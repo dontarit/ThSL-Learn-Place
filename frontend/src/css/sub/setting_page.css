@@ -1,0 +1,285 @@
+.setting-container {
+    position: fixed;
+    left: 50%;
+    top: 200%;
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #5e93e0;
+    background: linear-gradient(0deg, #5e93e0 0%, #0084ff 20%, #0084ff 80%, #5e93e0 100%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-family: 'm_1mregular';
+    color: #f0f0f0;
+    transform: translate(-50%, -50%);
+    transition: top 200ms;
+    z-index: 3;
+}
+.setting-container-open {
+    animation: settingPopUp 600ms forwards;
+}
+.setting-container-close {
+    animation: settinggoDown 600ms forwards;
+}
+@keyframes settingPopUp {
+    0% {
+        top: 200%;
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    75% {
+        top: 45%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        top: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+@keyframes settinggoDown {
+    0% {
+        top: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    25% {
+        top: 45%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        top: 200%;
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+}
+
+#overlay-setting-container {
+    display: none;
+    position: fixed;
+    opacity: 0;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(41, 41, 41, .3);
+    transition-property: opacity;
+    transition: 100ms;
+    z-index: 2;
+}
+
+.setting-container .con-out {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    padding: 6px;
+    font-size: clamp(1.4em, 2.6vw, 2em);
+}
+
+.setting-container .con-out p {
+    font-weight: bold;
+}
+
+.setting-container .con-out div {
+    display: flex;
+    gap: 10px;
+}
+
+.setting-container .con-out .ph {
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    font-weight: bolder;
+    transition: color 200ms;
+}
+.setting-container .con-out .ph:nth-child(1):hover {
+    color: #ffbf00;
+}
+.setting-container .con-out .ph:nth-child(2):hover {
+    color: #ff2f00;
+}
+
+.setting-container .con-in {
+    padding: 16px;
+    background-color: #6844e9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.setting-container .con-in .topSelect p {
+    display: inline-block;
+    padding: 8px 8px;
+    font-size: clamp(16px, 2vw, 20px);
+    cursor: pointer;
+    user-select: none;
+    border-radius: 6px 6px 0 0;
+    transition: 250ms;
+}
+.setting-container .con-in .topSelect .set-at-main {
+    border-bottom: solid 1px #b226e4;
+    background-color: #b226e4;
+    color: #f0f0f0;
+}
+.setting-container .con-in .topSelect .set-at-sub {
+    border-bottom: solid 1px #8f3aae;
+    background-color: #8f3aae;
+    color: #ae8bb5;
+}
+
+.setting-container .con-in .conFor-mainCon {
+    display: flex;
+    position: relative;
+    transition: transform 250ms;
+}
+
+.setting-container .con-in .main-content {
+    width: 100%;
+    max-height: 50vh;
+    padding: 15px 10px;
+    flex-shrink: 0;
+    background-color: #b226e4;
+    background: linear-gradient(to bottom, #b226e4, #5e4cff);
+    border-radius: 0 6px 6px 6px;
+    transition: opacity 250ms;
+}
+
+
+.setting-container .con-in .main-content:not(:first-child) {
+    opacity: 0;
+}
+
+.setting-container .con-in .main-content section:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+.setting-container .con-in .head-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.setting-container .con-in .head {
+    font-size: 1.7em;
+    font-weight: bold;
+    padding-right: 10px;
+    text-wrap: nowrap;
+    color: #e2e2e2;
+}
+.setting-container .con-in .head-break {
+    width: 100%;
+    height: 1.8px;
+    background-color: #e2e2e2;
+}
+
+.setting-container .con-in .content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.setting-container .con-in .sub-con {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.setting-container .con-in .sub-con p {
+    margin: 0;
+    font-size: clamp(16px, 2vw, 20px);
+    flex-shrink: 0;
+}
+
+.setting-container .con-in .sub-con input,
+.setting-container .con-in .sub-con select {
+    flex-grow: 1;
+    padding: 5px;
+    max-width: 100px;
+    min-width: 60px;
+    outline: none;
+    border: 3px solid #ccc;
+    border-radius: 4px;
+    font-size: clamp(12px, 2vw, 16px);
+    font-family: 'm_1mregular';
+    color: #757575;
+    transition: 200ms;
+}
+.setting-container .con-in .sub-con input:focus {
+    border: 3px solid #0084ff;
+}
+.setting-container .con-in .sub-con input[type = "checkbox"] {
+    all: unset;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border-radius: 4px;
+    max-width: 100px;
+    min-width: 90px;
+    height: clamp(16px, 2vw, 20px);
+    background-color: #dbdbdb;
+}
+.setting-container .con-in .sub-con input[type = "checkbox"]::before {
+    content: 'ON';
+    position: absolute;
+    text-align: center;
+    height: 100%;
+    width: 50%;
+    left: 0;
+    border-radius: 4px 0 0 4px;
+    color: #fff;
+    background-color: #70ca35;
+    font-size: clamp(12px, 2vw, 16px);
+    font-family: 'm_1mregular';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 250ms;
+}
+.setting-container .con-in .sub-con input[type = "checkbox"]:hover::before {
+    transform: scale(1.12);
+    border-radius: 4px;
+}
+
+.setting-container .con-in .sub-con input[type = "checkbox"]:checked::before {
+    content: 'OFF';
+    background-color: #c32509;
+    left: 50%;
+    border-radius: 0 4px 4px 0;
+}
+
+
+.setting-container .bottom-deck {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+.setting-container .bottom-deck input {
+    cursor: pointer;
+    padding: 5px 8px;
+    max-width: 80px;
+    min-width: 60px;
+    color: #232323;
+    background: #D2D3CB;
+    background: linear-gradient(0deg, #d2d3cb 50%, #f6f4fd 100%);
+    border: 1.8px solid #ccc;
+    border-radius: 4px;
+    flex-grow: 1;
+    font-size: clamp(12px, 2vw, 16px);
+    font-family: 'm_1mregular';
+    transition-property: border transform;
+    transition: 200ms;
+}
+.setting-container .bottom-deck input:hover {
+    border: 1.8px solid #0084ff;
+    transform: scale(1.12);
+    color: #000000;
+}
+.setting-container .bottom-deck .inner {
+    display: flex;
+    gap: 8px;
+}

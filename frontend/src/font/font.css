@@ -1,0 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@100..900&display=swap");
+@font-face {
+    font-family: 'm_1mregular';
+    src: url('M+ 1m regular/mplus-1m-regular-webfont.woff2') format('woff2'),
+         url('M+ 1m regular/mplus-1m-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'book_antiquaregular';
+    src: url('bookantiqua/bookantiqua-webfont.woff2') format('woff2'),
+         url('bookantiqua/bookantiqua-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,200..700;1,200..700&display=swap');
+@font-face {
+    font-family: 'agencyfblightregular';
+    src: url('agency_fb_light/agency_fb_light-webfont.woff2') format('woff2'),
+         url('agency_fb_light/agency_fb_light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
