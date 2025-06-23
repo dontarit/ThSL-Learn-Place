@@ -8,7 +8,9 @@ import './css/sub/waveBtn.css';
 
 import TSLlogo from './img/TSLlogo.png';
 import blankProfile from './img/blank-profile.png';
-// import blankProfile from './img/blank-profile.png';
+import newStar from './img/new star.png';
+import littleStar from './img/little star.png';
+import fullStar from './img/full star.png';
 import searchBtn from './img/searchBtn.png';
 import favBtn from './img/favBtn.png';
 import handPosBtn from './img/handPosBtn.png';
@@ -128,15 +130,15 @@ function LearnPlace() {
                     </div>
                     <div className="stars">
                         <div className="newStar learn-star">
-                            <img src="img/new star.png"/>
+                            <img src={newStar}/>
                             <p id="newSP">0</p>
                         </div>
                         <div className="littleStar learn-star">
-                            <img src="img/little star.png"/>
+                            <img src={littleStar}/>
                             <p id="littleSP">0</p>
                         </div>
                         <div className="fullStar learn-star">
-                            <img src="img/full star.png"/>
+                            <img src={fullStar}/>
                             <p id="fullSP">0</p>
                         </div>
                     </div>
