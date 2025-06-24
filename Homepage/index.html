@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>THsl-Homepage</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="modern-login.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <h1 class="logo">THsl-Homepage</h1>
+      <nav class="nav">
+        <a href="#about">About us</a>
+        <a href="#what">What is this</a>
+        <a href="#">-</a>
+        <a href="#">-</a>
+        <a href="#login" class="cta">ลงชื่อเข้าใช้</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Login Section -->
+  <section id="login" class="login">
+    <div class="container login-content">
+      <h2>เข้าสู่ระบบ</h2>
+      <p>เข้าสู่ระบบเพื่อเริ่มต้นการเรียนรู้ภาษามือไทย</p>
+      <a href="#" class="cta-large">เข้าสู่ระบบด้วยอีเมล</a>
+    </div>
+  </section>
+  
+   <div class="login-container">  	
+      <input type="checkbox" id="chk" aria-hidden="true">
+        <div class="signup-page">
+          <form>
+            <label for="chk" aria-hidden="true">Sign up</label>
+            <input type="text" name="txt" placeholder="User name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="pswd" placeholder="Password" required>
+            <button>Sign up</button>
+          </form>
+        </div>
+
+        <div class="login-page">
+          <form>
+            <label class="login-btn" for="chk" aria-hidden="true">Login</label>
+            <input class="login-input-btn" type="email" name="email" placeholder="Email" required="">
+            <input class="login-input-btn" type="password" name="pswd" placeholder="Password" required="">
+            <button class="login-submit-btn">Login</button>
+          </form>
+        </div>
+    </div>
+
+  <!-- About Us Section -->
+  <section id="about" class="section">
+    <h2>About Us</h2>
+    <p>
+      ชิน ทิว คอป 👍
+    </p>
+  </section>
+
+  <!-- What is this Section -->
+  <section id="what" class="section">
+    <h2>What is This</h2>
+    <p>
+      กูไม่รู้อะคิดไม่ออก
+    </p>
+  </section>
+
+</body>
+</html>
