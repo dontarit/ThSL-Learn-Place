@@ -1,28 +1,28 @@
 import { useEffect } from 'react';
 
-import './font/font.css';
-import './css/learnPlace.css';
-import './css/sub/searchbox.css';
-import './css/sub/setting_page.css';
-import './css/sub/waveBtn.css';
+import '../assets/font/font.css';
+import '../css/learnPlace.css';
+import '../css/sub/searchbox.css';
+import '../css/sub/setting_page.css';
+import '../css/sub/waveBtn.css';
 
-import TSLlogo from './img/TSLlogo.png';
-import blankProfile from './img/blank-profile.png';
-import newStar from './img/new star.png';
-import littleStar from './img/little star.png';
-import fullStar from './img/full star.png';
-import searchBtn from './img/searchBtn.png';
-import favBtn from './img/favBtn.png';
-import handPosBtn from './img/handPosBtn.png';
-import handShapeBtn from './img/handShapeBtn.png';
-import palmTurnBtn from './img/palmTurnBtn.png';
-import daynightBtn from './img/daynightBtn.png';
-import settingBtn from './img/settingBtn.png';
-import mascot from './img/mascot.png';
+import TSLlogo from '../assets/img/TSLlogo.png';
+import blankProfile from '../assets/img/blank-profile.png';
+import newStar from '../assets/img/new star.png';
+import littleStar from '../assets/img/little star.png';
+import fullStar from '../assets/img/full star.png';
+import searchBtn from '../assets/img/searchBtn.png';
+import favBtn from '../assets/img/favBtn.png';
+import handPosBtn from '../assets/img/handPosBtn.png';
+import handShapeBtn from '../assets/img/handShapeBtn.png';
+import palmTurnBtn from '../assets/img/palmTurnBtn.png';
+import daynightBtn from '../assets/img/daynightBtn.png';
+import settingBtn from '../assets/img/settingBtn.png';
+import mascot from '../assets/img/mascot.png';
 
 function LearnPlace() {
     useEffect(() => { 
-        import('./js/app-learnPlace.js') 
+        import('../js/app-learnPlace.js') 
     }, []);
     return (
         <>
