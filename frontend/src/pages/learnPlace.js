@@ -297,7 +297,7 @@ function LearnPlace() {
                 </button>
             </section>
         </div>
-        <div className="setting-container">
+        <div className="setting-container" aria-hidden = 'true'>
             <div className="con-out">
                 <p>Setting</p>
                 <div>

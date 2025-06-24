@@ -101,7 +101,11 @@ menuBtn.addEventListener("click", () => {
     }
 });
 
-document.querySelector('.forceCloseMenu').addEventListener('click', () => {closeMenu()})
+const forceCloseMenu = document.querySelector('.forceCloseMenu')
+forceCloseMenu.addEventListener('click', () => {
+    closeMenu()
+})
+
 window.addEventListener("click", (e) => {
     if (
         sideMenu.getAttribute('aria-hidden') == 'false' &&
@@ -111,11 +115,7 @@ window.addEventListener("click", (e) => {
         closeMenu();
     }
 });
-window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
-        closeMenu();
-    }
-});
+
 window.addEventListener('scroll', () => {
     if (sideMenu.ariaHidden == 'false') {
         closeMenu()
@@ -220,6 +220,7 @@ openSetting.addEventListener('click', () => {
     setTimeout(() => {
         overlaySetting.style.opacity = '1'
     }, 100);
+    settingBody.ariaHidden = false
     settingBody.classList.remove('setting-container-close')
     settingBody.classList.add('setting-container-open')
     settingBody.inert = false
@@ -230,6 +231,7 @@ function closeSettingFunc() {
     setTimeout(() => {
         overlaySetting.style.display = 'none'
     }, 100);
+    settingBody.ariaHidden = true
     openSetting.style.transform = 'rotate(0deg)'
     settingBody.classList.remove('setting-container-open')
     settingBody.classList.add('setting-container-close')
@@ -247,3 +249,15 @@ cancleSetting.addEventListener('click', () => {
 closeSetting.addEventListener('click', () => {
     closeSettingFunc()
 })
+
+
+
+// Event keydown
+window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
+        closeMenu()   
+    }
+    if (e.key === "Escape" && settingBody.getAttribute('aria-hidden') == 'false') {
+        closeSettingFunc()
+    }
+});
