@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import LearnPlace from './learnPlace.js';
-import reportWebVitals from './reportWebVitals';
+import './app.css';
+import LearnPlace from './pages/learnPlace.js';
+import reportWebVitals from './reportWebVitals.js';
 
-const root = ReactDOM.createRoot(document.body);
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <React.StrictMode>
         <LearnPlace/>
