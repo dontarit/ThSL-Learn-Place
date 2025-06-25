@@ -1,3 +1,6 @@
+// วิธีเปิดตัว server
+// เปิดหน้า terminal ที่โฟลเดอร์ "ThSL Learn Place\frontend" ตามด้วยคำสั่ง "npm start"
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
