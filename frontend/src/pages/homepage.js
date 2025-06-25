@@ -8,46 +8,56 @@
 import '../css/homepage.css';
 import '../css/sub/logsign-form.css';
 import '../js/AnimatedBackground';
+
+// import img ที่จำเป็น
+import TSLlogo from '../assets/img/TSLlogo.png';
+
 // เขียนคล้าย html นั่นแหละ
 function HomePage() {
     return (
         <>
-        <header className="header">
-            <h1 className="logo">ThSL-Homepage</h1>
-            <nav className="nav">
-                <a href="#home">Home</a>
-                <a href="#about">About</a>
-                <a href="#what">What is this</a>
-                <a href="#">-</a>
-                <a href="#">-</a>
-                <a className="cta">ลงชื่อเข้าใช้</a>
-            </nav>
+        <header>
+            <div className="con-header">
+                <div className="main-logo">
+                    <img src={TSLlogo} alt='logo'/>
+                </div>
+                <nav className="nav">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#what">What is this</a>
+                    <a href="#">-</a>
+                    <a href="#">-</a>
+                    <a className="cta">ลงชื่อเข้าใช้</a>
+                </nav>
+            </div>
         </header>
 
-        <section id="home" className="section">
-            <h2>About Us</h2>
-            <p>ชิน ทิว คอป 👍</p>
-        </section>
-        <section id="about" className="section">
-            <h2>About Us</h2>
-            <p>ชิน ทิว คอป 👍</p>
-        </section>
-        <section id="what" className="section">
-            <h2>What is This</h2>
-            <p>กูไม่รู้อะคิดไม่ออก</p>
-        </section>
-                <section id="home" className="section">
-            <h2>About Us</h2>
-            <p>ชิน ทิว คอป 👍</p>
-        </section>
-        <section id="about" className="section">
-            <h2>About Us</h2>
-            <p>ชิน ทิว คอป 👍</p>
-        </section>
-        <section id="what" className="section">
-            <h2>What is This</h2>
-            <p>กูไม่รู้อะคิดไม่ออก</p>
-        </section>
+        <div className='mainContent-container'>
+            <section id="home" className="section">
+                <h2>About Us</h2>
+                <p>ชิน ทิว คอป 👍</p>
+            </section>
+            <section id="what" className="section">
+                <h2>What is This</h2>
+                <p>กูไม่รู้อะคิดไม่ออก</p>
+            </section>
+            <section id="what" className="section">
+                <h2>What is This</h2>
+                <p>กูไม่รู้อะคิดไม่ออก</p>
+            </section>
+            <section id="what" className="section">
+                <h2>What is This</h2>
+                <p>กูไม่รู้อะคิดไม่ออก</p>
+            </section>
+            <section id="what" className="section">
+                <h2>What is This</h2>
+                <p>กูไม่รู้อะคิดไม่ออก</p>
+            </section>
+            <section id="what" className="section">
+                <h2>What is This</h2>
+                <p>กูไม่รู้อะคิดไม่ออก</p>
+            </section>
+        </div>
 
         <div className="logsign-container" style={{display: 'none'}}>
             <input type="checkbox" id="chk" aria-hidden="true"/>
