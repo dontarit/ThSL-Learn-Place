@@ -7,7 +7,7 @@
 */
 import '../css/homepage.css';
 import '../css/sub/logsign-form.css';
-
+import '../js/AnimatedBackground';
 // เขียนคล้าย html นั่นแหละ
 function HomePage() {
     return (
@@ -25,6 +25,18 @@ function HomePage() {
         </header>
 
         <section id="home" className="section">
+            <h2>About Us</h2>
+            <p>ชิน ทิว คอป 👍</p>
+        </section>
+        <section id="about" className="section">
+            <h2>About Us</h2>
+            <p>ชิน ทิว คอป 👍</p>
+        </section>
+        <section id="what" className="section">
+            <h2>What is This</h2>
+            <p>กูไม่รู้อะคิดไม่ออก</p>
+        </section>
+                <section id="home" className="section">
             <h2>About Us</h2>
             <p>ชิน ทิว คอป 👍</p>
         </section>
@@ -57,6 +69,7 @@ function HomePage() {
                 </form>
             </div>
         </div>
+        //
         </>
     )
 }

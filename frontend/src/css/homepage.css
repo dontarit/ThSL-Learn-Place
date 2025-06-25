@@ -2,10 +2,10 @@
     /*--bg-main: #0e0c31;*/
     /*--bg-subtle: #1b154c;*/
     --border-color: #000000;
-    --text-primary: #000000;
-    --text-secondary: #000000;
-    --link-color: #000000;
-    --link-hover: #000000;
+    --text-primary: #683ebd;
+    --text-secondary: #ffffff5b;
+    --link-color: #ffffff;
+    --link-hover: #ffffff;
     --button-primary: #2da44e;
     --button-hover: #218739;
 }
@@ -34,7 +34,7 @@ a:hover {
 }
 
 .header {
-    background: linear-gradient(90deg, rgba(7, 14, 227, 1) 0%, rgba(90, 109, 214, 1) 50%, rgba(135, 195, 230, 1) 100%);
+    /*background: linear-gradient(90deg, rgba(7, 14, 227, 1) 0%, rgba(90, 109, 214, 1) 50%, rgba(135, 195, 230, 1) 100%);*/
     padding: 1rem 0;
     border-bottom: 1px solid var(--border-color);
     display: flex;
@@ -60,7 +60,7 @@ a:hover {
 
 .cta {
     /*background: var(--button-primary);*/
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
     padding: 0.5rem 1rem;
     border-radius: 20px;
 }
@@ -131,7 +131,7 @@ a:hover {
 .section {
     padding: 5rem 1rem;
     text-align: center;
-    background: linear-gradient(90deg, rgba(7, 14, 227, 1) 0%, rgba(90, 109, 214, 1) 50%, rgba(135, 195, 230, 1) 100%);
+    /*background: linear-gradient(90deg, rgba(7, 14, 227, 1) 0%, rgba(90, 109, 214, 1) 50%, rgba(135, 195, 230, 1) 100%);*/
     color: var(--text-primary, #24292f);
     border-bottom: 1px solid var(--border-color, #d0d7de);
 }
