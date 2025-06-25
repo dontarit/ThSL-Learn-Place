@@ -1,6 +1,14 @@
+// ไฟล์นี้จะถูกเรียกโดย index.js ตอนเริ่ม server
+
+/*
+เรียกใช้ไฟล์ css
+    homepage.css        เป็นไฟล์ style หลังของ homepage
+    logsign-form.css    ไฟล์ style สำหรับหน้า login/signin เท่านั้น
+*/
 import '../css/homepage.css';
 import '../css/sub/logsign-form.css';
 
+// เขียนคล้าย html นั่นแหละ
 function HomePage() {
     return (
         <>
@@ -53,4 +61,5 @@ function HomePage() {
     )
 }
 
+// ส่งออกไปเพื่อใช้ใน index.js
 export default HomePage
