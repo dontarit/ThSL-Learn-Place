@@ -25,8 +25,6 @@ function HomePage() {
                     <a href="#home">Home</a>
                     <a href="#about">About</a>
                     <a href="#what">What is this</a>
-                    <a href="#">-</a>
-                    <a href="#">-</a>
                     <a className="cta">ลงชื่อเข้าใช้</a>
                 </nav>
             </div>
