@@ -5,6 +5,7 @@
 }
 
 body {
+    inset: 0;
     font-family: 'm_1mregular';
     background-color: #211D43;
     font-size: .8rem;

@@ -22,10 +22,19 @@ import mascot from '../assets/img/mascot.png';
 
 function LearnPlace() {
     useEffect(() => { 
-        import('../js/app-learnPlace.js') 
+        import('../js/app-learnPlace.js')
     }, []);
     return (
         <>
+        <style>{`
+            body {
+                background-color: var(--dark-bg);
+            }
+            header {
+                background-color: var(--dark-hd);
+                box-shadow: 2px 2px 22px var(--dark-sh);
+            }
+        `}</style>
         <header>
             <div className="con-header">
                 <div className="open-menu me-hed-btn" id="menuBtn">
