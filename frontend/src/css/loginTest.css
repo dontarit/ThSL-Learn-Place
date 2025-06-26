@@ -1,0 +1,30 @@
+body {
+    background:
+    linear-gradient(-90deg, rgba(79, 79, 79, 0.063) 1px, transparent 1px),
+    linear-gradient(rgba(79, 79, 79, 0.063) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+    background-color: #c7d2e0;
+    padding: 20px;
+    border-radius: 10px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+form div {
+    width: 20vw;
+    display: flex;
+    gap: 10px;
+}
+input {
+    width: 100%;
+    font-size: .8em;
+}

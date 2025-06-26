@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import '../assets/font/font.css';
 import '../css/learnPlace.css';
@@ -20,21 +20,41 @@ import daynightBtn from '../assets/img/daynightBtn.png';
 import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
+function checkTheme(value) {
+    if (value == "dark") {
+        return ['--dark-bg', '--dark-hd', '--dark-sh']
+    }
+    else if (value == "ligth") {
+        return ['--light-bg', '--light-hd', '--light-sh']
+    }
+    else {
+        return ['--dark-bg', '--dark-hd', '--dark-sh']
+    }
+}
+
 function LearnPlace() {
+    const [theme, setTheme] = useState()
+
     useEffect(() => { 
         import('../js/app-learnPlace.js')
     }, []);
+
     return (
         <>
-        <style>{`
+        <style>{
+            `
             body {
-                background-color: var(--dark-bg);
+                // background-color: var({--dark-bg});
+                background-color: var(${checkTheme(theme)[0]});
             }
             header {
-                background-color: var(--dark-hd);
-                box-shadow: 2px 2px 22px var(--dark-sh);
+                // background-color: var(--dark-hd);
+                // box-shadow: 2px 2px 22px var(--dark-sh);
+                background-color: var(${checkTheme(theme)[1]});
+                box-shadow: 2px 2px 22px var(${checkTheme(theme)[2]});
             }
-        `}</style>
+            `
+        }</style>
         <header>
             <div className="con-header">
                 <div className="open-menu me-hed-btn" id="menuBtn">
