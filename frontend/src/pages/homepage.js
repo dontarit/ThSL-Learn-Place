@@ -17,46 +17,61 @@ function HomePage() {
     return (
         <>
         <header>
-            <div className="con-header">
+            <div className='con-header'>
                 <div className="main-logo">
                     <img src={TSLlogo} alt='logo'/>
                 </div>
                 <nav className="nav">
                     <a href="#home">Home</a>
                     <a href="#about">About</a>
-                    <a href="#what">What is this</a>
-                    <a href="#">-</a>
-                    <a href="#">-</a>
-                    <a className="cta">ลงชื่อเข้าใช้</a>
                 </nav>
             </div>
         </header>
 
         <div className='mainContent-container'>
-            <section id="home" className="section">
-                <h2>About Us</h2>
+            <section id="home" className="welcomePage">
+                <div className='imgContainer'>
+                    <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
+                </div>
+                <div className='textContainer'style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '24px' }}>
+                    <div className='headTitle'style={{ maxWidth: '400px', fontSize: '30px', fontWeight: 'bold' }}>
+                        <p>วิธีการเรียนภาษาที่ทั้งสนุก ฟรีและได้ผลดีเยี่ยม!</p>
+                    </div>
+                    <div className='btnLogSign'style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <button className="StartBtn">มาเริ่มกันเลย</button> 
+                        <button className="LoginBtn">ฉันมีบัญชีอยู่แล้ว</button>    
+                    </div>
+                </div>
+            </section>
+            <section id="what" className="section1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ width: '320px', height: '259.2px', backgroundColor: '#eee', marginTop: '20px'  }}>
+                <h2 className='WhatIsThis' style={{ display: 'flex',justifyContent:'center',alignItems:'center',textAlign:'center'}}>
+                    <span> What is this
+                        <br></br>
+                    </span>
+                </h2>
+                <br></br>
                 <p>ชิน ทิว คอป 👍</p>
+                </div>
+            <div className='imgsection1' style={{ marginTop: '16px', textAlign: 'center' }}>
+                <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
+            </div>
             </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
+            <section id="what" className="section2" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',marginBottom:'0px' }}>
+                <div style={{ width: '320px', height: '259.2px', backgroundColor: '#eee', marginTop: '20px'  }}>
+                <h2 className='WhatIsThis' style={{ display: 'flex',justifyContent:'center',alignItems:'center',textAlign:'center'}}>
+                    <span> What is this
+                        <br></br>
+                    </span>
+                </h2>
+                <br></br>
+                <p>ชิน ทิว คอป 👍</p>
+                </div>
+            <div className='imgsection2' style={{ marginTop: '16px', textAlign: 'center' }}>
+                <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
+            </div>
             </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
-            </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
-            </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
-            </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
-            </section>
+
         </div>
 
         <div className="logsign-container" style={{display: 'none'}}>
