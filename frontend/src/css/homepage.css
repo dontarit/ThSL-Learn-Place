@@ -5,8 +5,6 @@
     --link-color: #ffffff;
 }
 
-
-
 header {
     color: white;
     position: fixed;
@@ -19,19 +17,21 @@ header {
     box-shadow: 2px 2px 22px rgba(0, 0, 0, 0.1);
     z-index: 2;
 }
+
 .con-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 0;
 }
+
 .con-header .main-logo img {
     width: calc(1.8em * 2.2);
 }
+
 .con-header .nav a {
     font-weight: 500;
 }
-
 
 .mainContent-container {
     display: flex;
@@ -43,9 +43,11 @@ header {
     width: 80%;
     background-color: red;
 }
-.mainContent-container > section {
+
+.mainContent-container>section {
     height: 100vh;
 }
+
 .welcomePage {
     display: flex;
     flex-direction: row;
@@ -54,6 +56,65 @@ header {
     gap: 10px;
     background-color: blue;
 }
-.welcomePage .imgContainer img {
+
+
+/* .welcomePage .imgContainer img {
     width: ;
+} */
+
+.StartBtn {
+    all: unset;
+    display: flex;
+    justify-content: center;
+    gap: .5em;
+    padding: clamp(5px, 1.2vw, 10px);
+    padding: clamp(12px, 1.2vw, 18px) clamp(8px, 1.2vw, 10px);
+    border-radius: 12px;
+    width: 100%;
+    font-size: clamp(12px, 5vw, 1.6em);
+    font-family: 'm_1mregular';
+    cursor: pointer;
+    transition: transform 200ms;
+    color: #e2e2e2;
+    background-color: #6e4adb;
+    gap: 30px;
+}
+
+.LoginBtn {
+    all: unset;
+    display: flex;
+    justify-content: center;
+    gap: .5em;
+    padding: clamp(5px, 1.2vw, 10px);
+    padding: clamp(12px, 1.2vw, 18px) clamp(8px, 1.2vw, 10px);
+    border-radius: 12px;
+    width: 100%;
+    font-size: clamp(12px, 5vw, 1.6em);
+    font-family: 'm_1mregular';
+    cursor: pointer;
+    transition: transform 200ms;
+    color: #000000;
+    background-color: #1d086b;
+    display: flex;
+    flex-direction: column;
+}
+
+.textContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /*background: white;*/
+    padding: 40px;
+    border-radius: 10px;
+    
+}
+.headTitle{
+    font-size: 30px;
+    align-content: center;
+}
+.WhatIsThis{
+    font-size: 40px;
+    align-items: center;
 }
