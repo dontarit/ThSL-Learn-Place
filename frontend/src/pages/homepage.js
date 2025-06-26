@@ -57,6 +57,20 @@ function HomePage() {
                 <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
             </div>
             </section>
+            <section id="what" className="section2" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',marginBottom:'0px' }}>
+                <div style={{ width: '320px', height: '259.2px', backgroundColor: '#eee', marginTop: '20px'  }}>
+                <h2 className='WhatIsThis' style={{ display: 'flex',justifyContent:'center',alignItems:'center',textAlign:'center'}}>
+                    <span> What is this
+                        <br></br>
+                    </span>
+                </h2>
+                <br></br>
+                <p>ชิน ทิว คอป 👍</p>
+                </div>
+            <div className='imgsection2' style={{ marginTop: '16px', textAlign: 'center' }}>
+                <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
+            </div>
+            </section>
 
         </div>
 
