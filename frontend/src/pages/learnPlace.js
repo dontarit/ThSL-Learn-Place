@@ -26,13 +26,15 @@ function LearnPlace() {
     }, []);
     return (
         <>
-        <div class="
-            absolute
-            inset-0
-            bg-[linear-gradient(to_right,#4f4f4f10_1px,transparent_1px),
-                linear-gradient(to_bottom,#4f4f4f10_1px,transparent_1px)]
-            bg-[size:24px_24px]">
-        </div>
+        <style>{`
+            body {
+                background-color: var(--dark-bg);
+            }
+            header {
+                background-color: var(--dark-hd);
+                box-shadow: 2px 2px 22px var(--dark-sh);
+            }
+        `}</style>
         <header>
             <div className="con-header">
                 <div className="open-menu me-hed-btn" id="menuBtn">
