@@ -22,10 +22,17 @@ import mascot from '../assets/img/mascot.png';
 
 function LearnPlace() {
     useEffect(() => { 
-        import('../js/app-learnPlace.js') 
+        import('../js/app-learnPlace.js')
     }, []);
     return (
         <>
+        <div class="
+            absolute
+            inset-0
+            bg-[linear-gradient(to_right,#4f4f4f10_1px,transparent_1px),
+                linear-gradient(to_bottom,#4f4f4f10_1px,transparent_1px)]
+            bg-[size:24px_24px]">
+        </div>
         <header>
             <div className="con-header">
                 <div className="open-menu me-hed-btn" id="menuBtn">
