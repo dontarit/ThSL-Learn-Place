@@ -11,7 +11,7 @@ import ReactDOM from 'react-dom/client';
     learnPlace.js   หน้าที่ user จะเข้าไปทันทีถ้าหาก login ไว้แล้ว
 */
 import './app.css';
-import LearnPlace from './pages/learnPlace.js';
+// import LearnPlace from './pages/learnPlace.js';
 import HomePage from './pages/homepage.js';
 import reportWebVitals from './reportWebVitals.js';
 

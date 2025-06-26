@@ -17,43 +17,35 @@ function HomePage() {
     return (
         <>
         <header>
-            <div className="con-header">
+            <div className='con-header'>
                 <div className="main-logo">
                     <img src={TSLlogo} alt='logo'/>
                 </div>
                 <nav className="nav">
                     <a href="#home">Home</a>
                     <a href="#about">About</a>
-                    <a href="#what">What is this</a>
-                    <a className="cta">ลงชื่อเข้าใช้</a>
                 </nav>
             </div>
         </header>
 
         <div className='mainContent-container'>
-            <section id="home" className="section">
+            <section id="home" className="welcomePage">
+                <div className='imgContainer'>
+                    <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
+                </div>
+                <div className='textContainer'>
+                    <div className='headTitle'>
+                        <p>วิธีการเรียนภาษาที่ทั้งสนุก ฟรีและได้ผลดีเยี่ยม!</p>
+                    </div>
+                    <div className='btnLogSign'>
+                        <button className="StartBtn">มาเริ่มกันเลย</button>    
+                        <button className="LoginBtn">ฉันมีบัญชีอยู่แล้ว</button>    
+                    </div>
+                </div>
+            </section>
+            <section id="about" className="section">
                 <h2>About Us</h2>
                 <p>ชิน ทิว คอป 👍</p>
-            </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
-            </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
-            </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
-            </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
-            </section>
-            <section id="what" className="section">
-                <h2>What is This</h2>
-                <p>กูไม่รู้อะคิดไม่ออก</p>
             </section>
         </div>
 
