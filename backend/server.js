@@ -1,14 +1,11 @@
 const express = require('express')
 const mysql = require('mysql')
 const cors = require('cors')
-// const http = require('http')
 // const socketIo = require('socket.io')
-// const path = require('path')
 // const puppeteer = require('puppeteer')
 
 const app = express()
-const port = process.env.PORT || 5000
-
+app.use(express.json())
 app.use(cors())
 
 const pool = mysql.createPool({
@@ -20,27 +17,30 @@ const pool = mysql.createPool({
 })
 
 app.post('/login', (req, res) => {
-    const sql = "SELECT * FROM user_data WHRER user_name = ? AND user_password = ?"
-    const value = [
-        req.body.name,
-        req.body.password
-    ]
+    const sql = "SELECT * FROM user_data WHERE user_email = ? AND user_password = ?"
     pool.getConnection((err, connection) => {
         if (err) {
-            console.error('Error getting connection:', err);
-            return;
+            res.json("Connection Failed")
+            console.error('Error getting connection:', err)
+            return
         }
-        connection.query(sql, (err, data) => {
+        connection.query(sql, [req.body.email, req.body.password], (err, data) => {
             connection.release()
             if (err) {
-                console.error('Error executing query:', err);
+                res.json("Login Failed")
+                console.error('Error executing query:', err)
                 return
             }
-            res.json(data)
+            if (data.length > 0) {
+                return res.json(true)
+            } else {
+                return res.json(false)
+            }
         })
     })
 })
 
+const port = process.env.PORT || 5000
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`)
+    console.log(`Server is running on http://localhost:${port}/login`)
 })

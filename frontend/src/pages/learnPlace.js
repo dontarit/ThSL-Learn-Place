@@ -276,18 +276,18 @@ function LearnPlace() {
                     </div>
                 </div>
                 <div className="revBtn_container">
-                    <button id="reviewBtn" className="btn-animate btnAnimate">
+                    <button id="reviewBtn" className="btnAnimate">
                         <span>START REVIEW</span>
                         <span>(10)</span>
                     </button>
                 </div>
             </section>
             <section className="Cam-Search">
-                <button className="searchBoxBtn btn-animate search-animate btnAnimate" id="activateSearch">
+                <button className="searchBoxBtn search-animate btnAnimate" id="activateSearch">
                     <p>Search for a word</p>
                     <i className="ph ph-magnifying-glass"></i>
                 </button>
-                <button className="cameraBoxBtn btn-animate btnAnimate">
+                <button className="cameraBoxBtn btnAnimate">
                     <p>Translate with camera</p>
                     <i className="ph-fill ph-camera"></i>
                 </button>
