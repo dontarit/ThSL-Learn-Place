@@ -151,27 +151,29 @@ searchInput.addEventListener('focusout', () => {
         });
     }
     searchCon.style.transition = 'ease top 300ms'
-    searchInput.value = ''
     searchCon.style.top = '-50%'
+    searchInput.value = ''
 })
 
 
 
-// Spin animation for icon
-const setingOpen = document.querySelectorAll('.setingOpen')
-setingOpen.forEach(element => {
-    element.addEventListener('click', () => {
-        let time = 500
-        element.style.transition = `transform ${time}ms`
-        element.style.transform = 'rotate(360deg)'
-    })
-});
+// Spin animation, use when open setting page with gear icon
+function SpinCheck(elememt) {
+    if (elememt.classList.contains('Spin-n')) {
+        elememt.classList.remove('Spin-n')
+        elememt.classList.add('Spin-y')
+    }
+    else if (elememt.classList.contains('Spin-y')) {
+        elememt.classList.remove('Spin-y')
+        elememt.classList.add('Spin-n')
+    }
+}
 
 
 
 // Change setting option
 const settingBody = document.querySelector('.setting-container')
-const openSetting = document.querySelector('.open-setting')
+const openSetting = document.querySelectorAll('.open-setting')
 const overlaySetting = document.getElementById('overlay-setting-container')
 const closeStBtn = document.querySelector('.setting-container .con-out .ph-x')
 const quesStBtn = document.querySelector('.setting-container .con-out .ph-question-mark')
@@ -214,25 +216,30 @@ topSelect.forEach(element => {
 
 
 // Open and Close setting
-openSetting.addEventListener('click', () => {
-    topSelect[0].click()
-    overlaySetting.style.display = 'block'
-    setTimeout(() => {
-        overlaySetting.style.opacity = '1'
-    }, 100);
-    settingBody.ariaHidden = false
-    settingBody.classList.remove('setting-container-close')
-    settingBody.classList.add('setting-container-open')
-    settingBody.inert = false
-})
+const overlaySettingTime = 250
+openSetting.forEach(element => {
+    element.addEventListener('click', () => {
+        SpinCheck(element)
+        topSelect[0].click()
+        overlaySetting.style.transition = `all ${overlaySettingTime}ms`
+        overlaySetting.style.display = 'block'
+        setTimeout(() => {
+            overlaySetting.style.opacity = '1'
+        }, overlaySettingTime);
+        settingBody.ariaHidden = false
+        settingBody.classList.remove('setting-container-close')
+        settingBody.classList.add('setting-container-open')
+        settingBody.inert = false
+    })
+});
 
 function closeSettingFunc() {
+    overlaySetting.style.transition = `all ${overlaySettingTime}ms`
     overlaySetting.style.opacity = '0'
     setTimeout(() => {
         overlaySetting.style.display = 'none'
-    }, 100);
+    }, overlaySettingTime);
     settingBody.ariaHidden = true
-    openSetting.style.transform = 'rotate(0deg)'
     settingBody.classList.remove('setting-container-open')
     settingBody.classList.add('setting-container-close')
     settingBody.inert = true
@@ -240,15 +247,13 @@ function closeSettingFunc() {
 
 const advanceSetting = document.getElementById('advance_setting')
 const submitSetting = document.getElementById('submit_setting')
-const cancleSetting = document.getElementById('cancle_setting')
-const closeSetting = document.querySelector('.setting-container .con-out .ph-x')
+const closeSetting = document.querySelectorAll('.closeSetting')
 
-cancleSetting.addEventListener('click', () => {
-    closeSettingFunc()
-})
-closeSetting.addEventListener('click', () => {
-    closeSettingFunc()
-})
+closeSetting.forEach(element => {
+    element.addEventListener('click', () => {
+        closeSettingFunc()
+    })
+});
 
 
 
