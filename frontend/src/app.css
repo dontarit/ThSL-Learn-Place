@@ -7,7 +7,6 @@
 body {
     inset: 0;
     font-family: 'm_1mregular';
-    background-color: #211D43;
     font-size: .8rem;
 }
 
@@ -16,7 +15,7 @@ html {
 }
 
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {

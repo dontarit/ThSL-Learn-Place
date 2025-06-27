@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import '../assets/font/font.css';
 import '../css/learnPlace.css';
@@ -21,20 +21,20 @@ import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
 function LearnPlace() {
+    const setDarkMode = () => {
+        document.querySelector('body').setAttribute('data-theme', 'dark');
+    }
+    const setLightMode = () => {
+        document.querySelector('body').setAttribute('data-theme', 'light');
+    }
+    setDarkMode()
+
     useEffect(() => { 
         import('../js/app-learnPlace.js')
     }, []);
+
     return (
         <>
-        <style>{`
-            body {
-                background-color: var(--dark-bg);
-            }
-            header {
-                background-color: var(--dark-hd);
-                box-shadow: 2px 2px 22px var(--dark-sh);
-            }
-        `}</style>
         <header>
             <div className="con-header">
                 <div className="open-menu me-hed-btn" id="menuBtn">
@@ -66,8 +66,8 @@ function LearnPlace() {
                         </div>
                     </div>
                 </div>
-                <div className="open-setting me-hed-btn setingOpen">
-                    <i className="ph-fill ph-gear-six" id="settingBtn"></i>
+                <div className="open-setting me-hed-btn settingIconOpen Spin-n">
+                    <i className="ph-fill ph-gear-six"></i>
                 </div>
             </div>
         </header>
@@ -129,7 +129,7 @@ function LearnPlace() {
                             </div>
                             <div className="already-signin">
                                 {/* <p id="navHead-txt">USER NAME</p> */}
-                                <p id="navHead-txt">aaaaaaaaaaaaaaa</p>
+                                <p id="navHead-txt" title='Hello'>aaaaaaaaaaaaaaa</p>
                                 <div id="usetime">
                                     <p>Time usage: </p>
                                     <p>-</p>
@@ -183,7 +183,7 @@ function LearnPlace() {
                         <img src={daynightBtn}/>
                         <p>Light/Dark</p>
                     </div>
-                    <div className="settingBtn iconBtn btnAnimate">
+                    <div className="settingBtn iconBtn open-setting">
                         <img src={settingBtn}/>
                         <p>Setting</p>
                     </div>
@@ -311,7 +311,7 @@ function LearnPlace() {
                 <p>Setting</p>
                 <div>
                     <i className="ph ph-question-mark"></i>
-                    <i className="ph ph-x"></i>
+                    <i className="ph ph-x closeSetting"></i>
                 </div>
             </div>
             <div className="con-in">
@@ -337,7 +337,14 @@ function LearnPlace() {
                                 </div>
                                 <div className="sub-con">
                                     <p>Theme</p>
-                                    <select name="theme" id="theme" defaultValue="dark">
+                                    <select name="theme" id="theme" defaultValue="dark" onChange={(e) => {
+                                        if (e.target.value === 'dark') {
+                                            setDarkMode();
+                                        }
+                                        else if (e.target.value === 'light') {
+                                            setLightMode();
+                                        }
+                                    }}>
                                         <option value="light">Light</option>
                                         <option value="dark">Dark</option>
                                     </select>
@@ -398,8 +405,8 @@ function LearnPlace() {
                 <div className="bottom-deck">
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
                     <div className="inner">
-                        <input id="submit_setting" type="button" defaultValue="Ok"/>
-                        <input id="cancle_setting" type="button" defaultValue="Cancle"/>
+                        <input id="submit_setting" type="button" defaultValue="Ok" className='closeSetting'/>
+                        <input id="cancle_setting" type="button" defaultValue="Cancle" className='closeSetting'/>
                     </div>
                 </div>
             </div>
