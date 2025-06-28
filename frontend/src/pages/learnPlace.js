@@ -1,11 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import '../assets/font/font.css';
-import '../css/learnPlace.css';
-import '../css/sub/searchbox.css';
-import '../css/sub/setting_page.css';
-import '../css/sub/waveBtn.css';
-
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
 import newStar from '../assets/img/new star.png';
@@ -20,7 +14,7 @@ import daynightBtn from '../assets/img/daynightBtn.png';
 import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
-function LearnPlace() {
+export default function LearnPlace() {
     const setDarkMode = () => {
         document.querySelector('body').setAttribute('data-theme', 'dark');
     }
@@ -28,8 +22,14 @@ function LearnPlace() {
         document.querySelector('body').setAttribute('data-theme', 'light');
     }
     setDarkMode()
-
+    
     useEffect(() => { 
+        import('../assets/font/font.css')
+        import('../css/learnPlace.css')
+        import('../css/sub/searchbox.css')
+        import('../css/sub/setting_page.css')
+        import('../css/sub/waveBtn.css')
+        
         import('../js/app-learnPlace.js')
     }, []);
 
@@ -415,5 +415,3 @@ function LearnPlace() {
         </>
     );
 }
-
-export default LearnPlace;
