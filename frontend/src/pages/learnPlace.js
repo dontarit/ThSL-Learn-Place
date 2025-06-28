@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
@@ -15,6 +16,16 @@ import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
 export default function LearnPlace() {
+    let searchingIdelay
+    const handleSearching = (value) => {
+        clearTimeout(searchingIdelay)
+        searchingIdelay = setTimeout(() => {
+            axios.post('http://localhost:5000/learnServer', {data : value})
+            .then(res => {console.log(res.data)})
+            .catch(err => {console.log(err)})
+        }, 1000);
+    }
+    
     const setDarkMode = () => {
         document.querySelector('body').setAttribute('data-theme', 'dark');
     }
@@ -29,7 +40,6 @@ export default function LearnPlace() {
         import('../css/sub/searchbox.css')
         import('../css/sub/setting_page.css')
         import('../css/sub/waveBtn.css')
-        
         import('../js/app-learnPlace.js')
     }, []);
 
@@ -48,19 +58,22 @@ export default function LearnPlace() {
                 <div className="main-logo">
                     <img src={TSLlogo} alt='logo'/>
                 </div>
-                <div className="search-container">
+                <div className="search-container" inert>
                     <div>
                         <div className="input-place">
-                            <input type="text" name="word" id="search-box" placeholder="Search for..." autoComplete="off"/>
+                            <div className="sideSearchSend">
+                                <i className="ph ph-magnifying-glass"></i>
+                            </div>
+                            <input type="text" name="word" id="search-box" autoComplete="off" onChange={e => {handleSearching(e.target.value)}}/>
                         </div>
                         <div className="free-option">
-                            <div className="clipboard btnAnimate">
+                            <div className="clipboard">
                                 <i className="ph ph-clipboard"></i>
                             </div>
-                            <div className="history btnAnimate">
+                            <div className="history">
                                 <i className="ph ph-clock-counter-clockwise"></i>
                             </div>
-                            <div className="question btnAnimate">
+                            <div className="question">
                                 <i className="ph ph-question"></i>
                             </div>
                         </div>
@@ -71,7 +84,7 @@ export default function LearnPlace() {
                 </div>
             </div>
         </header>
-        <div className="search-result" style={{display: 'none'}}>
+        <div className="search-result" style={{display: 'flex'}}>
             <div className="history-list">
                 <div className="word-container">
                     <div>
@@ -306,7 +319,7 @@ export default function LearnPlace() {
                 </button>
             </section>
         </div>
-        <div className="setting-container" aria-hidden = 'true'>
+        <div className="setting-container" aria-hidden='true'>
             <div className="con-out">
                 <p>Setting</p>
                 <div>

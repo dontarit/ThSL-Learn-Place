@@ -43,8 +43,8 @@ changeStrTable()
 const append_btnAnimate = document.querySelectorAll('.btnAnimate')
 append_btnAnimate.forEach(element => {
     element.addEventListener('click', () => {
-        element.style.transform = 'translateY(-5%) scale(1.02)'
         element.transition = 'transform 100ms'
+        element.style.transform = 'translateY(-5%) scale(1.02)'
         setTimeout(() => {
             element.style.transform = 'translateY(0%) scale(1)'
         }, 100);
@@ -106,22 +106,6 @@ forceCloseMenu.addEventListener('click', () => {
     closeMenu()
 })
 
-window.addEventListener("click", (e) => {
-    if (
-        sideMenu.getAttribute('aria-hidden') == 'false' &&
-        !sideMenu.contains(e.target) &&
-        e.target !== menuBtn
-    ) {
-        closeMenu();
-    }
-});
-
-window.addEventListener('scroll', () => {
-    if (sideMenu.ariaHidden == 'false') {
-        closeMenu()
-    }
-})
-
 
 
 // Search button animation
@@ -130,30 +114,38 @@ const searchCon = document.querySelector('.search-container')
 const searchInput = document.getElementById('search-box')
 const headBtn = document.querySelectorAll('.me-hed-btn')
 
-searchBtn.forEach(element => {
-    element.addEventListener('click', () => {
-        if (window.innerWidth < 481) {
-            headBtn.forEach(ele => {
-                ele.style.transition = 'opacity 300ms'
-                ele.style.opacity = '0'
-            });
-        }
-        searchCon.style.transition = 'ease top 300ms'
-        searchCon.style.top = '50%'
-        searchInput.focus()
-    })
-});
-searchInput.addEventListener('focusout', () => {
-    if (window.innerWidth < 481) {
+function openSearch() {
+    if (window.innerWidth < 768) {
+        headBtn.forEach(elememt => {
+            elememt.inert = true
+            elememt.style.transition = 'opacity 300ms'
+            elememt.style.opacity = '0'
+        });
+    }
+    searchCon.inert = false
+    searchCon.style.transition = 'ease top 300ms'
+    searchCon.style.top = '50%'
+    searchInput.focus()
+}
+function closeSearch() {
+    if (window.innerWidth < 768) {
         headBtn.forEach(element => {
+            element.inert = false
             element.style.transition = 'opacity 300ms'
             element.style.opacity = '1'
         });
     }
+    searchCon.inert = true
     searchCon.style.transition = 'ease top 300ms'
     searchCon.style.top = '-50%'
     searchInput.value = ''
-})
+}
+
+searchBtn.forEach(element => {
+    element.addEventListener('click', () => {
+        openSearch()
+    })
+});
 
 
 
@@ -257,7 +249,8 @@ closeSetting.forEach(element => {
 
 
 
-// Event keydown
+// Window event
+
 window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
         closeMenu()   
@@ -266,3 +259,22 @@ window.addEventListener("keydown", (e) => {
         closeSettingFunc()
     }
 });
+
+window.addEventListener("click", (e) => {
+    if (
+        sideMenu.getAttribute('aria-hidden') == 'false' &&
+        !sideMenu.contains(e.target) &&
+        e.target !== menuBtn
+    ) {
+        closeMenu();
+    }
+    if (!searchCon.contains(e.target) && e.target.id !== 'activateSearch') {
+        closeSearch();
+    }
+});
+
+window.addEventListener('scroll', () => {
+    if (sideMenu.ariaHidden == 'false') {
+        closeMenu()
+    }
+})

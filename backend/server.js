@@ -1,9 +1,10 @@
 const express = require('express')
 const mysql = require('mysql')
 const cors = require('cors')
-// const socketIo = require('socket.io')
-// const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer')
 
+// const port = process.env.PORT || 5000
+const port = 5000
 const app = express()
 app.use(express.json())
 app.use(cors())
@@ -16,7 +17,7 @@ const pool = mysql.createPool({
     database : 'thsl_learn',
 })
 
-app.post('/login', (req, res) => {
+app.post('/loginServer', (req, res) => {
     const sql = "SELECT * FROM user_data WHERE user_email = ? AND user_password = ?"
     pool.getConnection((err, connection) => {
         if (err) {
@@ -40,7 +41,66 @@ app.post('/login', (req, res) => {
     })
 })
 
-const port = process.env.PORT || 5000
+app.post('/learnServer', async (req, res) => {
+    console.log(`Searching for : ${req.body.data}`);
+    const browser = await puppeteer.launch()
+    const page = await browser.newPage()
+    await page.goto(`https://www.th-sl.com/?s=${req.body.data}`)
+    // await page.goto('https://www.th-sl.com/page/2/?s=ภาษา')
+    
+    const card_data = await page.evaluate(() => {
+        const card_element = document.querySelectorAll('.elementor-post__title')
+        const card_array = []
+
+        for (const elememt of card_element) {
+            const text = elememt.querySelector('a').innerText;
+            if (
+                text != 'ไม่พบผลการค้นหา' &&
+                text != 'ฐานข้อมูลภาษามือไทย' &&
+                text != 'ค้นหาด้วยภาษามือไทย' &&
+                text != 'ค้นหาด้วยคำศัพท์ภาษามือไทย'
+            ) {
+                card_array.push(text)
+            }
+        }
+
+        return card_array
+    })
+    
+    console.log(`Search(${req.body.data}) : ${card_data}`);
+    res.json(card_data)
+
+    await new Promise(resolve => setTimeout(resolve, port))
+    await browser.close()
+})
+
+// app.post('/recomentWord', async (req, res) => {
+//     const browser = await puppeteer.launch()
+//     const page = await browser.newPage()
+    
+//     const data = []
+
+//     // Fetch data from console and send to website
+//     page.on('console', async (msg) => {
+//         const args = msg.args()
+
+//         for (let i = 0; i < args.length; ++i) {
+//             try {
+//                 const val = await args[i].jsonValue()
+//                 data.push(val)
+//             } catch (e) {
+//                 console.log(`[ARG ${i}] <unserializable>`)
+//             }
+//         }
+//     })
+    
+//     await page.goto('https://www.th-sl.com/search-by-act/')
+//     await new Promise(resolve => setTimeout(resolve, port))
+//     await browser.close()
+    
+//     res.json({data})
+// })
+
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}/login`)
+    console.log(`Server is running on http://localhost:${port}`)
 })

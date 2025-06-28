@@ -7,10 +7,10 @@ export default function LoginTest() {
     const [password, setPassword] = useState('')
     const handleSubmit = (e) => {
         e.preventDefault()
-        axios.post('http://localhost:5000/login', {email, password})
+    }
+    axios.post('http://localhost:5000/loginServer', {email, password})
         .then(res => {console.log(res.data)})
         .catch(err => {console.log(err)}) // Activate เมื่อไม่สามารถเชื่อกับ server.js
-    }
     
     useEffect(() => { 
         import('../css/loginTest.css')
