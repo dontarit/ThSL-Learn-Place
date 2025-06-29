@@ -42,64 +42,52 @@ app.post('/loginServer', (req, res) => {
 })
 
 app.post('/learnServer', async (req, res) => {
-    console.log(`Searching for : ${req.body.data}`);
+    const req_data = req.body.search_data
+    const req_page = req.body.search_page
+    console.log(`User Searching : ${req_data}`);
+    
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto(`https://www.th-sl.com/?s=${req.body.data}`)
-    // await page.goto('https://www.th-sl.com/page/2/?s=ภาษา')
+    await page.goto(`https://www.th-sl.com/page/${req_page}/?s=${req_data}`)
+
     
     const card_data = await page.evaluate(() => {
-        const card_element = document.querySelectorAll('.elementor-post__title')
+        const card_element = document.querySelectorAll('.elementor-post__card')
+        const page_element = document.querySelector('.elementor-pagination')
         const card_array = []
-
+        
+        // Check if there are thumbnail or not (unavailable = not word-card)
         for (const elememt of card_element) {
-            const text = elememt.querySelector('a').innerText;
-            if (
-                text != 'ไม่พบผลการค้นหา' &&
-                text != 'ฐานข้อมูลภาษามือไทย' &&
-                text != 'ค้นหาด้วยภาษามือไทย' &&
-                text != 'ค้นหาด้วยคำศัพท์ภาษามือไทย'
-            ) {
+            const text = elememt.querySelector('.elementor-post__title').innerText;
+            const img = elememt.querySelector('.elementor-post__thumbnail')
+            if (img != null) {
                 card_array.push(text)
             }
         }
-
-        return card_array
+        
+        // Send card_array again if more page still avialable
+        const getPage = document.querySelector('.page-numbers.current')
+        const page_now = page_element != null ? getPage.innerText.trim().replace(/\D/g, '') : 1
+        const page_all = page_element != null ? page_element.childElementCount : 1
+        return {card_array, page_all, page_now}
     })
     
-    console.log(`Search(${req.body.data}) : ${card_data}`);
-    res.json(card_data)
+    let word_data = card_data.card_array
+    let page_all = card_data.page_all
+    let page_now = card_data.page_now
+    
+    // Send data to user
+    console.log(`Searching for "${req_data}"(${page_now}/${page_all}) : ${word_data}`);
+    res.json({
+        search : req_data,
+        send : word_data,
+        pageAll : parseInt(page_all),
+        pageNow : parseInt(page_now),
+    })
 
     await new Promise(resolve => setTimeout(resolve, port))
     await browser.close()
 })
-
-// app.post('/recomentWord', async (req, res) => {
-//     const browser = await puppeteer.launch()
-//     const page = await browser.newPage()
-    
-//     const data = []
-
-//     // Fetch data from console and send to website
-//     page.on('console', async (msg) => {
-//         const args = msg.args()
-
-//         for (let i = 0; i < args.length; ++i) {
-//             try {
-//                 const val = await args[i].jsonValue()
-//                 data.push(val)
-//             } catch (e) {
-//                 console.log(`[ARG ${i}] <unserializable>`)
-//             }
-//         }
-//     })
-    
-//     await page.goto('https://www.th-sl.com/search-by-act/')
-//     await new Promise(resolve => setTimeout(resolve, port))
-//     await browser.close()
-    
-//     res.json({data})
-// })
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`)

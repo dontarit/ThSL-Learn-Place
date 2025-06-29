@@ -17,19 +17,60 @@ import mascot from '../assets/img/mascot.png';
 
 export default function LearnPlace() {
     let searchingIdelay
-    const handleSearching = (value) => {
-        clearTimeout(searchingIdelay)
-        searchingIdelay = setTimeout(() => {
-            axios.post('http://localhost:5000/learnServer', {data : value})
-            .then(res => {console.log(res.data)})
-            .catch(err => {console.log(err)})
-        }, 1000);
+    let searchController
+
+    async function typingSearch(value) {
+        clearTimeout(searchingIdelay);
+        if (value == '') {
+            console.log(searchController);
+            cancelSearch()
+            console.log(searchController);
+        }else {
+            searchingIdelay = setTimeout(async () => {
+                searchController = new AbortController()
+                const signal = searchController.signal
+                console.log(searchController);
+                console.log(signal);
+    
+                try {
+                    // Make the initial request for the first page
+                    const res = await axios.post('http://localhost:5000/learnServer', {
+                        search_data: value,
+                        search_page: 1,
+                        signal: signal
+                    });
+                    console.log(res.data);
+    
+                    // Loop through all pages from the current to total pages
+                    for (let i = res.data['pageNow']; i < res.data['pageAll']; i++) {
+                        const pageRes = await axios.post('http://localhost:5000/learnServer', {
+                            search_data: value,
+                            search_page: i + 1,
+                            signal: signal
+                        });
+                        console.log(pageRes.data);
+                    }
+                } catch (err) {
+                    console.error('Error occurred during search:', err);
+                }
+            }, 1000);
+        }
+    }
+    function cancelSearch() {
+        if (searchController) {
+            searchController.abort()
+        }
+    }
+
+    // Activate when user press enter with search box
+    function handleSearch(e) {
+        e.preventDefault()
     }
     
-    const setDarkMode = () => {
+    function setDarkMode() {
         document.querySelector('body').setAttribute('data-theme', 'dark');
     }
-    const setLightMode = () => {
+    function setLightMode() {
         document.querySelector('body').setAttribute('data-theme', 'light');
     }
     setDarkMode()
@@ -60,12 +101,16 @@ export default function LearnPlace() {
                 </div>
                 <div className="search-container" inert>
                     <div>
-                        <div className="input-place">
-                            <div className="sideSearchSend">
+                        {/* <div className="input-place"> */}
+                        <form className="input-place" onSubmit={handleSearch}>
+                            <button className="sideSearchSend" type='submit'>
                                 <i className="ph ph-magnifying-glass"></i>
-                            </div>
-                            <input type="text" name="word" id="search-box" autoComplete="off" onChange={e => {handleSearching(e.target.value)}}/>
-                        </div>
+                            </button>
+                            <input type="text" name="word" id="search-box" autoComplete="off" 
+                                onChange={e => {typingSearch(e.target.value)}}
+                            />
+                        </form>
+                        {/* </div> */}
                         <div className="free-option">
                             <div className="clipboard">
                                 <i className="ph ph-clipboard"></i>
