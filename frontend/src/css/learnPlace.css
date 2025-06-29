@@ -639,6 +639,7 @@ progress::-webkit-progress-value {
 .progress-word>div p:nth-child(2) span {
     opacity: 0;
     user-select: none;
+    -webkit-user-drag: none;
 }
 
 .progress-0 {
