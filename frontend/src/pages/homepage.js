@@ -28,50 +28,58 @@ function HomePage() {
             </div>
         </header>
 
-        <div className='mainContent-container'>
+        <div className='main-container'>
             <section id="home" className="welcomePage">
                 <div className='imgContainer'>
                     <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
                 </div>
-                <div className='textContainer'style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '24px' }}>
-                    <div className='headTitle'style={{ maxWidth: '400px', fontSize: '30px', fontWeight: 'bold' }}>
+                <div className='textContainer' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '24px' }}>
+                    <div className='headTitle' style={{ maxWidth: '400px', fontSize: '30px', fontWeight: 'bold' }}>
                         <p>วิธีการเรียนภาษาที่ทั้งสนุก ฟรีและได้ผลดีเยี่ยม!</p>
                     </div>
-                    <div className='btnLogSign'style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div className='btnLogSign' style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <button className="StartBtn">มาเริ่มกันเลย</button> 
                         <button className="LoginBtn">ฉันมีบัญชีอยู่แล้ว</button>    
                     </div>
                 </div>
             </section>
             <section id="what" className="section1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ width: '320px', height: '259.2px', backgroundColor: '#eee', marginTop: '20px'  }}>
+                <div style={{ width: '320px', height: '259.2px', marginTop: '20px'  }}>
                 <h2 className='WhatIsThis' style={{ display: 'flex',justifyContent:'center',alignItems:'center',textAlign:'center'}}>
                     <span> What is this
                         <br></br>
                     </span>
                 </h2>
                 <br></br>
-                <p>ชิน ทิว คอป 👍</p>
+                <p className='FistParagrap' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontSize: '16px', lineHeight: '1.5' }}>
+                    <span>สนุกไปกับการเรียนรู้และการฝึกฝนภาษามือได้ด้วยตนเองผ่านเว็ปแอป ด้วยรูปแบบการตรวจจับการเคลื่อนไหวผ่านกล้องวิดีโอ เพื่อนำมาแปลข้อความแบบ real time 
+                    </span>
+                </p>
                 </div>
             <div className='imgsection1' style={{ marginTop: '16px', textAlign: 'center' }}>
                 <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
             </div>
             </section>
-            <section id="what" className="section2" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',marginBottom:'0px' }}>
-                <div style={{ width: '320px', height: '259.2px', backgroundColor: '#eee', marginTop: '20px'  }}>
-                <h2 className='WhatIsThis' style={{ display: 'flex',justifyContent:'center',alignItems:'center',textAlign:'center'}}>
-                    <span> What is this
+            <section id="about_us" className="section2" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',marginBottom:'0px' }}>
+                <div style={{ width: '320px', height: '259.2px', marginTop: '20px'  }}>
+                <h2 className='About_us' style={{ display: 'flex',justifyContent:'center',alignItems:'center',textAlign:'center'}}>
+                    <span> About Us
                         <br></br>
                     </span>
                 </h2>
                 <br></br>
-                <p>ชิน ทิว คอป 👍</p>
+                <p className='SecondParagrap' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', fontSize: '16px', lineHeight: '1.5',color: 'white' }}>
+                    <span>
+                        เราคือกลุ่มนักเรียนจากโรงเรียนหนองบัวพิทยาคาร ผู้จัดทำเว็ปแอพพลิเคชันนี้ขึ้นมาเพื่อช่วยให้ผู้ที่สนใจเรียนรู้ภาษามือไทยได้มีเครื่องมือที่สะดวกและเข้าถึงได้ง่าย
+                        <br></br>
+                        โดยใช้เทคโนโลยีการตรวจจับการเคลื่อนไหวผ่านกล้องวิดีโอ เพื่อแปลภาษามือเป็นข้อความแบบเรียลไทม์
+                    </span>
+                </p>
                 </div>
             <div className='imgsection2' style={{ marginTop: '16px', textAlign: 'center' }}>
                 <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0mo1-1RPPCSd54lH3fcOeOWM1wRHxEZ3C1A&s'/>
             </div>
             </section>
-
         </div>
 
         <div className="logsign-container" style={{display: 'none'}}>
@@ -94,9 +102,9 @@ function HomePage() {
                 </form>
             </div>
         </div>
-        //
         </>
     )
+
 }
 
 // ส่งออกไปเพื่อใช้ใน index.js

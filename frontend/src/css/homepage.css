@@ -41,7 +41,7 @@ header {
     margin: auto;
     padding-bottom: 12em;
     width: 80%;
-    background-color: red;
+    /*background-color: red;*/
 }
 
 .mainContent-container>section {
@@ -114,7 +114,4 @@ header {
     font-size: 30px;
     align-content: center;
 }
-.WhatIsThis{
-    font-size: 40px;
-    align-items: center;
-}
+/*ทำให้เป็นล่าสุด*/
