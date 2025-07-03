@@ -10,7 +10,7 @@ export default function LoginTest() {
     }
     axios.post('http://localhost:5000/loginServer', {email, password})
         .then(res => {console.log(res.data)})
-        .catch(err => {console.log(err)}) // Activate เมื่อไม่สามารถเชื่อกับ server.js
+        .catch(err => {console.log(err)}) // Activate เมื่อไม่สามารถเชื่อมกับ server.js
     
     useEffect(() => { 
         import('../css/loginTest.css')

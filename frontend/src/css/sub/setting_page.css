@@ -16,6 +16,11 @@
     transition: top 200ms;
     z-index: 3;
 }
+.setting-container input::-webkit-outer-spin-button,
+.setting-container input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 .setting-container-open {
     animation: settingPopUp 600ms forwards;
 }
@@ -115,8 +120,13 @@
     font-size: clamp(16px, 2vw, 20px);
     cursor: pointer;
     user-select: none;
-    border-radius: 6px 6px 0 0;
     transition: 250ms;
+}
+.setting-container .con-in .topSelect p:first-child {
+    border-radius: 6px 0 0 0;
+}
+.setting-container .con-in .topSelect p:last-child {
+    border-radius: 0 6px 0 0;
 }
 .setting-container .con-in .topSelect .set-at-main {
     border-bottom: solid 1px #b226e4;
@@ -185,14 +195,35 @@
     align-items: center;
     gap: 10px;
 }
+.setting-container .con-in .sub-upper {
+    width: 100%;
+}
 
 .setting-container .con-in .sub-con p {
     margin: 0;
     font-size: clamp(16px, 2vw, 20px);
-    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.setting-container .con-in .sub-con img {
+    width: clamp(60px, 5vw, 72px);
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
 }
 
+.setting-container .con-in .sub-con input::placeholder,
+.setting-container .con-in .sub-upper input::placeholder {
+    color: #949494;
+}
+.setting-container .con-in .sub-con.valueInsert input::placeholder,
+.setting-container .con-in .sub-upper.valueInsert input::placeholder {
+    color: #000;
+}
 .setting-container .con-in .sub-con input,
+.setting-container .con-in .sub-upper input,
 .setting-container .con-in .sub-con select {
     flex-grow: 1;
     padding: 5px;
@@ -203,11 +234,14 @@
     border-radius: 4px;
     font-size: clamp(12px, 2vw, 16px);
     font-family: 'm_1mregular';
-    color: #757575;
+    color: #000;
     transition: 200ms;
 }
 .setting-container .con-in .sub-con input:focus {
     border: 3px solid #0084ff;
+}
+.setting-container .con-in .sub-con input:focus::placeholder {
+    color: transparent;
 }
 .setting-container .con-in .sub-con input[type = "checkbox"] {
     all: unset;
@@ -217,9 +251,9 @@
     align-items: center;
     padding: 5px;
     border-radius: 4px;
-    max-width: 100px;
     min-width: 90px;
-    height: clamp(16px, 2vw, 20px);
+    max-width: calc(100px - 5px - 3px);
+    height: calc(clamp(16px, 2vw, 20px) + 4px);
     background-color: #dbdbdb;
 }
 .setting-container .con-in .sub-con input[type = "checkbox"]::before {
@@ -243,12 +277,16 @@
     transform: scale(1.12);
     border-radius: 4px;
 }
-
 .setting-container .con-in .sub-con input[type = "checkbox"]:checked::before {
     content: 'OFF';
     background-color: #c32509;
     left: 50%;
     border-radius: 0 4px 4px 0;
+}
+
+.setting-container .con-in .sub-con.avata_setting {
+    width: 100%;
+    justify-content: space-between;
 }
 
 
@@ -282,4 +320,18 @@
 .setting-container .bottom-deck .inner {
     display: flex;
     gap: 8px;
+}
+
+#password-field {
+    position: relative;
+}
+.field-icon {
+    all: unset;
+    position: relative;
+    margin-left: -25px;
+    margin-top: -25px;
+    font-size: clamp(12px, 2vw, 16px);
+    color: #000;
+    cursor: pointer;
+    z-index: 2;
 }

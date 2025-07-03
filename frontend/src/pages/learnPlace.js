@@ -18,7 +18,6 @@ import mascot from '../assets/img/mascot.png';
 export default function LearnPlace() {
     let searchingIdelay
     let searchController
-
     async function typingSearch(value) {
         clearTimeout(searchingIdelay);
         if (value == '') {
@@ -41,7 +40,7 @@ export default function LearnPlace() {
                     });
                     console.log(res.data);
     
-                    // Loop through all pages from the current to total pages
+                    // Loop all pages from current to total
                     for (let i = res.data['pageNow']; i < res.data['pageAll']; i++) {
                         const pageRes = await axios.post('http://localhost:5000/learnServer', {
                             search_data: value,
@@ -61,19 +60,99 @@ export default function LearnPlace() {
             searchController.abort()
         }
     }
-
     // Activate when user press enter with search box
     function handleSearch(e) {
         e.preventDefault()
     }
     
-    function setDarkMode() {
-        document.querySelector('body').setAttribute('data-theme', 'dark');
+    // Svae setting config
+    const [settingStore, setSettingStore] = useState({
+        setValue: {
+            schedule: 4,
+            streak: false,
+            theme: 'dark',
+            time: '00:10'
+        },
+        value: {
+            schedule: 4,
+            streak: false,
+            theme: 'dark',
+            time: '00:10'
+        }
+    })
+    
+    function changeStrTable(row, col) {
+        const tableStr = document.querySelector('.showTableStr')
+        tableStr.innerHTML = ''
+        for (let i = 1; i <= row; i++) {
+            let theRow = document.createElement('div')
+            theRow.classList.add(`row-${i}`)
+            theRow.classList.add("tableRow")
+
+            for (let j = 1; j <= col; j++) {
+                let theColumn = document.createElement('div')
+                let progress = document.createElement('span')
+                let i = document.createElement('i')
+
+                theColumn.classList.add(`col-${j}`)
+                theColumn.classList.add("tableColumn")
+                progress.type = 'button'
+                i.classList.add('ph-fill')
+                i.classList.add('ph-check-circle')
+
+                theColumn.appendChild(progress)
+                theColumn.appendChild(i)
+                theRow.appendChild(theColumn)
+            }
+            tableStr.appendChild(theRow)
+        }
+        document.querySelector('.tableColumn').style.width = 'calc(50% / (7 / 1.5))'
     }
-    function setLightMode() {
-        document.querySelector('body').setAttribute('data-theme', 'light');
+    function disableStreak(disable) {
+        let time = 500
+        const main = document.querySelector('.mainContent-container')
+        const schedule = document.querySelector('.schedule')
+        main.style.transition = `${time}ms`
+        schedule.style.transition = `${time}ms`
+        if (disable) {
+            main.style.transform = `translateY(calc(0% - clamp(1.2em, 8vw, 5em) - ${schedule.offsetHeight}px))`
+            schedule.classList.add('disableSchedule')
+        }else {
+            main.style.transform = 'translateY(0%)'
+            schedule.classList.remove('disableSchedule')
+        }
     }
-    setDarkMode()
+    function checkTheme(theme) {
+        if (theme == 'dark') {
+            document.querySelector('body').setAttribute('data-theme', 'dark')
+        } else if (theme == 'light') {
+            document.querySelector('body').setAttribute('data-theme', 'light')
+        }
+    }
+
+    function comfirmSetting(apply) {
+        const historyShow = document.getElementById('history-show')
+        const streakShow = document.getElementById('streak-show')
+        const themeShow = document.getElementById('theme-show')
+        const timeShow = document.getElementById('time-show')
+        if (apply) {
+            Object.entries(settingStore.setValue).forEach(thevalue => {
+                settingStore.value[thevalue[0]] = thevalue[1]
+            })
+        }
+        const schedule = settingStore.value.schedule
+        const streak = settingStore.value.streak
+        const theme = settingStore.value.theme
+        const time = settingStore.value.time
+
+        changeStrTable(schedule, 7)
+        historyShow.setAttribute('placeholder', `${schedule} week`)
+        disableStreak(streak)
+        streakShow.checked = streak
+        checkTheme(theme)
+        themeShow.value = theme
+        timeShow.value = time
+    }
     
     useEffect(() => { 
         import('../assets/font/font.css')
@@ -82,7 +161,10 @@ export default function LearnPlace() {
         import('../css/sub/setting_page.css')
         import('../css/sub/waveBtn.css')
         import('../js/app-learnPlace.js')
+        comfirmSetting(true)
     }, []);
+
+
 
     return (
         <>
@@ -101,7 +183,6 @@ export default function LearnPlace() {
                 </div>
                 <div className="search-container" inert>
                     <div>
-                        {/* <div className="input-place"> */}
                         <form className="input-place" onSubmit={handleSearch}>
                             <button className="sideSearchSend" type='submit'>
                                 <i className="ph ph-magnifying-glass"></i>
@@ -110,7 +191,6 @@ export default function LearnPlace() {
                                 onChange={e => {typingSearch(e.target.value)}}
                             />
                         </form>
-                        {/* </div> */}
                         <div className="free-option">
                             <div className="clipboard">
                                 <i className="ph ph-clipboard"></i>
@@ -129,7 +209,7 @@ export default function LearnPlace() {
                 </div>
             </div>
         </header>
-        <div className="search-result" style={{display: 'flex'}}>
+        <div className="search-result" style={{display: 'none'}}>
             <div className="history-list">
                 <div className="word-container">
                     <div>
@@ -241,7 +321,7 @@ export default function LearnPlace() {
                         <img src={daynightBtn}/>
                         <p>Light/Dark</p>
                     </div>
-                    <div className="settingBtn iconBtn open-setting">
+                    <div className="settingBtn iconBtn forceCloseMenu open-setting">
                         <img src={settingBtn}/>
                         <p>Setting</p>
                     </div>
@@ -266,7 +346,7 @@ export default function LearnPlace() {
                         </p>
                     </div>
                 </div>
-                <div className="showTableStr row-4 col-7"></div>
+                <div className="showTableStr"></div>
                 <div className="tell-history">
                     <p id="last-use">21/5/2025</p>
                     <p id="study-time">No History</p>
@@ -364,7 +444,7 @@ export default function LearnPlace() {
                 </button>
             </section>
         </div>
-        <div className="setting-container" aria-hidden='true'>
+        <div className="setting-container">
             <div className="con-out">
                 <p>Setting</p>
                 <div>
@@ -375,7 +455,7 @@ export default function LearnPlace() {
             <div className="con-in">
                 <div className="topSelect">
                     <p id="stcon-topic-0" className="set-at-main">Main</p>
-                    <p id="stcon-topic-1" className="set-at-sub">Profile</p>    
+                    <p id="stcon-topic-1" className="set-at-sub">Profile</p>
                 </div>
                 <div className="conFor-mainCon">
                     <div className="main main-content">
@@ -385,24 +465,79 @@ export default function LearnPlace() {
                                 <span className="head-break"></span>
                             </div>
                             <div className="content">
-                                <div className="sub-con">
-                                    <p>Weeks of study history</p>
-                                    <input name="history-show" id="history-show" type="text" defaultValue="4 week"/>
+                                <div className="sub-con valueInsert">
+                                    <p title='Study history'>Study History</p>
+                                    <input name="history-show" id="history-show" type="number" placeholder="4 week" autoComplete='off'
+                                        onBlur={(e) => {
+                                            let element = e.target
+                                            let value = element.value == '' || element.value == null ? settingStore.value.schedule : element.value
+                                            if (value > 100) {
+                                                let time = 750
+                                                let color = element.style.color
+                                                element.inert = true
+                                                element.setAttribute('type', 'text')
+                                                element.value = 'Over limit'
+                                                element.style.color = '#c32509'
+                                                element.style.border = '3px solid #c32509'
+                                                setTimeout(() => {
+                                                    element.inert = false
+                                                    element.setAttribute('type', 'number')
+                                                    element.style.color = color
+                                                    element.style.border = '3px solid #ccc'
+                                                    element.value = ''
+                                                }, time);
+                                            } else {
+                                                element.setAttribute('placeholder', `${value} week`)
+                                                setSettingStore(prevState => ({
+                                                    ...prevState,
+                                                    setValue: {
+                                                        ...prevState.setValue,
+                                                        schedule: parseInt(value),
+                                                    }
+                                                }));
+                                                element.value = ''
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                <div className="sub-con valueInsert">
+                                    <p title='Show streak'>Show Streak</p>
+                                    <input name="streak-show" id="streak-show" type="checkbox"
+                                        onClick={(e) => {
+                                            setSettingStore(prevState => ({
+                                                ...prevState,
+                                                setValue: {
+                                                    ...prevState.setValue,
+                                                    streak: e.target.checked
+                                                }
+                                            }));
+                                        }}
+                                    />
                                 </div>
                                 <div className="sub-con">
-                                    <p>Show study streak</p>
-                                    <input name="streak-show" id="streak-show" type="checkbox"/> 
-                                </div>
-                                <div className="sub-con">
-                                    <p>Theme</p>
-                                    <select name="theme" id="theme" defaultValue="dark" onChange={(e) => {
-                                        if (e.target.value === 'dark') {
-                                            setDarkMode();
-                                        }
-                                        else if (e.target.value === 'light') {
-                                            setLightMode();
-                                        }
-                                    }}>
+                                    <p title='Theme set'>Theme Set</p>
+                                    <select name="theme" id="theme-show" defaultValue="dark"
+                                        onChange={(e) => {
+                                            if (e.target.value === 'dark') {
+                                                setSettingStore(prevState => ({
+                                                    ...prevState,
+                                                    setValue: {
+                                                        ...prevState.setValue,
+                                                        theme: 'dark'
+                                                    }
+                                                }));
+                                            }
+                                            else if (e.target.value === 'light') {
+                                                setSettingStore(prevState => ({
+                                                    ...prevState,
+                                                    setValue: {
+                                                        ...prevState.setValue,
+                                                        theme: 'light'
+                                                    }
+                                                }));
+                                            }
+                                        }}
+                                    >
                                         <option value="light">Light</option>
                                         <option value="dark">Dark</option>
                                     </select>
@@ -415,9 +550,19 @@ export default function LearnPlace() {
                                 <span className="head-break"></span>
                             </div>
                             <div className="content">
-                                <div className="sub-con">
-                                    <p>Dialy study target</p>
-                                    <input type="text" defaultValue="5 minute"/>
+                                <div className="sub-con valueInsert">
+                                    <p title='Daily Goals'>Daily Goals</p>
+                                    <input name="time-show" id="time-show" type="time" defaultValue='00:10' 
+                                        onChange={(e) => {
+                                            setSettingStore(prevState => ({
+                                                ...prevState,
+                                                setValue: {
+                                                    ...prevState.setValue,
+                                                    time: e.target.value
+                                                }
+                                            }));
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -425,36 +570,34 @@ export default function LearnPlace() {
                     <div className="profile main-content">
                         <section>
                             <div className="head-group">
-                                <p className="head">Lession</p>
+                                <p className="head">Information</p>
                                 <span className="head-break"></span>
                             </div>
                             <div className="content">
-                                <div className="sub-con">
-                                    <p>Weeks of study history</p>
-                                    <input name="history-show" id="history-show" type="text" defaultValue="4 week"/>
+                                <div className="sub-con avata_setting">
+                                    <img src={blankProfile} alt='blank profile'/>
+                                    <div className='sub-upper'>
+                                        <p>Name</p>
+                                        <div>
+                                            <input name="user-name" id="user-name" type="text" placeholder='User Name' autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
+                                            <i className="ph ph-pencil-simple field-icon"></i>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="sub-con">
-                                    <p>Show study streak</p>
-                                    <input name="streak-show" id="streak-show" type="checkbox"/>
-                                </div>
-                                <div className="sub-con">
-                                    <p>Theme</p>
-                                    <select name="theme" id="theme" defaultValue="dark">
-                                        <option value="light">Light</option>
-                                        <option value="dark">Dark</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </section>
-                        <section>
-                            <div className="head-group">
-                                <p className="head">User Interface</p>
-                                <span className="head-break"></span>
-                            </div>
-                            <div className="content">
-                                <div className="sub-con">
-                                    <p>Dialy study target</p>
-                                    <input type="text" defaultValue="5 minute"/>
+                                <div className="sub-con" style={{justifyContent: 'center'}}>
+                                    <div className='sub-upper'>
+                                        <p title='Email'>Email</p>
+                                        <input type="text" placeholder='name@email.com' style={{minWidth: '100%'}} inert/>
+                                    </div>
+                                    <div className='sub-upper valueInsert'>
+                                        <p title='Password'>Password</p>
+                                        <div className="form-group">
+                                            <div className="col-md-6">
+                                                <input id="password-field" type="password" className="form-control" name="password" style={{minWidth: '100%'}} inert/>
+                                                <button toggle="#password-field" id='toggle-password' className="ph ph-eye field-icon"></button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -463,8 +606,8 @@ export default function LearnPlace() {
                 <div className="bottom-deck">
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
                     <div className="inner">
-                        <input id="submit_setting" type="button" defaultValue="Ok" className='closeSetting'/>
-                        <input id="cancle_setting" type="button" defaultValue="Cancle" className='closeSetting'/>
+                        <input id="submit_setting" type="button" defaultValue="Ok" className='closeSetting' onClick={() => {comfirmSetting(true)}}/>
+                        <input id="cancle_setting" type="button" defaultValue="Cancle" className='closeSetting' onClick={()  => {comfirmSetting(false)}}/>
                     </div>
                 </div>
             </div>

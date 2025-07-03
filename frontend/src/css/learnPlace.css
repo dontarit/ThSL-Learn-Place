@@ -14,6 +14,7 @@ body {
     background-size: 24px 24px;
     background-color: var(--dark-bg);
     transition: background-color 500ms ease-in-out;
+    font-size: .8rem;
 }
 
 [data-theme='dark'] {
@@ -280,7 +281,7 @@ header {
     cursor: pointer;
 }
 
-.user .avatar img {
+.avatar img {
     width: clamp(50px, 8vw, 80px);
     -webkit-user-drag: none;
     -khtml-user-drag: none;
@@ -430,8 +431,14 @@ header {
     background: linear-gradient(135deg, #980ccc 0%, #4487e9 100%);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     border-radius: 8px;
+    transition: .5s;
+    opacity: 1;
+    transform: scale(1) translateY(0%);
 }
-
+.disableSchedule {
+    opacity: 0;
+    transform: scale(0) translateY(100%);
+}
 .schedule .tell-streak {
     display: flex;
     flex-direction: row;
@@ -482,30 +489,43 @@ header {
 
 .tableColumn {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
     aspect-ratio: 1/1;
     width: calc(50% / (7 / 1.5));
     background-color: #494949;
     border-radius: 50%;
     box-sizing: content-box;
+    cursor: pointer;
 }
-
-.tableColumn input {
-    all: unset;
+.tableColumn::after {
+    content: url("");
+    position: absolute;
+    top: 0;
     width: 100%;
     height: 100%;
-    transform: scale(0);
+    border-radius: 50%;
+}
+
+.tableColumn span {
+    all: unset;
+    scale: 0.00001;
+    width: 100%;
+    height: 100%;
     background-color: #bfbfbf;
     border-radius: 50%;
-    transition: transform 1s;
+    transition: scale 1s;
+    /* inherits: false; */
 }
 
 .tableColumn i {
+    all: unset;
     position: absolute;
-    color: #fff;
-    font-size: clamp(10px, 2vw, 1.2em);
+    font-size: clamp(12px, 2vw, 2em);
+    color: #50822f;
     opacity: 0;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     transition: opacity 1s;
 }
 
@@ -629,7 +649,6 @@ progress::-webkit-progress-value {
     text-align: center;
     width: 100%;
     flex-shrink: 0;
-    width: 100%;
 }
 
 .progress-word>div {

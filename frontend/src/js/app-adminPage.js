@@ -1,17 +1,3 @@
-// Button animation on click
-const append_btnAnimate = document.querySelectorAll('.btnAnimate')
-append_btnAnimate.forEach(element => {
-    element.addEventListener('click', () => {
-        element.transition = 'transform 100ms'
-        element.style.transform = 'translateY(-5%) scale(1.02)'
-        setTimeout(() => {
-            element.style.transform = 'translateY(0%) scale(1)'
-        }, 100);
-    })
-});
-
-
-
 // Menu toggle button
 const sideMenu = document.getElementById("sideMenu");
 const menuBtn = document.getElementById("menuBtn");
@@ -51,7 +37,6 @@ function closeMenu() {
         element.style.transform = 'translateX(-50%)'
     })
 }
-
 menuBtn.addEventListener("click", () => {
     if (sideMenu.getAttribute('aria-hidden') == 'true') {
         openMenu()
@@ -59,7 +44,6 @@ menuBtn.addEventListener("click", () => {
         closeMenu()
     }
 });
-
 const forceCloseMenu = document.querySelector('.forceCloseMenu')
 forceCloseMenu.addEventListener('click', () => {
     closeMenu()
@@ -177,6 +161,7 @@ openSetting.forEach(element => {
         setTimeout(() => {
             overlaySetting.style.opacity = '1'
         }, overlaySettingTime);
+        settingBody.ariaHidden = false
         settingBody.classList.remove('setting-container-close')
         settingBody.classList.add('setting-container-open')
         settingBody.inert = false
@@ -189,6 +174,7 @@ function closeSettingFunc() {
     setTimeout(() => {
         overlaySetting.style.display = 'none'
     }, overlaySettingTime);
+    settingBody.ariaHidden = true
     settingBody.classList.remove('setting-container-open')
     settingBody.classList.add('setting-container-close')
     settingBody.inert = true
@@ -203,26 +189,6 @@ closeSetting.forEach(element => {
         closeSettingFunc()
     })
 });
-
-
-
-// Password toggle
-const togglePassword = document.getElementById('toggle-password')
-const passwordField = document.getElementById('password-field')
-togglePassword.addEventListener('click', (e) => {
-    const elememt = e.target
-    if (passwordField.defaultValue == 'secret') {
-        elememt.classList.remove('ph-eye')
-        elememt.classList.add('ph-eye-slash')
-        passwordField.defaultValue = 'show'
-        passwordField.type = 'text'
-    }else {
-        elememt.classList.add('ph-eye')
-        elememt.classList.remove('ph-eye-slash')
-        passwordField.defaultValue = 'secret'
-        passwordField.type = 'password'
-    }
-})
 
 
 
