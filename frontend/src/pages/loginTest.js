@@ -1,13 +1,20 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react';
+import axios from 'axios'
 
-import '../css/loginTest.css'
 
-function LoginTest() {
+export default function LoginTest() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const handleSubmit = (e) => {
         e.preventDefault()
     }
+    axios.post('http://localhost:5000/loginServer', {email, password})
+        .then(res => {console.log(res.data)})
+        .catch(err => {console.log(err)}) // Activate เมื่อไม่สามารถเชื่อมกับ server.js
+    
+    useEffect(() => { 
+        import('../css/loginTest.css')
+    }, []);
 
     return (
         <>
@@ -27,5 +34,3 @@ function LoginTest() {
         </>
     )
 }
-
-export default LoginTest
