@@ -252,3 +252,21 @@ window.addEventListener('scroll', () => {
         closeMenu()
     }
 })
+window.addEventListener('load', () => {
+    document.body.style.transition = 'background-color 500ms ease-in-out';
+    document.querySelector('.headerSection').style.transition = '500ms ease-in-out';
+    document.getElementById('sideMenu').style.transition = 'transform 300ms';
+    
+    const transitions = [
+        { selector: '.tableColumn span', style: 'scale 1s' },
+        { selector: '.tableColumn i', style: 'opacity 1s' },
+        { selector: '.open-menu .menu-btn-out', style: '500ms' },
+        { selector: '.open-menu .menu-btn-in', style: '500ms' }
+    ];
+
+    transitions.forEach(({ selector, style }) => {
+        document.querySelectorAll(selector).forEach(element => {
+            element.style.transition = style;
+        });
+    });
+});

@@ -123,10 +123,9 @@ export default function LearnPlace() {
         }
     }
     function checkTheme(theme) {
-        if (theme == 'dark') {
-            document.querySelector('body').setAttribute('data-theme', 'dark')
-        } else if (theme == 'light') {
-            document.querySelector('body').setAttribute('data-theme', 'light')
+        const validThemes = ['light', 'dark', 'ocean'];
+        if (validThemes.includes(theme)) {
+            document.querySelector('body').setAttribute('data-theme', theme);
         }
     }
 
@@ -145,12 +144,16 @@ export default function LearnPlace() {
         const theme = settingStore.value.theme
         const time = settingStore.value.time
 
+        // table
         changeStrTable(schedule, 7)
         historyShow.setAttribute('placeholder', `${schedule} week`)
+        // streak
         disableStreak(streak)
         streakShow.checked = streak
+        // theme
         checkTheme(theme)
         themeShow.value = theme
+        // time
         timeShow.value = time
     }
     
@@ -168,7 +171,7 @@ export default function LearnPlace() {
 
     return (
         <>
-        <header>
+        <header className='headerSection'>
             <div className="con-header">
                 <div className="open-menu me-hed-btn" id="menuBtn">
                         <span className="menu-btn-out"></span>
@@ -333,14 +336,14 @@ export default function LearnPlace() {
                 <div className="tell-streak">
                     <div className="streak-container stnow">
                         <p>Current streak</p>
-                        <p id="dayStr">
+                        <p id="dayStr" className='make_text_gap'>
                             <span>2</span>
                             <span>DAY</span>
                         </p>
                     </div>
                     <div className="streak-container stbest">
                         <p>Best streak</p>
-                        <p id="bestStr">
+                        <p id="bestStr" className='make_text_gap'>
                             <span>16</span>
                             <span>DAY</span>
                         </p>
@@ -360,16 +363,16 @@ export default function LearnPlace() {
                             <div>
                                 <span>You are currently studying</span>
                             </div>
-                            <div>
-                                <span>134</span>
+                            <div className='make_text_gap'>
+                                <span id='txthilig'>134</span>
                                 <span>Thai Sign word.</span>
                             </div>
                         </div>
                         <div className="box2">
-                            <div>
+                            <div className='make_text_gap'>
                                 <span>Now you have</span>
-                                <span>10</span>
-                                <span>words</span>
+                                <span id='txthilig'>10</span>
+                                <span>word</span>
                             </div>
                             <div>
                                 <span>ready for review now</span>
@@ -379,13 +382,13 @@ export default function LearnPlace() {
                 </div>
                 <div className="level-show">
                     <div className="level-current">
-                        <p>
+                        <p className='make_text_gap'>
                             <span>Level</span>
-                            <span>3-8</span>
+                            <span id='levamt'>3-8</span>
                         </p>
-                        <p>
-                            <span>Next Level:</span>
-                            <span>144</span>
+                        <p className='make_text_gap'>
+                            <span>Next Level</span>
+                            <span id='levamt'>144</span>
                             <span>XP</span>
                         </p>
                     </div>
@@ -518,21 +521,13 @@ export default function LearnPlace() {
                                     <p title='Theme set'>Theme Set</p>
                                     <select name="theme" id="theme-show" defaultValue="dark"
                                         onChange={(e) => {
-                                            if (e.target.value === 'dark') {
+                                            const theme = e.target.value;
+                                            if (['light', 'dark', 'ocean'].includes(theme)) {
                                                 setSettingStore(prevState => ({
                                                     ...prevState,
                                                     setValue: {
                                                         ...prevState.setValue,
-                                                        theme: 'dark'
-                                                    }
-                                                }));
-                                            }
-                                            else if (e.target.value === 'light') {
-                                                setSettingStore(prevState => ({
-                                                    ...prevState,
-                                                    setValue: {
-                                                        ...prevState.setValue,
-                                                        theme: 'light'
+                                                        theme
                                                     }
                                                 }));
                                             }
@@ -540,6 +535,7 @@ export default function LearnPlace() {
                                     >
                                         <option value="light">Light</option>
                                         <option value="dark">Dark</option>
+                                        <option value="ocean">Ocean</option>
                                     </select>
                                 </div>
                             </div>
