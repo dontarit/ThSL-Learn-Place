@@ -201,13 +201,17 @@
     gap: 0.5rem;
     outline: 2px solid transparent;
     border-radius: inherit;
+    cursor: pointer;
 }
 .sidebar__link.selected {
     outline: 2px solid var(--accent--secondary);
     outline-offset: -2px;
     background: var(--bg--focus);
-    .icon svg {
-        fill: var(--accent--primary);
+    .icon i {
+        color: var(--accent--primary);
+    }
+    .text {
+        color: var(--dark--primary);
     }
 }
 
@@ -231,7 +235,7 @@
     transition: color 266ms ease-out;
 }
 
-.sidebar__link:hover {
+.sidebar__link:not(.selected):hover {
     background: var(--bg--hover);
     .icon i {
         color: var(--accent--primary);
@@ -241,14 +245,14 @@
     }
 }
 
-.sidebar__link:focus {
+/* .sidebar__link:focus {
     outline: 2px solid var(--accent--secondary);
     outline-offset: -2px;
     background: var(--bg--focus);
     .icon svg {
         fill: var(--accent--primary);
     }
-}
+} */
 
 .vertical-sidebar:not(:has(:checked)) .toggle--open,
 .vertical-sidebar:has(:checked) .toggle--close {

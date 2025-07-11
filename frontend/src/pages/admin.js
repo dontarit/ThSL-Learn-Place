@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
@@ -46,7 +45,7 @@ export default function AdminPage() {
                                 </a>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="/admin/create" data-tooltip="Inbox">
+                                <a className="sidebar__link" href="/admin/create" data-tooltip="Create Data">
                                     <span className="icon">
                                         <i className="ph ph-camera"></i>
                                     </span>
@@ -54,7 +53,7 @@ export default function AdminPage() {
                                 </a>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="#" data-tooltip="Favourite">
+                                <a className="sidebar__link" href="/admin/user" data-tooltip="User Management">
                                     <span className="icon">
                                         <i className="ph ph-identification-card"></i>
                                     </span>
@@ -62,7 +61,7 @@ export default function AdminPage() {
                                 </a>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="#" data-tooltip="Favourite">
+                                <a className="sidebar__link" href="/admin/thsl" data-tooltip="Thai Sign Management">
                                     <span className="icon">
                                         <i className="ph ph-database"></i>
                                     </span>
@@ -75,7 +74,7 @@ export default function AdminPage() {
                                 <h2 className="sidebar__item--heading textSetupSide">page</h2>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="/home" data-tooltip="Inbox">
+                                <a className="sidebar__link" href="/home" data-tooltip="Home">
                                     <span className="icon">
                                         <i className="ph ph-house-line"></i>
                                     </span>
@@ -83,7 +82,7 @@ export default function AdminPage() {
                                 </a>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="/learn" data-tooltip="Inbox">
+                                <a className="sidebar__link" href="/learn" data-tooltip="Main">
                                     <span className="icon">
                                         <i className="ph ph-lightbulb"></i>
                                     </span>
@@ -96,7 +95,7 @@ export default function AdminPage() {
                                 <h2 className="sidebar__item--heading textSetupSide">profile</h2>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="#" data-tooltip="Profile">
+                                <a className="sidebar__link" href="" data-tooltip="Profile">
                                     <span className="icon">
                                         <i className="ph ph-user"></i>
                                     </span>
@@ -104,7 +103,7 @@ export default function AdminPage() {
                                 </a>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="#" data-tooltip="Settings">
+                                <a className="sidebar__link" href="" data-tooltip="Settings">
                                     <span className="icon">
                                         <i className="ph ph-gear-six"></i>
                                     </span>
@@ -112,7 +111,7 @@ export default function AdminPage() {
                                 </a>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="#" data-tooltip="Logout">
+                                <a className="sidebar__link" href="" data-tooltip="Logout">
                                     <span className="icon">
                                         <i className="ph ph-sign-out"></i>
                                     </span>
@@ -139,15 +138,15 @@ export default function AdminPage() {
                             <i className="ph ph-lightbulb"></i>
                             <h1>To Main</h1>
                         </a>
-                        <a href='/admin/Create' className='btnSlc'>
+                        <a href='/admin/create' className='btnSlc'>
                             <i className="ph-fill ph-camera"></i>
                             <h1>Create Data</h1>
                         </a>
-                        <a href='/admin/User' className='btnSlc'>
+                        <a href='/admin/user' className='btnSlc'>
                             <i className="ph-fill ph-user"></i>
                             <h1>User Management</h1>
                         </a>
-                        <a href='/admin/ThSL' className='btnSlc'>
+                        <a href='/admin/thsl' className='btnSlc'>
                             <i className="ph ph-database"></i>
                             <h1>ThSl Management</h1>
                         </a>

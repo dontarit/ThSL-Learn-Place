@@ -17,9 +17,9 @@ const router = createBrowserRouter([
     {path: '/learn', element: <LearnPlace/>},
     {path: '/login', element: <LoginTest/>},
     {path: '/admin', element: <AdminPage/>},
-    {path: '/admin/Create', element: <AdminCreate/>},
-    {path: '/admin/User', element: <AdminPage/>},
-    {path: '/admin/ThSL', element: <AdminPage/>},
+    {path: '/admin/create', element: <AdminCreate/>},
+    {path: '/admin/user', element: <AdminPage/>},
+    {path: '/admin/thsl', element: <AdminPage/>},
     {path: '*', element: <NotFoundPage/>}
 ])
 const root = ReactDOM.createRoot(document.getElementById("root"));
