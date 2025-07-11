@@ -1,10 +1,5 @@
-import { useEffect } from 'react';
-
-import '../assets/font/font.css';
-import '../css/learnPlace.css';
-import '../css/sub/searchbox.css';
-import '../css/sub/setting_page.css';
-import '../css/sub/waveBtn.css';
+import { useEffect, useState } from 'react';
+import axios from 'axios'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
@@ -20,13 +15,163 @@ import daynightBtn from '../assets/img/daynightBtn.png';
 import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
-function LearnPlace() {
+export default function LearnPlace() {
+    let searchingIdelay
+    let searchController
+    async function typingSearch(value) {
+        clearTimeout(searchingIdelay);
+        if (value == '') {
+            console.log(searchController);
+            cancelSearch()
+            console.log(searchController);
+        }else {
+            searchingIdelay = setTimeout(async () => {
+                searchController = new AbortController()
+                const signal = searchController.signal
+                console.log(searchController);
+                console.log(signal);
+    
+                try {
+                    // Make the initial request for the first page
+                    const res = await axios.post('http://localhost:5000/learnServer', {
+                        search_data: value,
+                        search_page: 1,
+                        signal: signal
+                    });
+                    console.log(res.data);
+    
+                    // Loop all pages from current to total
+                    for (let i = res.data['pageNow']; i < res.data['pageAll']; i++) {
+                        const pageRes = await axios.post('http://localhost:5000/learnServer', {
+                            search_data: value,
+                            search_page: i + 1,
+                            signal: signal
+                        });
+                        console.log(pageRes.data);
+                    }
+                } catch (err) {
+                    console.error('Error occurred during search:', err);
+                }
+            }, 1000);
+        }
+    }
+    function cancelSearch() {
+        if (searchController) {
+            searchController.abort()
+        }
+    }
+    // Activate when user press enter with search box
+    function handleSearch(e) {
+        e.preventDefault()
+    }
+    
+    // Svae setting config
+    const [settingStore, setSettingStore] = useState({
+        setValue: {
+            schedule: 4,
+            streak: false,
+            theme: 'dark',
+            time: '00:10'
+        },
+        value: {
+            schedule: 4,
+            streak: false,
+            theme: 'dark',
+            time: '00:10'
+        }
+    })
+    
+    function changeStrTable(row, col) {
+        const tableStr = document.querySelector('.showTableStr')
+        tableStr.innerHTML = ''
+        for (let i = 1; i <= row; i++) {
+            let theRow = document.createElement('div')
+            theRow.classList.add(`row-${i}`)
+            theRow.classList.add("tableRow")
+
+            for (let j = 1; j <= col; j++) {
+                let theColumn = document.createElement('div')
+                let progress = document.createElement('span')
+                let i = document.createElement('i')
+
+                theColumn.classList.add(`col-${j}`)
+                theColumn.classList.add("tableColumn")
+                progress.type = 'button'
+                i.classList.add('ph-fill')
+                i.classList.add('ph-check-circle')
+
+                theColumn.appendChild(progress)
+                theColumn.appendChild(i)
+                theRow.appendChild(theColumn)
+            }
+            tableStr.appendChild(theRow)
+        }
+        document.querySelector('.tableColumn').style.width = 'calc(50% / (7 / 1.5))'
+    }
+    function disableStreak(disable) {
+        let time = 500
+        const main = document.querySelector('.mainContent-container')
+        const schedule = document.querySelector('.schedule')
+        main.style.transition = `${time}ms`
+        schedule.style.transition = `${time}ms`
+        if (disable) {
+            main.style.transform = `translateY(calc(0% - clamp(1.2em, 8vw, 5em) - ${schedule.offsetHeight}px))`
+            schedule.classList.add('disableSchedule')
+        }else {
+            main.style.transform = 'translateY(0%)'
+            schedule.classList.remove('disableSchedule')
+        }
+    }
+    function checkTheme(theme) {
+        const validThemes = ['light', 'dark', 'ocean'];
+        if (validThemes.includes(theme)) {
+            document.querySelector('body').setAttribute('data-theme', theme);
+        }
+    }
+
+    function comfirmSetting(apply) {
+        const historyShow = document.getElementById('history-show')
+        const streakShow = document.getElementById('streak-show')
+        const themeShow = document.getElementById('theme-show')
+        const timeShow = document.getElementById('time-show')
+        if (apply) {
+            Object.entries(settingStore.setValue).forEach(thevalue => {
+                settingStore.value[thevalue[0]] = thevalue[1]
+            })
+        }
+        const schedule = settingStore.value.schedule
+        const streak = settingStore.value.streak
+        const theme = settingStore.value.theme
+        const time = settingStore.value.time
+
+        // table
+        changeStrTable(schedule, 7)
+        historyShow.setAttribute('placeholder', `${schedule} week`)
+        // streak
+        disableStreak(streak)
+        streakShow.checked = streak
+        // theme
+        checkTheme(theme)
+        themeShow.value = theme
+        // time
+        timeShow.value = time
+    }
+    
     useEffect(() => { 
-        import('../js/app-learnPlace.js') 
+        import('../assets/font/font.css')
+        import('../css/learnPlace.css')
+        import('../css/sub/searchbox.css')
+        import('../css/sub/setting_page.css')
+        import('../css/sub/waveBtn.css')
+        import('../js/app-learnPlace.js')
+        comfirmSetting(true)
     }, []);
+
+
+
     return (
         <>
-        <header>
+        <header className='headerSection'>
             <div className="con-header">
                 <div className="open-menu me-hed-btn" id="menuBtn">
                         <span className="menu-btn-out"></span>
@@ -39,26 +184,31 @@ function LearnPlace() {
                 <div className="main-logo">
                     <img src={TSLlogo} alt='logo'/>
                 </div>
-                <div className="search-container">
+                <div className="search-container" inert>
                     <div>
-                        <div className="input-place">
-                            <input type="text" name="word" id="search-box" placeholder="Search for..." autoComplete="off"/>
-                        </div>
+                        <form className="input-place" onSubmit={handleSearch}>
+                            <button className="sideSearchSend" type='submit'>
+                                <i className="ph ph-magnifying-glass"></i>
+                            </button>
+                            <input type="text" name="word" id="search-box" autoComplete="off" 
+                                onChange={e => {typingSearch(e.target.value)}}
+                            />
+                        </form>
                         <div className="free-option">
-                            <div className="clipboard btnAnimate">
+                            <div className="clipboard">
                                 <i className="ph ph-clipboard"></i>
                             </div>
-                            <div className="history btnAnimate">
+                            <div className="history">
                                 <i className="ph ph-clock-counter-clockwise"></i>
                             </div>
-                            <div className="question btnAnimate">
+                            <div className="question">
                                 <i className="ph ph-question"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="open-setting me-hed-btn setingOpen">
-                    <i className="ph-fill ph-gear-six" id="settingBtn"></i>
+                <div className="open-setting me-hed-btn settingIconOpen Spin-n">
+                    <i className="ph-fill ph-gear-six"></i>
                 </div>
             </div>
         </header>
@@ -120,7 +270,7 @@ function LearnPlace() {
                             </div>
                             <div className="already-signin">
                                 {/* <p id="navHead-txt">USER NAME</p> */}
-                                <p id="navHead-txt">aaaaaaaaaaaaaaa</p>
+                                <p id="navHead-txt" title='Hello'>aaaaaaaaaaaaaaa</p>
                                 <div id="usetime">
                                     <p>Time usage: </p>
                                     <p>-</p>
@@ -174,7 +324,7 @@ function LearnPlace() {
                         <img src={daynightBtn}/>
                         <p>Light/Dark</p>
                     </div>
-                    <div className="settingBtn iconBtn btnAnimate">
+                    <div className="settingBtn iconBtn forceCloseMenu open-setting">
                         <img src={settingBtn}/>
                         <p>Setting</p>
                     </div>
@@ -186,20 +336,20 @@ function LearnPlace() {
                 <div className="tell-streak">
                     <div className="streak-container stnow">
                         <p>Current streak</p>
-                        <p id="dayStr">
+                        <p id="dayStr" className='make_text_gap'>
                             <span>2</span>
                             <span>DAY</span>
                         </p>
                     </div>
                     <div className="streak-container stbest">
                         <p>Best streak</p>
-                        <p id="bestStr">
+                        <p id="bestStr" className='make_text_gap'>
                             <span>16</span>
                             <span>DAY</span>
                         </p>
                     </div>
                 </div>
-                <div className="showTableStr row-4 col-7"></div>
+                <div className="showTableStr"></div>
                 <div className="tell-history">
                     <p id="last-use">21/5/2025</p>
                     <p id="study-time">No History</p>
@@ -213,16 +363,16 @@ function LearnPlace() {
                             <div>
                                 <span>You are currently studying</span>
                             </div>
-                            <div>
-                                <span>134</span>
+                            <div className='make_text_gap'>
+                                <span id='txthilig'>134</span>
                                 <span>Thai Sign word.</span>
                             </div>
                         </div>
                         <div className="box2">
-                            <div>
+                            <div className='make_text_gap'>
                                 <span>Now you have</span>
-                                <span>10</span>
-                                <span>words</span>
+                                <span id='txthilig'>10</span>
+                                <span>word</span>
                             </div>
                             <div>
                                 <span>ready for review now</span>
@@ -232,13 +382,13 @@ function LearnPlace() {
                 </div>
                 <div className="level-show">
                     <div className="level-current">
-                        <p>
+                        <p className='make_text_gap'>
                             <span>Level</span>
-                            <span>3-8</span>
+                            <span id='levamt'>3-8</span>
                         </p>
-                        <p>
-                            <span>Next Level:</span>
-                            <span>144</span>
+                        <p className='make_text_gap'>
+                            <span>Next Level</span>
+                            <span id='levamt'>144</span>
                             <span>XP</span>
                         </p>
                     </div>
@@ -267,18 +417,18 @@ function LearnPlace() {
                     </div>
                 </div>
                 <div className="revBtn_container">
-                    <button id="reviewBtn" className="btn-animate btnAnimate">
+                    <button id="reviewBtn" className="btnAnimate">
                         <span>START REVIEW</span>
                         <span>(10)</span>
                     </button>
                 </div>
             </section>
             <section className="Cam-Search">
-                <button className="searchBoxBtn btn-animate search-animate btnAnimate" id="activateSearch">
+                <button className="searchBoxBtn search-animate btnAnimate" id="activateSearch">
                     <p>Search for a word</p>
                     <i className="ph ph-magnifying-glass"></i>
                 </button>
-                <button className="cameraBoxBtn btn-animate btnAnimate">
+                <button className="cameraBoxBtn btnAnimate">
                     <p>Translate with camera</p>
                     <i className="ph-fill ph-camera"></i>
                 </button>
@@ -291,24 +441,24 @@ function LearnPlace() {
                         <span>Your information will not be saved.</span>
                     </div>
                 </div>
-                <button className="sign-button" role="button">
+                <button className="sign-button btnAnimate" role="button">
                     <span>Sign In</span>
                     <div className="liquid"></div>
                 </button>
             </section>
         </div>
-        <div className="setting-container" aria-hidden = 'true'>
+        <div className="setting-container">
             <div className="con-out">
                 <p>Setting</p>
                 <div>
                     <i className="ph ph-question-mark"></i>
-                    <i className="ph ph-x"></i>
+                    <i className="ph ph-x closeSetting"></i>
                 </div>
             </div>
             <div className="con-in">
                 <div className="topSelect">
                     <p id="stcon-topic-0" className="set-at-main">Main</p>
-                    <p id="stcon-topic-1" className="set-at-sub">Profile</p>    
+                    <p id="stcon-topic-1" className="set-at-sub">Profile</p>
                 </div>
                 <div className="conFor-mainCon">
                     <div className="main main-content">
@@ -318,19 +468,74 @@ function LearnPlace() {
                                 <span className="head-break"></span>
                             </div>
                             <div className="content">
-                                <div className="sub-con">
-                                    <p>Weeks of study history</p>
-                                    <input name="history-show" id="history-show" type="text" defaultValue="4 week"/>
+                                <div className="sub-con valueInsert">
+                                    <p title='Study history'>Study History</p>
+                                    <input name="history-show" id="history-show" type="number" placeholder="4 week" autoComplete='off'
+                                        onBlur={(e) => {
+                                            let element = e.target
+                                            let value = element.value == '' || element.value == null ? settingStore.value.schedule : element.value
+                                            if (value > 100) {
+                                                let time = 750
+                                                let color = element.style.color
+                                                element.inert = true
+                                                element.setAttribute('type', 'text')
+                                                element.value = 'Over limit'
+                                                element.style.color = '#c32509'
+                                                element.style.border = '3px solid #c32509'
+                                                setTimeout(() => {
+                                                    element.inert = false
+                                                    element.setAttribute('type', 'number')
+                                                    element.style.color = color
+                                                    element.style.border = '3px solid #ccc'
+                                                    element.value = ''
+                                                }, time);
+                                            } else {
+                                                element.setAttribute('placeholder', `${value} week`)
+                                                setSettingStore(prevState => ({
+                                                    ...prevState,
+                                                    setValue: {
+                                                        ...prevState.setValue,
+                                                        schedule: parseInt(value),
+                                                    }
+                                                }));
+                                                element.value = ''
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                <div className="sub-con valueInsert">
+                                    <p title='Show streak'>Show Streak</p>
+                                    <input name="streak-show" id="streak-show" type="checkbox"
+                                        onClick={(e) => {
+                                            setSettingStore(prevState => ({
+                                                ...prevState,
+                                                setValue: {
+                                                    ...prevState.setValue,
+                                                    streak: e.target.checked
+                                                }
+                                            }));
+                                        }}
+                                    />
                                 </div>
                                 <div className="sub-con">
-                                    <p>Show study streak</p>
-                                    <input name="streak-show" id="streak-show" type="checkbox"/> 
-                                </div>
-                                <div className="sub-con">
-                                    <p>Theme</p>
-                                    <select name="theme" id="theme" defaultValue="dark">
+                                    <p title='Theme set'>Theme Set</p>
+                                    <select name="theme" id="theme-show" defaultValue="dark"
+                                        onChange={(e) => {
+                                            const theme = e.target.value;
+                                            if (['light', 'dark', 'ocean'].includes(theme)) {
+                                                setSettingStore(prevState => ({
+                                                    ...prevState,
+                                                    setValue: {
+                                                        ...prevState.setValue,
+                                                        theme
+                                                    }
+                                                }));
+                                            }
+                                        }}
+                                    >
                                         <option value="light">Light</option>
                                         <option value="dark">Dark</option>
+                                        <option value="ocean">Ocean</option>
                                     </select>
                                 </div>
                             </div>
@@ -341,9 +546,19 @@ function LearnPlace() {
                                 <span className="head-break"></span>
                             </div>
                             <div className="content">
-                                <div className="sub-con">
-                                    <p>Dialy study target</p>
-                                    <input type="text" defaultValue="5 minute"/>
+                                <div className="sub-con valueInsert">
+                                    <p title='Daily Goals'>Daily Goals</p>
+                                    <input name="time-show" id="time-show" type="time" defaultValue='00:10' 
+                                        onChange={(e) => {
+                                            setSettingStore(prevState => ({
+                                                ...prevState,
+                                                setValue: {
+                                                    ...prevState.setValue,
+                                                    time: e.target.value
+                                                }
+                                            }));
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -351,36 +566,34 @@ function LearnPlace() {
                     <div className="profile main-content">
                         <section>
                             <div className="head-group">
-                                <p className="head">Lession</p>
+                                <p className="head">Information</p>
                                 <span className="head-break"></span>
                             </div>
                             <div className="content">
-                                <div className="sub-con">
-                                    <p>Weeks of study history</p>
-                                    <input name="history-show" id="history-show" type="text" defaultValue="4 week"/>
+                                <div className="sub-con avata_setting">
+                                    <img src={blankProfile} alt='blank profile'/>
+                                    <div className='sub-upper'>
+                                        <p>Name</p>
+                                        <div>
+                                            <input name="user-name" id="user-name" type="text" placeholder='User Name' autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
+                                            <i className="ph ph-pencil-simple field-icon"></i>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="sub-con">
-                                    <p>Show study streak</p>
-                                    <input name="streak-show" id="streak-show" type="checkbox"/>
-                                </div>
-                                <div className="sub-con">
-                                    <p>Theme</p>
-                                    <select name="theme" id="theme" defaultValue="dark">
-                                        <option value="light">Light</option>
-                                        <option value="dark">Dark</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </section>
-                        <section>
-                            <div className="head-group">
-                                <p className="head">User Interface</p>
-                                <span className="head-break"></span>
-                            </div>
-                            <div className="content">
-                                <div className="sub-con">
-                                    <p>Dialy study target</p>
-                                    <input type="text" defaultValue="5 minute"/>
+                                <div className="sub-con" style={{justifyContent: 'center'}}>
+                                    <div className='sub-upper'>
+                                        <p title='Email'>Email</p>
+                                        <input type="text" placeholder='name@email.com' style={{minWidth: '100%'}} inert/>
+                                    </div>
+                                    <div className='sub-upper valueInsert'>
+                                        <p title='Password'>Password</p>
+                                        <div className="form-group">
+                                            <div className="col-md-6">
+                                                <input id="password-field" type="password" className="form-control" name="password" style={{minWidth: '100%'}} inert/>
+                                                <button toggle="#password-field" id='toggle-password' className="ph ph-eye field-icon"></button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </section>
@@ -389,8 +602,8 @@ function LearnPlace() {
                 <div className="bottom-deck">
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
                     <div className="inner">
-                        <input id="submit_setting" type="button" defaultValue="Ok"/>
-                        <input id="cancle_setting" type="button" defaultValue="Cancle"/>
+                        <input id="submit_setting" type="button" defaultValue="Ok" className='closeSetting' onClick={() => {comfirmSetting(true)}}/>
+                        <input id="cancle_setting" type="button" defaultValue="Cancle" className='closeSetting' onClick={()  => {comfirmSetting(false)}}/>
                     </div>
                 </div>
             </div>
@@ -399,5 +612,3 @@ function LearnPlace() {
         </>
     );
 }
-
-export default LearnPlace;

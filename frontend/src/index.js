@@ -1,28 +1,33 @@
-// วิธีเปิดตัว server
-// เปิดหน้า terminal ที่โฟลเดอร์ "ThSL Learn Place\frontend" ตามด้วยคำสั่ง "npm start"
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-/*
-เรียกใช้ไฟล์ที่จำเป็น
-    app.css         เป็น style ที่ได้ใช้ในทุก page
-    homepage.js     ตัวหน้าหลักที่จะเปิดขึ้นในตอนแรก
-    learnPlace.js   หน้าที่ user จะเข้าไปทันทีถ้าหาก login ไว้แล้ว
-*/
 import './app.css';
-// import LearnPlace from './pages/learnPlace.js';
-import HomePage from './pages/homepage.js';
+import NotFoundPage from './pages/notfound.js';
+import HomePage from './pages/home.js';
+import LearnPlace from './pages/learnPlace.js';
+import LoginTest from './pages/loginTest.js';
+import AdminPage from './pages/admin.js';
+import AdminCreate from './pages/admin/create.js';
+
 import reportWebVitals from './reportWebVitals.js';
+import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 
+const router = createBrowserRouter([
+    {path: '/home', element: <HomePage/>},
+    {path: '/learn', element: <LearnPlace/>},
+    {path: '/login', element: <LoginTest/>},
+    {path: '/admin', element: <AdminPage/>},
+    {path: '/admin/create', element: <AdminCreate/>},
+    {path: '/admin/user', element: <AdminPage/>},
+    {path: '/admin/thsl', element: <AdminPage/>},
+    {path: '*', element: <NotFoundPage/>}
+])
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-    <React.StrictMode>
-        {/* ในจุดนี้จะมี script ตรวจจับว่า user ได้ login ไว้รึยังถ้ายังจะส่งไปหน้า HomePage ถ้าทำแล้วก็ไป LearnPlace */}
 
-        {/* เรียกใช้ตัวที่ import จากข้างต้นเพื่อแสดงโครงสร้าง html และ logic ต่างๆ */}
-        {/* <LearnPlace/> */}
-        <HomePage/>
-    </React.StrictMode>
+root.render(
+    // <React.StrictMode>
+    //     <RouterProvider router={router}/>
+    // </React.StrictMode>
+    <RouterProvider router={router}/>
 );
 reportWebVitals();

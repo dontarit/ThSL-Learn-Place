@@ -1,50 +1,9 @@
-// Create streak table
-function changeStrTable() {
-    let row, col
-    const tableStr = document.querySelector('.showTableStr')
-    
-    tableStr.classList.forEach(element => {
-        if (element.substring(0, 3) == "row") {
-            row = parseInt(element.substring(4, 6))
-        }
-        if (element.substring(0, 3) == "col") {
-            col = parseInt(element.substring(4, 6))
-        }
-    });
-    for (let i = 1; i <= row; i++) {
-        let theRow = document.createElement('div')
-        theRow.classList.add(`row-${i}`)
-        theRow.classList.add("tableRow")
-
-        for (let j = 1; j <= col; j++) {
-            let theColumn = document.createElement('div')
-            let input = document.createElement('input')
-            let i = document.createElement('i')
-
-            theColumn.classList.add(`col-${j}`)
-            theColumn.classList.add("tableColumn")
-            input.type = 'button'
-            i.classList.add('fa-solid')
-            i.classList.add('fa-circle-check')
-
-            theColumn.appendChild(input)
-            theColumn.appendChild(i)
-            theRow.appendChild(theColumn)
-        }
-        tableStr.appendChild(theRow)
-    }
-    document.querySelector('.tableColumn').style.width = 'calc(50% / (7 / 1.5))'
-}
-changeStrTable()
-
-
-
 // Button animation on click
 const append_btnAnimate = document.querySelectorAll('.btnAnimate')
 append_btnAnimate.forEach(element => {
     element.addEventListener('click', () => {
-        element.style.transform = 'translateY(-5%) scale(1.02)'
         element.transition = 'transform 100ms'
+        element.style.transform = 'translateY(-5%) scale(1.02)'
         setTimeout(() => {
             element.style.transform = 'translateY(0%) scale(1)'
         }, 100);
@@ -106,22 +65,6 @@ forceCloseMenu.addEventListener('click', () => {
     closeMenu()
 })
 
-window.addEventListener("click", (e) => {
-    if (
-        sideMenu.getAttribute('aria-hidden') == 'false' &&
-        !sideMenu.contains(e.target) &&
-        e.target !== menuBtn
-    ) {
-        closeMenu();
-    }
-});
-
-window.addEventListener('scroll', () => {
-    if (sideMenu.ariaHidden == 'false') {
-        closeMenu()
-    }
-})
-
 
 
 // Search button animation
@@ -130,48 +73,58 @@ const searchCon = document.querySelector('.search-container')
 const searchInput = document.getElementById('search-box')
 const headBtn = document.querySelectorAll('.me-hed-btn')
 
-searchBtn.forEach(element => {
-    element.addEventListener('click', () => {
-        if (window.innerWidth < 481) {
-            headBtn.forEach(ele => {
-                ele.style.transition = 'opacity 300ms'
-                ele.style.opacity = '0'
-            });
-        }
-        searchCon.style.transition = 'ease top 300ms'
-        searchCon.style.top = '50%'
-        searchInput.focus()
-    })
-});
-searchInput.addEventListener('focusout', () => {
-    if (window.innerWidth < 481) {
+function openSearch() {
+    if (window.innerWidth < 768) {
+        headBtn.forEach(elememt => {
+            elememt.inert = true
+            elememt.style.transition = 'opacity 300ms'
+            elememt.style.opacity = '0'
+        });
+    }
+    searchCon.inert = false
+    searchCon.style.transition = 'ease top 300ms'
+    searchCon.style.top = '50%'
+    searchInput.focus()
+}
+function closeSearch() {
+    if (window.innerWidth < 768) {
         headBtn.forEach(element => {
+            element.inert = false
             element.style.transition = 'opacity 300ms'
             element.style.opacity = '1'
         });
     }
+    searchCon.inert = true
     searchCon.style.transition = 'ease top 300ms'
-    searchInput.value = ''
     searchCon.style.top = '-50%'
-})
+    searchInput.value = ''
+}
 
-
-
-// Spin animation for icon
-const setingOpen = document.querySelectorAll('.setingOpen')
-setingOpen.forEach(element => {
+searchBtn.forEach(element => {
     element.addEventListener('click', () => {
-        let time = 500
-        element.style.transition = `transform ${time}ms`
-        element.style.transform = 'rotate(360deg)'
+        openSearch()
     })
 });
+
+
+
+// Spin animation, use when open setting page with gear icon
+function SpinCheck(elememt) {
+    if (elememt.classList.contains('Spin-n')) {
+        elememt.classList.remove('Spin-n')
+        elememt.classList.add('Spin-y')
+    }
+    else if (elememt.classList.contains('Spin-y')) {
+        elememt.classList.remove('Spin-y')
+        elememt.classList.add('Spin-n')
+    }
+}
 
 
 
 // Change setting option
 const settingBody = document.querySelector('.setting-container')
-const openSetting = document.querySelector('.open-setting')
+const openSetting = document.querySelectorAll('.open-setting')
 const overlaySetting = document.getElementById('overlay-setting-container')
 const closeStBtn = document.querySelector('.setting-container .con-out .ph-x')
 const quesStBtn = document.querySelector('.setting-container .con-out .ph-question-mark')
@@ -214,25 +167,28 @@ topSelect.forEach(element => {
 
 
 // Open and Close setting
-openSetting.addEventListener('click', () => {
-    topSelect[0].click()
-    overlaySetting.style.display = 'block'
-    setTimeout(() => {
-        overlaySetting.style.opacity = '1'
-    }, 100);
-    settingBody.ariaHidden = false
-    settingBody.classList.remove('setting-container-close')
-    settingBody.classList.add('setting-container-open')
-    settingBody.inert = false
-})
+const overlaySettingTime = 250
+openSetting.forEach(element => {
+    element.addEventListener('click', () => {
+        SpinCheck(element)
+        topSelect[0].click()
+        overlaySetting.style.transition = `all ${overlaySettingTime}ms`
+        overlaySetting.style.display = 'block'
+        setTimeout(() => {
+            overlaySetting.style.opacity = '1'
+        }, overlaySettingTime);
+        settingBody.classList.remove('setting-container-close')
+        settingBody.classList.add('setting-container-open')
+        settingBody.inert = false
+    })
+});
 
 function closeSettingFunc() {
+    overlaySetting.style.transition = `all ${overlaySettingTime}ms`
     overlaySetting.style.opacity = '0'
     setTimeout(() => {
         overlaySetting.style.display = 'none'
-    }, 100);
-    settingBody.ariaHidden = true
-    openSetting.style.transform = 'rotate(0deg)'
+    }, overlaySettingTime);
     settingBody.classList.remove('setting-container-open')
     settingBody.classList.add('setting-container-close')
     settingBody.inert = true
@@ -240,19 +196,37 @@ function closeSettingFunc() {
 
 const advanceSetting = document.getElementById('advance_setting')
 const submitSetting = document.getElementById('submit_setting')
-const cancleSetting = document.getElementById('cancle_setting')
-const closeSetting = document.querySelector('.setting-container .con-out .ph-x')
+const closeSetting = document.querySelectorAll('.closeSetting')
 
-cancleSetting.addEventListener('click', () => {
-    closeSettingFunc()
+closeSetting.forEach(element => {
+    element.addEventListener('click', () => {
+        closeSettingFunc()
+    })
+});
+
+
+
+// Password toggle
+const togglePassword = document.getElementById('toggle-password')
+const passwordField = document.getElementById('password-field')
+togglePassword.addEventListener('click', (e) => {
+    const elememt = e.target
+    if (passwordField.defaultValue == 'secret') {
+        elememt.classList.remove('ph-eye')
+        elememt.classList.add('ph-eye-slash')
+        passwordField.defaultValue = 'show'
+        passwordField.type = 'text'
+    }else {
+        elememt.classList.add('ph-eye')
+        elememt.classList.remove('ph-eye-slash')
+        passwordField.defaultValue = 'secret'
+        passwordField.type = 'password'
+    }
 })
-closeSetting.addEventListener('click', () => {
-    closeSettingFunc()
-})
 
 
 
-// Event keydown
+// Window event
 window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
         closeMenu()   
@@ -260,4 +234,39 @@ window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && settingBody.getAttribute('aria-hidden') == 'false') {
         closeSettingFunc()
     }
+});
+window.addEventListener("click", (e) => {
+    if (
+        sideMenu.getAttribute('aria-hidden') == 'false' &&
+        !sideMenu.contains(e.target) &&
+        e.target !== menuBtn
+    ) {
+        closeMenu();
+    }
+    if (!searchCon.contains(e.target) && e.target.id !== 'activateSearch') {
+        closeSearch();
+    }
+});
+window.addEventListener('scroll', () => {
+    if (sideMenu.ariaHidden == 'false') {
+        closeMenu()
+    }
+})
+window.addEventListener('load', () => {
+    document.body.style.transition = 'background-color 500ms ease-in-out';
+    document.querySelector('.headerSection').style.transition = '500ms ease-in-out';
+    document.getElementById('sideMenu').style.transition = 'transform 300ms';
+    
+    const transitions = [
+        { selector: '.tableColumn span', style: 'scale 1s' },
+        { selector: '.tableColumn i', style: 'opacity 1s' },
+        { selector: '.open-menu .menu-btn-out', style: '500ms' },
+        { selector: '.open-menu .menu-btn-in', style: '500ms' }
+    ];
+
+    transitions.forEach(({ selector, style }) => {
+        document.querySelectorAll(selector).forEach(element => {
+            element.style.transition = style;
+        });
+    });
 });
