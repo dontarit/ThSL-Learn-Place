@@ -3,10 +3,34 @@ import { useEffect, useState } from 'react';
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPage() {
+    const adminGeneralItems = [
+        {
+            id: 1,
+            link: 'create',
+            icon: 'ph-camera',
+            title: 'Create Data',
+            color: '#c4e456',
+        },
+        {
+            id: 2,
+            link: 'user',
+            icon: 'ph-identification-card',
+            title: 'User Management',
+            color: '#6d9be4',
+        },
+        {
+            id: 3,
+            link: 'thsl',
+            icon: 'ph-database',
+            title: 'ThSL Management',
+            color: '#f6cf55',
+        },
+    ]
+
     useEffect(() => { 
-        import('../assets/font/font.css')
-        import('../css/admin/style.css')
         import('../css/admin.css')
+        import('../css/admin/style.css')
+        import('../assets/font/font.css')
         import('../css/admin/side_nav.css')
 
         const main = document.querySelector('.mainContent-container')
@@ -37,44 +61,32 @@ export default function AdminPage() {
                                 <h2 className="sidebar__item--heading textSetupSide">general</h2>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link selected" data-tooltip="Inbox">
+                                <a className="sidebar__link selected" data-tooltip='Admin'>
                                     <span className="icon">
-                                        <i class="ph ph-identification-badge"></i>
+                                        <i className="ph ph-identification-badge"></i>
                                     </span>
                                     <span className="text">Admin</span>
                                 </a>
                             </li>
-                            <li className="sidebar__item">
-                                <a className="sidebar__link" href="/admin/create" data-tooltip="Create Data">
-                                    <span className="icon">
-                                        <i className="ph ph-camera"></i>
-                                    </span>
-                                    <span className="text">Create Data</span>
-                                </a>
-                            </li>
-                            <li className="sidebar__item">
-                                <a className="sidebar__link" href="/admin/user" data-tooltip="User Management">
-                                    <span className="icon">
-                                        <i className="ph ph-identification-card"></i>
-                                    </span>
-                                    <span className="text">User Management</span>
-                                </a>
-                            </li>
-                            <li className="sidebar__item">
-                                <a className="sidebar__link" href="/admin/thsl" data-tooltip="Thai Sign Management">
-                                    <span className="icon">
-                                        <i className="ph ph-database"></i>
-                                    </span>
-                                    <span className="text">ThSL Management</span>
-                                </a>
-                            </li>
+                            {
+                                adminGeneralItems.map((item) => (
+                                    <li className="sidebar__item" key={item.id}>
+                                        <a className="sidebar__link" href={`admin/${item.link}`} data-tooltip={item.title}>
+                                            <span className="icon">
+                                                <i className={`ph ${item.icon}`}></i>
+                                            </span>
+                                            <span className="text">{item.title}</span>
+                                        </a>
+                                    </li>
+                                ))
+                            }
                         </ul>
                         <ul className="sidebar__list list--secondary">
                             <li className="sidebar__item item--heading">
                                 <h2 className="sidebar__item--heading textSetupSide">page</h2>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="/home" data-tooltip="Home">
+                                <a className="sidebar__link" href="/home" data-tooltip="Home" target="_blank">
                                     <span className="icon">
                                         <i className="ph ph-house-line"></i>
                                     </span>
@@ -82,7 +94,7 @@ export default function AdminPage() {
                                 </a>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="/learn" data-tooltip="Main">
+                                <a className="sidebar__link" href="/learn" data-tooltip="Main" target="_blank">
                                     <span className="icon">
                                         <i className="ph ph-lightbulb"></i>
                                     </span>
@@ -130,26 +142,22 @@ export default function AdminPage() {
                 <section className="menuSelect">
                     <h1 className='topic'>Select where to go</h1>
                     <div className='container'>
-                        <a href='/home' className='btnSlc'>
+                        <a href='/home' className='btnSlc' target="_blank">
                             <i className="ph ph-house-line"></i>
                             <h1>To Home</h1>
                         </a>
-                        <a href='/learn' className='btnSlc'>
+                        <a href='/learn' className='btnSlc' target="_blank">
                             <i className="ph ph-lightbulb"></i>
                             <h1>To Main</h1>
                         </a>
-                        <a href='/admin/create' className='btnSlc'>
-                            <i className="ph-fill ph-camera"></i>
-                            <h1>Create Data</h1>
-                        </a>
-                        <a href='/admin/user' className='btnSlc'>
-                            <i className="ph-fill ph-user"></i>
-                            <h1>User Management</h1>
-                        </a>
-                        <a href='/admin/thsl' className='btnSlc'>
-                            <i className="ph ph-database"></i>
-                            <h1>ThSl Management</h1>
-                        </a>
+                        {
+                            adminGeneralItems.map((item) => (
+                                <a href={`admin/${item.link}`} className='btnSlc' key={item.id} style={{backgroundColor: item.color}}>
+                                    <i className={`ph ${item.icon}`}></i>
+                                    <h1>{item.title}</h1>
+                                </a>
+                            ))
+                        }
                     </div>
                 </section>
             </div>

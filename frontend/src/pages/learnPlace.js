@@ -70,13 +70,13 @@ export default function LearnPlace() {
         setValue: {
             schedule: 4,
             streak: false,
-            theme: 'dark',
+            theme: 'light',
             time: '00:10'
         },
         value: {
             schedule: 4,
             streak: false,
-            theme: 'dark',
+            theme: 'light',
             time: '00:10'
         }
     })
@@ -519,7 +519,7 @@ export default function LearnPlace() {
                                 </div>
                                 <div className="sub-con">
                                     <p title='Theme set'>Theme Set</p>
-                                    <select name="theme" id="theme-show" defaultValue="dark"
+                                    <select name="theme" id="theme-show" defaultValue="light"
                                         onChange={(e) => {
                                             const theme = e.target.value;
                                             if (['light', 'dark', 'ocean'].includes(theme)) {
