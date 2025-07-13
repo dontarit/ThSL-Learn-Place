@@ -184,7 +184,7 @@ nav ul {
         linear-gradient(rgba(79, 79, 79, 0.063) 1px, transparent 1px);
     background-size: 32px 32px;
     background-color: 0f0e29;
-    font-size: .8rem;
+    font-size: 1rem;
 }
 #together .container {
     display: flex;
@@ -219,6 +219,13 @@ nav ul {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
 }
 
+.thaiSpread {
+    text-justify: inter-word;
+    line-height: 1.6;
+    word-spacing: 1px;
+    letter-spacing: 0.5px;
+}
+
 /* ===== About website ===== */
 .tech-list {
     display: flex;
@@ -244,6 +251,7 @@ nav ul {
 
 .whatHead {
     font-size: 1.76em;
+    margin-bottom: .6em;
 }
 section {
     font-size: 1.168em;
@@ -293,7 +301,7 @@ section {
     color: #aaa
 }
 
-#why-choose-us {
+#content {
     min-height: 100vh;
 }
 

@@ -21,7 +21,7 @@ export default function HomePage() {
 
         let mainForm = document.querySelector('.mainForm')
         let overlay = document.querySelector('#overlay-setting-container')
-        let mainClick = document.querySelector('.loginClick')
+        let mainClick = document.querySelector('#loginClick')
 
         mainClick.addEventListener('click', () => {
             mainForm.style.display = 'block'
@@ -80,7 +80,7 @@ export default function HomePage() {
                     <ul id="nav-list">
                         <li><a href="#home">Home</a></li>
                         <li><a href="#about">About</a></li>
-                        <li><a href="#why-choose-us">Why Choose Us</a></li>
+                        <li><a href="#content">Content</a></li>
                     </ul>
                     <button id="burger"><i className="fa fa-bars"></i></button>
                 </nav>
@@ -122,7 +122,7 @@ export default function HomePage() {
                     <i className="ph ph-hands-praying"></i>
                     <i className="ph ph-hand-grabbing"></i>
                 </div>
-                <a className="btn loginClick" data-aos-once="true" data-aos="zoom-in-up" data-aos-delay="300" data-aos-duration="1000">Let's Start</a>
+                <a className="btn" id='loginClick' data-aos-once="true" data-aos="zoom-in-up" data-aos-delay="300" data-aos-duration="1000">Let's Start</a>
             </div>
         </section>
         <div className="sectionAbout" id="about">
@@ -131,7 +131,12 @@ export default function HomePage() {
                     <img className='image' src="https://placehold.co/500x500" alt="Profile"/>
                     <div className="text">
                         <h3 className="whatHead" data-aos="zoom-in-right" data-aos-duration="750">What is this?</h3>
-                        <p data-aos="zoom-in-right" data-aos-duration="800">Have fun learning and practicing sign language on your own through the web app, with motion detection via video camera to translate text in real time.</p>
+                        <p className='thaiSpread' data-aos="zoom-in-right" data-aos-duration="800">
+                            Thai Sign Language is the primary language for the hearing impaired to communicate in Thailand. However, 
+                            Thai society still lacks easily accessible and quality tools for learning and interpreting sign language systematically. 
+                            This project aims to develop a platform that uses technology to help reduce the communication gap and increase learning opportunities for everyone in society. 
+                            It is supported by funding from NSTDA and has received sign language data from the Thai Deaf Association.
+                        </p>
                         <br/>
                         <h4>Powered by</h4>
                         <ul className="tech-list">
@@ -143,6 +148,10 @@ export default function HomePage() {
                                 <img src="https://viz.mediapipe.dev/logo.png"/>
                                 Mediapipe
                             </li>
+                            <li>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/800px-Heart_coraz%C3%B3n.svg.png"/>
+                                And Love
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -152,7 +161,10 @@ export default function HomePage() {
                 <div className="container grid-2" data-aos="fade-right">
                     <div className="text">
                         <h3 className="whatHead" data-aos="zoom-in-right" data-aos-duration="750">About us</h3>
-                        <p data-aos="zoom-in-right" data-aos-duration="800">We are a group of students from Nongbua Pittayakarn School who created this web application to help those interested in learning Thai Sign Language have a convenient and accessible tool. It uses motion detection technology via video cameras to translate sign language into text in real time.</p>
+                        <p className='thaiSpread' data-aos="zoom-in-right" data-aos-duration="800">
+                            We are a group of students from Nongbua Pittayakarn School who have developed this web application to provide a convenient and accessible tool for those interested in learning Thai Sign Language. 
+                            It uses motion detection technology through video cameras to translate sign language into text in real-time.
+                        </p>
                         <br/>
                         <h4>Participants</h4>
                         <ul className="tech-list">
@@ -160,13 +172,21 @@ export default function HomePage() {
                                 <img src="https://www.rapiddg.com/sites/default/files/imce-files/react.png"/>
                                 Dontarit Haisok
                             </li>
+                            <li>
+                                <img src="https://www.rapiddg.com/sites/default/files/imce-files/react.png"/>
+                                Chindanai Chaipim
+                            </li>
+                            <li>
+                                <img src="https://www.rapiddg.com/sites/default/files/imce-files/react.png"/>
+                                Tanawit Phadasri
+                            </li>
                         </ul>
                     </div>
                     <img className='image' src="https://placehold.co/500x500" alt="Profile"/>
                 </div>
             </section>
         </div>
-        <section id="why-choose-us" className="section dark">
+        <section id="content" className="section dark">
             <div className="container">
                 <h3 className="section-title" data-aos="zoom-in-up" data-aos-once='true'>Why choose us?</h3>
                 <div id="project-grid" className="grid-3"></div>
@@ -178,7 +198,7 @@ export default function HomePage() {
                     <p>Let's learn</p>
                     <p className='accent'>Thai Sign Language</p>
                 </h3>
-                <a href="#home" className="btn">Let's Start</a>
+                <a href="#home" className="btn small">I'm ready</a>
             </div>
         </section>
         <footer>
