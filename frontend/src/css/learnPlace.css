@@ -17,6 +17,7 @@ body {
         linear-gradient(rgba(79, 79, 79, 0.063) 1px, transparent 1px);
     background-size: 32px 32px;
     background-color: var(--dark-bg);
+    background-color: #674eff;
     font-size: .8rem;
 }
 
@@ -306,7 +307,6 @@ header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(18px, 2vw, 26px);
 }
 
 #navHead-txt {
@@ -317,6 +317,11 @@ header {
     display: flex;
     flex-direction: row;
     text-wrap: nowrap;
+    word-spacing: -6px;
+    color: #bfbfbf;
+}
+#usetime .usage-number {
+    color: #55962a;
 }
 
 .stars {

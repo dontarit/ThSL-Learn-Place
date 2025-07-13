@@ -5,8 +5,8 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import './app.css';
 import NotFoundPage from './pages/notfound.js';
 import HomePage from './pages/home.js';
-import LearnPlace from './pages/learnPlace.js';
 import LoginTest from './pages/loginTest.js';
+import LearnPlace from './pages/learnPlace.js';
 import AdminPage from './pages/admin.js';
 import AdminPageItems from './pages/adminItem.js';
 

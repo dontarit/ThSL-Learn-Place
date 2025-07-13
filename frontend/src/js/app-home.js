@@ -58,3 +58,58 @@ projects.forEach((p) => {
     `;
     grid.appendChild(card);
 });
+
+
+
+const mainForm = document.querySelector('#chkFormSec');
+const log_h = document.querySelector('.login .handler');
+const sign_h = document.querySelector('.signup .handler');
+const timing = 30;
+const formTxt = {
+    sign: {
+        main: 'Sign up',
+        change: "Don't have an account?"
+    },
+    log: {
+        main: 'Login',
+        change: "Already a user?"
+    }
+};
+
+let change_main, change_sub;
+
+mainForm.addEventListener('click', () => {
+    clearInterval(change_main);
+    clearInterval(change_sub);
+
+    let chgt_m = '';
+    let chgt_s = '';
+    let count_m = 0;
+    let count_s = 0;
+
+    const isLogin = mainForm.checked;
+    const mainText = isLogin ? formTxt.sign.change : formTxt.log.change;
+    const subText = isLogin ? formTxt.log.main : formTxt.sign.main;
+    const mainHandler = isLogin ? sign_h : log_h;
+    const subHandler = isLogin ? log_h : sign_h;
+
+    change_main = setInterval(() => {
+        if (count_m === mainText.length) {
+            clearInterval(change_main);
+        } else {
+            chgt_m += mainText[count_m];
+            mainHandler.innerHTML = chgt_m;
+            count_m += 1;
+        }
+    }, timing);
+
+    change_sub = setInterval(() => {
+        if (count_s === subText.length) {
+            clearInterval(change_sub);
+        } else {
+            chgt_s += subText[count_s];
+            subHandler.innerHTML = chgt_s;
+            count_s += 1;
+        }
+    }, timing * 4);
+});

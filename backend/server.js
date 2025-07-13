@@ -17,20 +17,41 @@ const pool = mysql.createPool({
     database : 'thsl_learn',
 })
 
+app.post('/signinServer', (req, res) => {
+    const sql = "INSERT INTO `user_data`(`user_id`, `user_name`, `user_email`, `user_password`, `user_profile`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]','[value-5]')"
+    const checkdb = "SELECT * FROM user_data WHERE user_email = ?"
+    pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection:', err)
+            return res.json(err)
+        }
+        connection.query(checkdb, [req.body.email], (err, data) => {
+            connection.release()
+            if (err) {
+                console.error('Error execution query:', err)
+                return res.json(err)
+            }
+            if (data.length > 0) {
+                return res.json('email already used')
+            } else {
+                return res.json('welcome')
+            }
+        })
+    })
+})
+
 app.post('/loginServer', (req, res) => {
     const sql = "SELECT * FROM user_data WHERE user_email = ? AND user_password = ?"
     pool.getConnection((err, connection) => {
         if (err) {
-            res.json("Connection Failed")
             console.error('Error getting connection:', err)
-            return
+            return res.json(err)
         }
         connection.query(sql, [req.body.email, req.body.password], (err, data) => {
             connection.release()
             if (err) {
-                res.json("Login Failed")
                 console.error('Error executing query:', err)
-                return
+                return res.json(err)
             }
             if (data.length > 0) {
                 return res.json(true)

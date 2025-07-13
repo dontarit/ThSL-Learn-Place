@@ -9,7 +9,11 @@
     display: none;
     opacity: 0;
     font-family: 'Jost', sans-serif;
-    background: linear-gradient(to bottom, rgba(26, 19, 75, 0.768), rgba(48, 43, 99, .768), rgba(36, 36, 62, .768));
+    background:
+        linear-gradient(-90deg, rgba(194, 194, 194, 0.063) 1px, transparent 1px),
+        linear-gradient(rgba(194, 194, 194, 0.063) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-color: #292929;
     backdrop-filter: blur(25px);
     border-radius: 10px;
     box-shadow: 5px 20px 50px #000;
@@ -32,7 +36,7 @@
     z-index: 2;
 }
 
-#chk {
+#chkFormSec {
   display: none;
 }
 
@@ -43,12 +47,16 @@
 }
 
 .handler {
+  min-width: 100%;
   color: #fff;
   font-size: 2.3em;
   justify-content: center;
   display: flex;
   margin-top: 32px;
   font-weight: bold;
+  text-align: center;
+  text-wrap: nowrap;
+  overflow-wrap: break-word;
   cursor: pointer;
   transition: .5s ease-in-out;
 }
@@ -92,10 +100,10 @@
 
 .login {
     height: 460px;
-    background: rgba(238, 238, 238);
+    background-color: #a0aacf;
     border-radius: 80% / 10%;
-    /* height: 100%; */
-    transform: translateY(-120px);
+    height: 100%;
+    transform: translateY(-106px);
     transition: .6s ease-in-out;
 }
 
@@ -104,14 +112,15 @@
     transform: scale(.6);
 }
 
-#chk:checked ~ .login {
+#chkFormSec:checked ~ .login {
   transform: translateY(-400px);
 }
 
-#chk:checked ~ .login .handler {
+
+#chkFormSec:checked ~ .login .handler {
   transform: scale(1);
 }
 
-#chk:checked ~ .signup .handler {
+#chkFormSec:checked ~ .signup .handler {
   transform: scale(.6);
 }

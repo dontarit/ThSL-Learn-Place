@@ -18,6 +18,13 @@ import mascot from '../assets/img/mascot.png';
 export default function LearnPlace() {
     let searchingIdelay
     let searchController
+
+    function cancelSearch() {
+        if (searchController) {
+            searchController.abort()
+        }
+    }
+
     async function typingSearch(value) {
         clearTimeout(searchingIdelay);
         if (value == '') {
@@ -53,11 +60,6 @@ export default function LearnPlace() {
                     console.error('Error occurred during search:', err);
                 }
             }, 1000);
-        }
-    }
-    function cancelSearch() {
-        if (searchController) {
-            searchController.abort()
         }
     }
     // Activate when user press enter with search box
@@ -270,10 +272,11 @@ export default function LearnPlace() {
                             </div>
                             <div className="already-signin">
                                 {/* <p id="navHead-txt">USER NAME</p> */}
-                                <p id="navHead-txt" title='Hello'>aaaaaaaaaaaaaaa</p>
-                                <div id="usetime">
-                                    <p>Time usage: </p>
-                                    <p>-</p>
+                                <p id="navHead-txt" title='Hello'>Anonymous</p>
+                                <div id="usetime" className='make_text_gap'>
+                                    <span>Time usage</span>
+                                    <span className='usage-number'>0</span>
+                                    <span>hour</span>
                                 </div>
                             </div>
                         </div>

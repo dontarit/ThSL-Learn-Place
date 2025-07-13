@@ -172,9 +172,6 @@ nav ul {
     display: flex;
     padding: 5rem 0;
 }
-.sectionAbout section {
-    /* height: 100vh; */
-}
 .sectionAbout section:last-child {
     padding: 0;
     padding-bottom: 5rem;
@@ -211,7 +208,7 @@ nav ul {
 .grid-2,
 .grid-3 {
     display: grid;
-    gap: 2rem
+    gap: 2rem;
 }
 
 .grid-2 {
