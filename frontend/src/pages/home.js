@@ -5,12 +5,19 @@ import axios from 'axios'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
+axios.defaults.baseURL = 'http://localhost:5000';
+
 export default function HomePage() {
+    const [name_f, setName] = useState('')
+    const [email_f, setEmail] = useState('')
+    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+
     useEffect(() => {
         import('../assets/font/font.css')
         import('../css/home.css')
         import('../css/sub/waveBtn.css')
         import('../css/sub/logsignForm.css')
+        import('../css/sub/alert_box.css')
         
         AOS.init({
             duration: 800,
@@ -19,9 +26,10 @@ export default function HomePage() {
 
         import('../js/app-home.js')
 
-        let mainForm = document.querySelector('.mainForm')
-        let overlay = document.querySelector('#overlay-setting-container')
-        let mainClick = document.querySelector('#loginClick')
+        const mainForm = document.querySelector('.mainForm')
+        const formChk = document.querySelector('#chkFormSec')
+        const overlay = document.querySelector('#overlay-setting-container')
+        const mainClick = document.querySelector('#loginClick')
 
         mainClick.addEventListener('click', () => {
             mainForm.style.display = 'block'
@@ -31,44 +39,128 @@ export default function HomePage() {
                 overlay.style.opacity = '1'
             }, 1);
         })
-        window.addEventListener('click', (e) => {
-            if (e.target.id == 'overlay-setting-container') {
-                mainForm.style.opacity = '0'
-                overlay.style.opacity = '0'
-                setTimeout(() => {
-                    mainForm.style.display = 'none'
-                    overlay.style.display = 'none'
-                }, 250);
+        overlay.addEventListener('click', () => {
+            if (formChk.checked) {
+                formChk.click()
             }
+
+            mainForm.style.opacity = '0'
+            overlay.style.opacity = '0'
+            setTimeout(() => {
+                mainForm.style.display = 'none'
+                overlay.style.display = 'none'
+            }, 250);
         })
-    }, []);
 
-    const [name_f, setName] = useState('')
-    const [email_f, setEmail] = useState('')
+        if (authToken && isTokenExpired()) {
+            refreshToken();
+        }
+    }, [authToken]);
 
-    function signup(data) {
+
+
+    async function signup(data) {
         const name = name_f;
         const email = email_f;
         const pswd = data.get("pswd");
         const name_e = document.querySelector('.signup .inputform.name')
         const email_e = document.querySelector('.signup .inputform.email')
 
-        console.log(name);
-        console.log(email);
-        console.log(pswd);
-
-        axios.post('http://localhost:5000/signinServer', {name, email, pswd})
-            .then(res => {
-                name_e.value = name
-                email_e.value = email
-                console.log(res.data)
+        
+        await axios.post('/signinServer', {name, email, pswd})
+        .then(res => {
+                if (res.data.theme !== 'success') {
+                    name_e.value = name
+                    email_e.value = email
+                }
+                openAlert(res.data.theme, res.data.title, res.data.content)
             })
-            .catch(err => {console.error(err)})
+            .catch(err => {
+                console.error(err)
+            })
     }
 
     async function login(data) {
-        const email = data.get("email");
+        const email = email_f;
         const pswd = data.get("pswd");
+        const email_e = document.querySelector('.login .inputform.email')
+
+        await axios.post('/loginServer', {email, pswd})
+            .then(res => {
+                if (res.data.theme != 'success') {
+                    email_e.value = email
+                }
+                openAlert(res.data.theme, res.data.title, res.data.content)
+                const accessToken = res.data.token
+                localStorage.setItem('authToken', accessToken)
+                setAuthToken(accessToken)
+            })
+            .catch(err => {
+                console.error(err)
+            })
+    }
+
+    async function refreshToken() {
+        await axios.post('/loginServer')
+            .then(res => {
+                const accessToken = res.data.token
+                localStorage.setItem('authToken', accessToken)
+                setAuthToken(accessToken)
+            })
+            .catch(err => {
+                console.error(err)
+            })
+
+        try {
+            const response = await axios.post('/tokenServer');
+            const { accessToken } = response.data;
+
+            // Store new access token in localStorage
+            localStorage.setItem('authToken', accessToken);
+            setAuthToken(accessToken);
+        } catch (error) {
+            console.error('Error refreshing token:', error);
+            // alert('Session expired, please log in again.');
+        }
+    };
+
+    const isTokenExpired = () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return true;
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        return decodedToken.exp < Date.now() / 1000;
+    };
+    
+    function openAlert(theme, title, content) {
+        let icon
+        if (theme == 'success') { icon = 'ph-check-fat' }
+        else if (theme == 'info') { icon = 'ph-info' }
+        else if (theme == 'warning') { icon = 'ph-warning' }
+        else if (theme == 'danger') { icon = 'ph-x-circle' }
+
+        let alertDiv = document.createElement('div');
+        alertDiv.id = 'alert-content';
+        alertDiv.className = `alert alert-${theme} alert-close alert-white rounded`;
+        alertDiv.innerHTML = `
+            <div class="icon">
+                <i class="ph-fill ${icon}"></i>
+            </div>
+            <strong>${title} : </strong> ${content}
+        `;
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+            alertDiv.classList.add('alert-append')
+            alertDiv.classList.remove('alert-close')
+        }, 10);
+
+        setTimeout(() => {
+            alertDiv.classList.add('alert-close')
+            alertDiv.classList.remove('alert-append')
+            setTimeout(() => {
+                alertDiv.remove()
+            }, 1250);
+        }, 10 * 1000);
     }
 
     return (
@@ -102,9 +194,9 @@ export default function HomePage() {
             <div className="login">
                 <form action={login}>
                     <label htmlFor="chkFormSec" aria-hidden="true" className="handler">Already a user?</label>
-                    <div className="logsignSend loginBtnGroup">
-                        <input type="email" name="email" placeholder="email" required className="inputform name" onChange={e => setEmail(e.target.value)}/>
-                        <input type="password" name="pswd" placeholder="password" required className="inputform email" />
+                    <div className="logsignSend loginBtnGroup" inert>
+                        <input type="email" name="email" placeholder="email" required className="inputform email" onChange={e => setEmail(e.target.value)}/>
+                        <input type="password" name="pswd" placeholder="password" required className="inputform" />
                         <button id='btnFormLog' className="btnform">Login</button>
                     </div>
                 </form>

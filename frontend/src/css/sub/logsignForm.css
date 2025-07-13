@@ -31,8 +31,7 @@
     width: 100vw;
     height: 100vh;
     background-color: rgb(41, 41, 41, .3);
-    transition-property: opacity;
-    transition: 100ms;
+    transition: opacity 100ms;
     z-index: 2;
 }
 

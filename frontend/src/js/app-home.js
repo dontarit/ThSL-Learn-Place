@@ -93,6 +93,14 @@ mainForm.addEventListener('click', () => {
     const mainHandler = isLogin ? sign_h : log_h;
     const subHandler = isLogin ? log_h : sign_h;
 
+    if (isLogin) {
+        document.querySelector('.signinBtnGroup').inert = true
+        document.querySelector('.loginBtnGroup').inert = false
+    } else {
+        document.querySelector('.signinBtnGroup').inert = false
+        document.querySelector('.loginBtnGroup').inert = true
+    }
+
     change_main = setInterval(() => {
         if (count_m === mainText.length) {
             clearInterval(change_main);

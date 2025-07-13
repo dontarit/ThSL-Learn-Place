@@ -1,13 +1,36 @@
 const express = require('express')
 const mysql = require('mysql')
+const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const crypto = require('crypto')
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const puppeteer = require('puppeteer')
 
 // const port = process.env.PORT || 5000
 const port = 5000
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
 app.use(cors())
+
+// const ACCESS_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
+// const REFRESH_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
+const ACCESS_TOKEN_SECRET = 'this-is-a-very-very-much-strong-access-token-secret';
+const REFRESH_TOKEN_SECRET = 'this-is-a-very-very-much-strong-refresh-token-secret';
+console.log('ACCESS_TOKEN_SECRET:', ACCESS_TOKEN_SECRET);
+console.log('REFRESH_TOKEN_SECRET:', REFRESH_TOKEN_SECRET);
+
+const generateAccessToken = (user) => {
+  return jwt.sign({ id: user.user_id, username: user.user_name }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+};
+const generateRefreshToken = (user) => {
+  return jwt.sign({ id: user.id, username: user.username }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+};
+
+let user = { id: 1, username: 'user1', password: bcrypt.hashSync('password123', 10) }
+console.log(generateAccessToken(user));
+console.log(generateRefreshToken(user));
 
 const pool = mysql.createPool({
     connectionLimit : 10,
@@ -18,49 +41,84 @@ const pool = mysql.createPool({
 })
 
 app.post('/signinServer', (req, res) => {
-    const sql = "INSERT INTO `user_data`(`user_id`, `user_name`, `user_email`, `user_password`, `user_profile`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]','[value-5]')"
-    const checkdb = "SELECT * FROM user_data WHERE user_email = ?"
+    const { name, email, pswd } = req.body
+    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password) VALUES (?, ?, ?)"
+    const checkEmailQuery = "SELECT * FROM user_data WHERE user_email = ?"
+    
     pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection:', err)
-            return res.json(err)
+            return res.json({theme: 'danger', title: 'Error', content: "Can't getting connection"})
+        } else {
+            connection.query(checkEmailQuery, [email], (err, data) => {
+                connection.release()
+                if (err) {
+                    console.error('Error executing query:', err)
+                    return res.json({theme: 'danger', title: 'Error', content: "Can't executing query"})
+                }
+                if (data.length > 0) {
+                    return res.json({theme: 'warning', title: 'Warning', content: 'That email already exists. Enter a different account'})
+                }
+    
+                connection.query(insertQuery, [name, email, pswd], (err) => {
+                    if (err) {
+                        console.error('Error inserting data:', err)
+                        return res.json({theme: 'danger', title: 'Error', content: "Can't inserting data"})
+                    }
+                    return res.json({theme: 'success', title: 'Signed', content: 'Sign up successfully'})
+                })
+            })
         }
-        connection.query(checkdb, [req.body.email], (err, data) => {
+    })
+})
+
+app.post('/loginServer', (req, res) => {
+    const { email, pswd } = req.body
+    const checkUserQuery = "SELECT * FROM user_data WHERE user_email = ? AND user_password = ?"
+
+    pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection:', err)
+            return res.json({theme: 'danger', title: 'Error', content: "Can't getting connection"})
+        }
+        connection.query(checkUserQuery, [email, pswd], (err, data) => {
             connection.release()
             if (err) {
-                console.error('Error execution query:', err)
-                return res.json(err)
+                console.error('Error executing query:', err)
+                return res.json({theme: 'danger', title: 'Error', content: 'Error executing query'})
             }
-            if (data.length > 0) {
-                return res.json('email already used')
+            if (data.length > 1) {
+                console.error('Error database conflict :', err)
+                return res.json({theme: 'danger', title: 'Error', content: "Database conflict"})
+            } else if (data.length == 1) {
+                const accessToken = generateAccessToken(data[0]);
+                const refreshToken = generateRefreshToken(data[0]);
+
+                res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' });
+
+                return res.json({theme: 'success', title: 'Loged', content: 'Login successfully', token: accessToken})
             } else {
-                return res.json('welcome')
+                return res.json({theme: 'warning', title: 'Warning', content: "The account doesn't exist, or the password is incorrect. Enter a different account"})
             }
         })
     })
 })
 
-app.post('/loginServer', (req, res) => {
-    const sql = "SELECT * FROM user_data WHERE user_email = ? AND user_password = ?"
-    pool.getConnection((err, connection) => {
-        if (err) {
-            console.error('Error getting connection:', err)
-            return res.json(err)
-        }
-        connection.query(sql, [req.body.email, req.body.password], (err, data) => {
-            connection.release()
-            if (err) {
-                console.error('Error executing query:', err)
-                return res.json(err)
-            }
-            if (data.length > 0) {
-                return res.json(true)
-            } else {
-                return res.json(false)
-            }
-        })
-    })
-})
+app.post('/token', (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({ message: 'No refresh token found' });
+    }
+
+    jwt.verify(refreshToken, REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid refresh token' });
+
+        // Generate new access token for the user
+        const accessToken = generateAccessToken(user);
+        res.json({ accessToken });
+    });
+});
 
 app.post('/learnServer', async (req, res) => {
     const req_data = req.body.search_data
