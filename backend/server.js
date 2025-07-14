@@ -96,15 +96,30 @@ app.post('/loginServer', (req, res) => {
 
                 res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' });
 
-                return res.json({theme: 'success', title: 'Loged', content: 'Login successfully', token: accessToken})
+                return res.json({
+                    theme: 'success', 
+                    title: 'Loged', 
+                    content: 'Login successfully', 
+                    token: accessToken,
+                    user_data: {
+                        name: data[0].user_name,
+                        email: data[0].user_email,
+                        profile: data[0].user_profile,
+                    }
+                })
             } else {
-                return res.json({theme: 'warning', title: 'Warning', content: "The account doesn't exist, or the password is incorrect. Enter a different account"})
+                return res.json({theme: 'danger', title: 'Warning', content: "Wrong email or password"})
             }
         })
     })
 })
 
-app.post('/token', (req, res) => {
+app.post('/logoutServer', (req, res) => {
+    res.clearCookie('refreshToken');
+    return res.json({theme: 'success', title: 'Done', content: "Logged out successfully"})
+});
+
+app.post('/tokenServer', (req, res) => {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {

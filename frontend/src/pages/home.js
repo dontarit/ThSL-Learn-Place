@@ -13,6 +13,15 @@ export default function HomePage() {
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
 
     useEffect(() => {
+        if (authToken && isTokenExpired()) {
+            refreshToken();
+        } else {
+            const linkButtonNavigate = document.createElement('a');
+            linkButtonNavigate.href = '/learn'
+            linkButtonNavigate.click()
+            return
+        }
+
         import('../assets/font/font.css')
         import('../css/home.css')
         import('../css/sub/waveBtn.css')
@@ -51,10 +60,6 @@ export default function HomePage() {
                 overlay.style.display = 'none'
             }, 250);
         })
-
-        if (authToken && isTokenExpired()) {
-            refreshToken();
-        }
     }, [authToken]);
 
 
@@ -86,49 +91,55 @@ export default function HomePage() {
         const email_e = document.querySelector('.login .inputform.email')
 
         await axios.post('/loginServer', {email, pswd})
-            .then(res => {
-                if (res.data.theme != 'success') {
-                    email_e.value = email
-                }
-                openAlert(res.data.theme, res.data.title, res.data.content)
+        .then(res => {
+            openAlert(res.data.theme, res.data.title, res.data.content) 
+            if (res.data.theme != 'success') {
+                email_e.value = email
+            }
+            if (res.data.theme == 'success') {
                 const accessToken = res.data.token
+                const user_data = res.data.user_data
                 localStorage.setItem('authToken', accessToken)
+                localStorage.setItem('name', user_data.name)
+                localStorage.setItem('email', user_data.email)
+                localStorage.setItem('profile', user_data.profile)
                 setAuthToken(accessToken)
-            })
-            .catch(err => {
-                console.error(err)
-            })
+            }
+        })
+        .catch(err => {
+            console.error(err)
+        })
     }
 
     async function refreshToken() {
-        await axios.post('/loginServer')
+        await axios.post('/tokenServer')
             .then(res => {
                 const accessToken = res.data.token
                 localStorage.setItem('authToken', accessToken)
                 setAuthToken(accessToken)
+                console.log(accessToken);
             })
             .catch(err => {
-                console.error(err)
+                console.error('Error refreshing token:', err);
             })
-
-        try {
-            const response = await axios.post('/tokenServer');
-            const { accessToken } = response.data;
-
-            // Store new access token in localStorage
-            localStorage.setItem('authToken', accessToken);
-            setAuthToken(accessToken);
-        } catch (error) {
-            console.error('Error refreshing token:', error);
-            // alert('Session expired, please log in again.');
-        }
     };
 
     const isTokenExpired = () => {
         const token = localStorage.getItem('authToken');
+
         if (!token) return true;
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
-        return decodedToken.exp < Date.now() / 1000;
+        if (token.split('.').length !== 3) {
+            console.error('Invalid token format');
+            return true;
+        }
+        
+        try {
+            const decodedToken = JSON.parse(atob(token.split('.')[1]));
+            return decodedToken.exp < Date.now() / 1000;
+        } catch (e) {
+            console.error('Error decoding token:', e);
+            return true;
+        }
     };
     
     function openAlert(theme, title, content) {
@@ -163,6 +174,8 @@ export default function HomePage() {
         }, 10 * 1000);
     }
 
+
+
     return (
         <>
         <header id="header">
@@ -186,7 +199,7 @@ export default function HomePage() {
                     <div className="logsignSend signinBtnGroup">
                         <input type="text" name="name" placeholder="name" required className="inputform name" onChange={e => setName(e.target.value)}/>
                         <input type="email" name="email" placeholder="email" required className="inputform email" onChange={e => setEmail(e.target.value)}/>
-                        <input type="password" name="pswd" placeholder="password" required className="inputform" />
+                        <input type="password" name="pswd" placeholder="password" minLength={8} required className="inputform" />
                         <button id='btnFormSign' className="btnform">Sign up</button>
                     </div>
                 </form>

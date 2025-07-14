@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import NotFoundPage from '../pages/notfound.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
@@ -198,7 +199,7 @@ export default function AdminPageItems() {
     }
     else {
         return (
-            <Navigate to="/notfound" replace/>
+            <NotFoundPage/>
         )
     }
 

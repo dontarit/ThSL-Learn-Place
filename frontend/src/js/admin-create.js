@@ -48,7 +48,7 @@ const fpsControl = new controls.FPS()
 const spinner = document.querySelector('.loading')
 
 spinner.ontransitionend = () => {
-    spinner.style.display = 'none'
+    spinner.remove()
 }
 
 // Function for manage landmark

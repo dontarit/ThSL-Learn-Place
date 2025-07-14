@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios'
 
+import openAlert from '../js/alert-box.js'
+
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
 import newStar from '../assets/img/new star.png';
@@ -11,14 +13,75 @@ import favBtn from '../assets/img/favBtn.png';
 import handPosBtn from '../assets/img/handPosBtn.png';
 import handShapeBtn from '../assets/img/handShapeBtn.png';
 import palmTurnBtn from '../assets/img/palmTurnBtn.png';
-import daynightBtn from '../assets/img/daynightBtn.png';
+import logoutBtn from '../assets/img/logoutBtn.png';
 import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
 export default function LearnPlace() {
+    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+
+    const isTokenExpired = () => {
+        const token = localStorage.getItem('authToken');
+
+        if (!token) return true;
+        if (token.split('.').length !== 3) {
+            console.error('Invalid token format');
+            return true;
+        }
+        
+        try {
+            const decodedToken = JSON.parse(atob(token.split('.')[1]));
+            return decodedToken.exp < Date.now() / 1000;
+        } catch (e) {
+            console.error('Error decoding token:', e);
+            return true;
+        }
+    };
+
+    useEffect(() => {
+        if (authToken && isTokenExpired()) {
+            const linkButtonNavigate = document.createElement('a');
+            linkButtonNavigate.href = '/home'
+            linkButtonNavigate.click()
+            return
+        }
+
+        import('../assets/font/font.css')
+        import('../css/learnPlace.css')
+        import('../css/sub/searchbox.css')
+        import('../css/sub/setting_page.css')
+        import('../css/sub/waveBtn.css')
+        import('../css/sub/alert_box.css')
+        import('../js/app-learnPlace.js')
+        comfirmSetting(true)
+    }, [authToken]);
+
+    async function handleLogout() {
+        localStorage.setItem('authToken', 'none');
+        localStorage.setItem('name', '')
+        localStorage.setItem('email', '')
+        localStorage.setItem('profile', '')
+        setAuthToken(false);
+        console.log('hello');
+        await axios.post('/logoutServer')
+            .then(res => {
+                if (authToken && isTokenExpired()) {
+                    const linkButtonNavigate = document.createElement('a');
+                    linkButtonNavigate.href = '/home'
+                    linkButtonNavigate.click()
+                    return
+                } else {
+                    console.log('welcome');
+                }
+                openAlert(res.data.theme, res.data.title, res.data.content)
+            })
+            .catch(err => {
+                console.log('error')
+            })
+    }
+
     let searchingIdelay
     let searchController
-
     function cancelSearch() {
         if (searchController) {
             searchController.abort()
@@ -62,7 +125,7 @@ export default function LearnPlace() {
             }, 1000);
         }
     }
-    // Activate when user press enter with search box
+    // Activate when user press enter while focus in searchbox
     function handleSearch(e) {
         e.preventDefault()
     }
@@ -159,16 +222,14 @@ export default function LearnPlace() {
         timeShow.value = time
     }
     
-    useEffect(() => { 
-        import('../assets/font/font.css')
-        import('../css/learnPlace.css')
-        import('../css/sub/searchbox.css')
-        import('../css/sub/setting_page.css')
-        import('../css/sub/waveBtn.css')
-        import('../js/app-learnPlace.js')
-        comfirmSetting(true)
-    }, []);
-
+    const [use_hour, setUse_hour] = useState(0)
+    const [use_min, setUse_min] = useState(0)
+    function countRecord() {
+        // setInterval(() => {
+        //     setInterval
+        // }, 1000);
+    }
+    
 
 
     return (
@@ -272,11 +333,13 @@ export default function LearnPlace() {
                             </div>
                             <div className="already-signin">
                                 {/* <p id="navHead-txt">USER NAME</p> */}
-                                <p id="navHead-txt" title='Hello'>Anonymous</p>
+                                <p id="navHead-txt" title='Hello'>{localStorage.getItem('name')}</p>
                                 <div id="usetime" className='make_text_gap'>
                                     <span>Time usage</span>
                                     <span className='usage-number'>0</span>
-                                    <span>hour</span>
+                                    <span>h</span>
+                                    <span className='usage-number'>0</span>
+                                    <span>m</span>
                                 </div>
                             </div>
                         </div>
@@ -323,13 +386,13 @@ export default function LearnPlace() {
                     </div>
                 </div>
                 <div className="third-nav typeNav">
-                    <div className="daynightBtn iconBtn btnAnimate">
-                        <img src={daynightBtn}/>
-                        <p>Light/Dark</p>
-                    </div>
                     <div className="settingBtn iconBtn forceCloseMenu open-setting">
                         <img src={settingBtn}/>
                         <p>Setting</p>
+                    </div>
+                    <div className="daynightBtn iconBtn btnAnimate" id='logoutBtnFnc' onClick={handleLogout}>
+                        <img src={logoutBtn}/>
+                        <p>Logout</p>
                     </div>
                 </div>
             </div>
