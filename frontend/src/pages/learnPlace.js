@@ -88,7 +88,7 @@ export default function LearnPlace() {
             searchController.abort()
         }
     }
-
+  
     async function typingSearch(value) {
         clearTimeout(searchingIdelay);
         if (value == '') {
@@ -230,7 +230,6 @@ export default function LearnPlace() {
         //     setInterval
         // }, 1000);
     }
-    
 
 
     return (

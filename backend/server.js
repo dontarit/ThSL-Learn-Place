@@ -146,6 +146,31 @@ app.post('/tokenServer', (req, res) => {
     });
 });
 
+=======
+app.post('/loginServer', (req, res) => {
+    const sql = "SELECT * FROM user_data WHERE user_email = ? AND user_password = ?"
+    pool.getConnection((err, connection) => {
+        if (err) {
+            res.json("Connection Failed")
+            console.error('Error getting connection:', err)
+            return
+        }
+        connection.query(sql, [req.body.email, req.body.password], (err, data) => {
+            connection.release()
+            if (err) {
+                res.json("Login Failed")
+                console.error('Error executing query:', err)
+                return
+            }
+            if (data.length > 0) {
+                return res.json(true)
+            } else {
+                return res.json(false)
+            }
+        })
+    })
+})
+
 app.post('/learnServer', async (req, res) => {
     const req_data = req.body.search_data
     const req_page = req.body.search_page
