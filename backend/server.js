@@ -14,10 +14,8 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(cors())
 
-// const ACCESS_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
-// const REFRESH_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
-const ACCESS_TOKEN_SECRET = 'this-is-a-very-very-much-strong-access-token-secret';
-const REFRESH_TOKEN_SECRET = 'this-is-a-very-very-much-strong-refresh-token-secret';
+const ACCESS_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
+const REFRESH_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
 console.log('ACCESS_TOKEN_SECRET:', ACCESS_TOKEN_SECRET);
 console.log('REFRESH_TOKEN_SECRET:', REFRESH_TOKEN_SECRET);
 

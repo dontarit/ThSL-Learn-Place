@@ -1,11 +1,38 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios'
+
 import NotFoundPage from '../pages/notfound.js';
+import getBase from '../js/getBase.js'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPageItems() {
+    getBase()
+    import('../assets/font/font.css')
+    import('../css/admin/style.css')
+    import('../css/admin/side_nav.css')
+
     const id = useParams()
+    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+    const [isAdmin, setIsAdmin] = useState('');
+
+    const isTokenExpired = () => {
+        const token = localStorage.getItem('authToken');
+
+        if (!token) return true;
+        if (token.split('.').length !== 3) {
+            console.error('Invalid token format');
+            return true;
+        }
+        try {
+            const decodedToken = JSON.parse(atob(token.split('.')[1]));
+            return decodedToken.exp < Date.now() / 1000;
+        } catch (e) {
+            console.error('Error decoding token:', e);
+            return true;
+        }
+    };
 
     const adminGeneralItems = [
         {
@@ -29,10 +56,6 @@ export default function AdminPageItems() {
     ]
     
     useEffect(() => {
-        import('../assets/font/font.css')
-        import('../css/admin/style.css')
-        import('../css/admin/side_nav.css')
-
         if (id.page == 'create') {
             import('../css/admin/create.css')
             const script = [
@@ -55,7 +78,29 @@ export default function AdminPageItems() {
                 import('../js/admin-create.js')
             })
         }
-    }, []);
+    }, [authToken, isAdmin]);
+
+    async function handleLogout() {
+        localStorage.setItem('authToken', 'none');
+        localStorage.setItem('name', '')
+        localStorage.setItem('email', '')
+        localStorage.setItem('profile', '')
+        setAuthToken(false);
+        await axios.post('/logoutServer')
+            .then(res => {
+                if (authToken && isTokenExpired()) {
+                    const linkButtonNavigate = document.createElement('a');
+                    linkButtonNavigate.href = '/home'
+                    linkButtonNavigate.click()
+                    return
+                } else {
+                    console.log('welcome');
+                }
+            })
+            .catch(err => {
+                console.log('error')
+            })
+    }
 
     let pageMount
     let asideBar = (
@@ -143,7 +188,7 @@ export default function AdminPageItems() {
                             </a>
                         </li>
                         <li className="sidebar__item">
-                            <a className="sidebar__link" href="" data-tooltip="Logout">
+                            <a className="sidebar__link" href="" data-tooltip="Logout" onClick={handleLogout}>
                                 <span className="icon">
                                     <i className="ph ph-sign-out"></i>
                                 </span>

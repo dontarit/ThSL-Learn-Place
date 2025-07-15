@@ -18,11 +18,31 @@ export default function HomePage() {
     const [name_f, setName] = useState('')
     const [email_f, setEmail] = useState('')
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+    const [isAdmin, setIsAdmin] = useState('');
+
+    async function checkState() {
+        await axios.post('/checkAdminServer', {token: authToken})
+            .then(res => {
+                setIsAdmin(res.data)
+                return
+            }).catch(err => {
+                setIsAdmin(false)
+                return
+            })
+    }
+    checkState()
 
     useEffect(() => {
         if (authToken && isTokenExpired()) {
             refreshToken();
-        } else {
+        }
+        else if (isAdmin) {
+            const linkButtonNavigate = document.createElement('a');
+            linkButtonNavigate.href = '/admin'
+            linkButtonNavigate.click()
+            return
+        }
+        else {
             const linkButtonNavigate = document.createElement('a');
             linkButtonNavigate.href = '/learn'
             linkButtonNavigate.click()
@@ -61,7 +81,7 @@ export default function HomePage() {
                 overlay.style.display = 'none'
             }, 250);
         })
-    }, [authToken]);
+    }, [authToken, isAdmin]);
 
 
 

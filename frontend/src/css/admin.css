@@ -100,8 +100,7 @@
     margin: 0;
 }
 
-.menuSelect .container .btnSlc:nth-child(1) {background-color: #62c2c1;}
-.menuSelect .container .btnSlc:nth-child(2) {background-color: #ee945c;}
+.menuSelect .container .btnSlc:nth-child(1) {background-color: #ee945c;}
 
 @media (max-width: 768px) {
     .menuSelect .container {

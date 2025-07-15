@@ -8,6 +8,10 @@ import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPage() {
     getBase()
+    import('../css/admin.css')
+    import('../css/admin/style.css')
+    import('../assets/font/font.css')
+    import('../css/admin/side_nav.css')
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [isAdmin, setIsAdmin] = useState('');
@@ -53,27 +57,14 @@ export default function AdminPage() {
         };
         checkState();
         if (isAdmin) {
-            setTimeout(() => {
+            window.addEventListener('load', () => {
                 const main = document.querySelector('.mainContent-container')
                 const side = document.querySelector('.naviSidebar')
                 main.style.width = `calc(100% - ${side.offsetWidth}px)`
-            }, 10);
+            })
         }
-    }, [authToken]);
-
-    if (isAdmin) {
-        import('../css/admin.css')
-        import('../css/admin/style.css')
-        import('../assets/font/font.css')
-        import('../css/admin/side_nav.css')
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const main = document.querySelector('.mainContent-container')
-                const side = document.querySelector('.naviSidebar')
-                main.style.width = `calc(100% - ${side.offsetWidth}px)`
-            }, 10);
-        })
-    }
+    }, [authToken, isAdmin]);
+    
     if (!isAdmin) {
         return <NotFoundPage />;
     }
@@ -226,12 +217,12 @@ export default function AdminPage() {
                 <section className="menuSelect">
                     <h1 className='topic'>Select where to go</h1>
                     <div className='container'>
-                        <a href='/home' className='btnSlc' target="_blank">
+                        {/* <a href='/home' className='btnSlc' target="_blank">
                             <i className="ph ph-house-line"></i>
                             <h1>To Home</h1>
-                        </a>
+                        </a> */}
                         <a href='/learn' className='btnSlc' target="_blank">
-                            <i className="ph ph-lightbulb"></i>
+                            <i className="ph ph-house-line"></i>
                             <h1>To Main</h1>
                         </a>
                         {
