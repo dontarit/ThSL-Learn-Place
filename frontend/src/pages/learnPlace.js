@@ -37,7 +37,6 @@ export default function LearnPlace() {
             console.error('Invalid token format');
             return true;
         }
-        
         try {
             const decodedToken = JSON.parse(atob(token.split('.')[1]));
             return decodedToken.exp < Date.now() / 1000;

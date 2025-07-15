@@ -20,7 +20,6 @@ export default function AdminPage() {
             console.error('Invalid token format');
             return true;
         }
-        
         try {
             const decodedToken = JSON.parse(atob(token.split('.')[1]));
             return decodedToken.exp < Date.now() / 1000;
@@ -53,20 +52,23 @@ export default function AdminPage() {
             }
         };
         checkState();
-  }, [authToken]);
+        if (isAdmin) {
+            const main = document.querySelector('.mainContent-container');
+            const side = document.querySelector('.naviSidebar');
+            window.addEventListener('load', () => {
+                main.style.width = `calc(100% - ${side.offsetWidth}px)`;
+            });
+        }
+        if (!isAdmin) {
+            return <NotFoundPage />;
+        }
+    }, [authToken]);
 
     if (isAdmin) {
         import('../css/admin.css')
         import('../css/admin/style.css')
         import('../assets/font/font.css')
         import('../css/admin/side_nav.css')
-        const main = document.querySelector('.mainContent-container');
-        const side = document.querySelector('.naviSidebar');
-        window.addEventListener('load', () => {
-            if (main && side) {
-            main.style.width = `calc(100% - ${side.offsetWidth}px)`;
-            }
-        });
     }
     if (!isAdmin) {
         return <NotFoundPage />;
