@@ -40,7 +40,7 @@
     border: none;
     border-radius: 15px 0 0 15px;
     color: #fafafa;
-    background-color: #121212;
+    background-color: #292929;
     cursor: pointer;
 }
 .input-place #search-box {
@@ -50,7 +50,7 @@
     border-bottom: solid 2px #0055b0;
     outline: none;
     padding: 12px 10px;
-    background-color: #121212;
+    background-color: #292929;
     cursor: text;
     font-size: 20px;
     color: #409aff;

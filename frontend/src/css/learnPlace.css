@@ -1,7 +1,8 @@
 :root {
     --dark-bg: #121212;
     --dark-hd: rgba(5, 2, 18, 0.879);
-    --dark-sh: rgba(5, 2, 18, 0.507);
+    --dark-hd: rgb(33, 33, 40, 0.879);
+    --dark-sh: rgba(33, 33, 40, 0.507);
     --light-bg: #c7d2e0;
     --light-hd: rgb(45, 63, 93, 0.879);
     --light-sh: rgba(45, 63, 93, 0.507);
@@ -14,8 +15,9 @@ body {
     background:
         linear-gradient(-90deg, rgba(79, 79, 79, 0.063) 1px, transparent 1px),
         linear-gradient(rgba(79, 79, 79, 0.063) 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-size: 32px 32px;
     background-color: var(--dark-bg);
+    background-color: #674eff;
     font-size: .8rem;
 }
 
@@ -305,7 +307,6 @@ header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(18px, 2vw, 26px);
 }
 
 #navHead-txt {
@@ -316,6 +317,11 @@ header {
     display: flex;
     flex-direction: row;
     text-wrap: nowrap;
+    word-spacing: -6px;
+    color: #bfbfbf;
+}
+#usetime .usage-number {
+    color: #55962a;
 }
 
 .stars {
@@ -348,7 +354,7 @@ header {
     overflow-x: hidden;
     overflow-y: scroll;
     overscroll-behavior: contain;
-    font-family: 'm_1mregular';
+    font-family: "m_1mregular", "K2D", sans-serif;
     font-size: clamp(1.5em, 2vw, 2em);
 }
 
@@ -454,6 +460,7 @@ header {
     height: 100%;
     background: #980CCC;
     background: linear-gradient(135deg, #980ccc 0%, #4487e9 100%);
+    font-family: "Poppins", "K2D", sans-serif;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     border-radius: 8px;
     transition: .5s;
@@ -472,7 +479,6 @@ header {
     width: 100%;
     padding: clamp(5px, 1.2vw, 10px);
     font-size: clamp(.8em, 2vw, 1.2em);
-    /* font-family: "Poppins", sans-serif; */
     color: #fff;
 }
 
@@ -561,7 +567,6 @@ header {
     padding: clamp(30px, 5vw, 20px) 0;
     color: #e2e2e2;
     word-spacing: -6px;
-    font-family: 'm_1mregular';
     font-size: clamp(12px, 6vw, 25px);
 }
 
@@ -573,7 +578,7 @@ header {
     width: 100%;
     height: 100%;
     position: relative;
-    background: #6E4ADB;
+    background: #6e4adb;
     background: linear-gradient(135deg, #6e4adb 0%, #4487e9 65%);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     padding: 20px clamp(12px, 2.2vw, 20px);
@@ -611,7 +616,7 @@ header {
     padding: 10px 12px;
     color: #e2e2e2;
     font-size: clamp(14px, 2.8vw, 22px);
-    font-family: 'm_1mregular';
+    font-family: "m_1mregular", "Kanit", sans-serif;
     line-height: 1.4;
     margin: 0;
 }
@@ -652,7 +657,7 @@ header {
     color: #e2e2e2;
     font-weight: 500;
     word-spacing: -6px;
-    font-family: 'm_1mregular';
+    font-family: "m_1mregular", "K2D", sans-serif;
     font-size: clamp(16px, 2.8vw, 22px);
 }
 
@@ -696,12 +701,12 @@ progress::-webkit-progress-value {
 }
 
 .progress-word>div p:nth-child(1) {
-    font-family: "Cascadia Code";
+    font-family: "Cascadia Code", sans-serif;
     font-size: 1.2em;
 }
 
 .progress-word>div p:nth-child(2) {
-    font-family: 'agencyfblightregular';
+    font-family: 'agencyfblightregular', sans-serif;
     text-wrap: nowrap;
 }
 
@@ -739,7 +744,7 @@ progress::-webkit-progress-value {
 
 #reviewBtn span {
     font-size: clamp(12px, 5vw, 1.6em);
-    font-family: 'm_1mregular';
+    font-family: "m_1mregular", "K2D", sans-serif;
     font-weight: bold;
     letter-spacing: 3px;
 }
@@ -764,7 +769,7 @@ progress::-webkit-progress-value {
     border-radius: 12px;
     width: 100%;
     font-size: clamp(12px, 5vw, 1.6em);
-    font-family: 'm_1mregular';
+    font-family: "m_1mregular", "K2D", sans-serif;
     cursor: pointer;
     transition: transform 200ms;
 }
@@ -812,7 +817,7 @@ progress::-webkit-progress-value {
     justify-content: space-between;
     color: #e2e2e2;
     font-weight: 500;
-    font-family: 'm_1mregular';
+    font-family: "m_1mregular", "K2D", sans-serif;
     font-size: clamp(18px, 2.8vw, 25px);
 }
 
@@ -827,7 +832,7 @@ progress::-webkit-progress-value {
 }
 
 .To-Signin button span {
-    font-family: 'm_1mregular';
+    font-family: "m_1mregular", "K2D", sans-serif;
     font-size: clamp(18px, 2.8vw, 25px);
 }
 
