@@ -1,0 +1,74 @@
+.sign-button {
+    all: unset;
+    width: 100%;
+    position: relative;
+    text-align: center;
+    letter-spacing: 5px;
+    font-weight: bold;
+    padding: 10px 0;
+    transform: scale(1);
+    overflow: hidden;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sign-button span {
+    position: relative;
+    z-index: 0;
+    color: #fff;
+    color: #8684ff;
+    transition: color 0.6s;
+}
+
+.sign-button .liquid {
+    position: absolute;
+    top: -60px;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #980ccc 0%, #4487e9 100%);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.7);
+    z-index: -1;
+    transition: 0.6s;
+}
+
+.sign-button .liquid::after,
+.sign-button .liquid::before {
+    position: absolute;
+    content: "";
+    width: 200%;
+    height: 200%;
+    top: 0;
+    left: 0;
+    transform: translate(-25%, -75%);
+}
+
+.sign-button .liquid::after {
+    border-radius: 45%;
+    background: rgba(20, 20, 20, 1);
+    box-shadow: 0 0 10px 5px linear-gradient(135deg, #980ccc 0%, #4487e9 100%);
+    animation: animate 5s linear infinite;
+    opacity: 0.8;
+}
+
+.sign-button .liquid::before {
+    border-radius: 40%;
+    box-shadow: 0 0 10px rgba(26, 26, 26, 0.5),
+        inset 0 0 5px rgba(26, 26, 26, 0.5);
+    background: rgba(26, 26, 26, 0.5);
+
+    animation: animate 7s linear infinite;
+}
+
+@keyframes animate {
+    0% {
+        transform: translate(-25%, -75%) rotate(0);
+    }
+    100% {
+        transform: translate(-25%, -75%) rotate(360deg);
+    }
+}
+
+.sign-button:hover span{
+    color: #e2e2e2;
+}
