@@ -53,14 +53,11 @@ export default function AdminPage() {
         };
         checkState();
         if (isAdmin) {
-            const main = document.querySelector('.mainContent-container');
-            const side = document.querySelector('.naviSidebar');
-            window.addEventListener('load', () => {
-                main.style.width = `calc(100% - ${side.offsetWidth}px)`;
-            });
-        }
-        if (!isAdmin) {
-            return <NotFoundPage />;
+            setTimeout(() => {
+                const main = document.querySelector('.mainContent-container')
+                const side = document.querySelector('.naviSidebar')
+                main.style.width = `calc(100% - ${side.offsetWidth}px)`
+            }, 10);
         }
     }, [authToken]);
 
@@ -69,6 +66,13 @@ export default function AdminPage() {
         import('../css/admin/style.css')
         import('../assets/font/font.css')
         import('../css/admin/side_nav.css')
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const main = document.querySelector('.mainContent-container')
+                const side = document.querySelector('.naviSidebar')
+                main.style.width = `calc(100% - ${side.offsetWidth}px)`
+            }, 10);
+        })
     }
     if (!isAdmin) {
         return <NotFoundPage />;

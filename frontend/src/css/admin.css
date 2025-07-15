@@ -57,12 +57,10 @@
     color: #fafafa;
 }
 .menuSelect .container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    max-width: 1200px;
-    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    gap: 2rem;
+    width: 100%;
 }
 .menuSelect .btnSlc {
     position: relative;
@@ -70,10 +68,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 220px;
-    height: 250px;
     border-radius: 15px;
-    padding: 20px;
+    padding: 26px;
     text-align: center;
     text-decoration: none;
     color: #000;
