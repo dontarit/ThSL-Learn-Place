@@ -22,10 +22,10 @@ console.log('ACCESS_TOKEN_SECRET:', ACCESS_TOKEN_SECRET);
 console.log('REFRESH_TOKEN_SECRET:', REFRESH_TOKEN_SECRET);
 
 const generateAccessToken = (user) => {
-  return jwt.sign({ id: user.user_id, username: user.user_name }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+  return jwt.sign({ id: user.user_id, username: user.user_name, isAdmin: user.admin_state }, ACCESS_TOKEN_SECRET);
 };
 const generateRefreshToken = (user) => {
-  return jwt.sign({ id: user.id, username: user.username }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ id: user.id, username: user.username, isAdmin: user.admin_state }, REFRESH_TOKEN_SECRET);
 };
 
 let user = { id: 1, username: 'user1', password: bcrypt.hashSync('password123', 10) }
@@ -113,6 +113,19 @@ app.post('/loginServer', (req, res) => {
         })
     })
 })
+
+app.post('/checkAdminServer', (req, res) => {
+    const token = req.body.token
+    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid token' });
+        if (user.isAdmin) {
+            return res.json(true)
+        }
+        else {
+            return res.json(false)
+        }
+    })
+});
 
 app.post('/logoutServer', (req, res) => {
     res.clearCookie('refreshToken');

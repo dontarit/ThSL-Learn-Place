@@ -71,8 +71,7 @@
     width: 100vw;
     height: 100vh;
     background-color: rgb(41, 41, 41, .3);
-    transition-property: opacity;
-    transition: 100ms;
+    transition: opacity 100ms;
     z-index: 2;
 }
 
@@ -332,6 +331,13 @@
     margin-top: -25px;
     font-size: clamp(12px, 2vw, 16px);
     color: #000;
-    cursor: pointer;
     z-index: 2;
+}
+.setting-container .sub-con.pswdChange {
+    justify-content: right;
+    background-color: red;
+}
+.setting-container .sub-con #changepswd_setting {
+    min-width: 100%;
+    cursor: pointer;
 }

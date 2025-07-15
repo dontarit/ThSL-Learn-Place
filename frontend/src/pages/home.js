@@ -3,11 +3,18 @@ import "aos/dist/aos.css";
 import AOS from "aos";
 import axios from 'axios'
 
+import getBase from '../js/getBase.js'
+
 import TSLlogo from '../assets/img/TSLlogo.png';
 
-axios.defaults.baseURL = 'http://localhost:5000';
-
 export default function HomePage() {
+    getBase()
+    import('../assets/font/font.css')
+    import('../css/home.css')
+    import('../css/sub/waveBtn.css')
+    import('../css/sub/logsignForm.css')
+    import('../css/sub/alert_box.css')
+
     const [name_f, setName] = useState('')
     const [email_f, setEmail] = useState('')
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
@@ -21,12 +28,6 @@ export default function HomePage() {
             linkButtonNavigate.click()
             return
         }
-
-        import('../assets/font/font.css')
-        import('../css/home.css')
-        import('../css/sub/waveBtn.css')
-        import('../css/sub/logsignForm.css')
-        import('../css/sub/alert_box.css')
         
         AOS.init({
             duration: 800,
