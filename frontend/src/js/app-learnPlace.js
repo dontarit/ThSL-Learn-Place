@@ -172,7 +172,7 @@ openSetting.forEach(element => {
     element.addEventListener('click', () => {
         SpinCheck(element)
         topSelect[0].click()
-        overlaySetting.style.transition = `all ${overlaySettingTime}ms`
+        overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
         overlaySetting.style.display = 'block'
         setTimeout(() => {
             overlaySetting.style.opacity = '1'
@@ -184,7 +184,7 @@ openSetting.forEach(element => {
 });
 
 function closeSettingFunc() {
-    overlaySetting.style.transition = `all ${overlaySettingTime}ms`
+    overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
     overlaySetting.style.opacity = '0'
     setTimeout(() => {
         overlaySetting.style.display = 'none'
@@ -203,26 +203,6 @@ closeSetting.forEach(element => {
         closeSettingFunc()
     })
 });
-
-
-
-// Password toggle
-const togglePassword = document.getElementById('toggle-password')
-const passwordField = document.getElementById('password-field')
-togglePassword.addEventListener('click', (e) => {
-    const elememt = e.target
-    if (passwordField.defaultValue == 'secret') {
-        elememt.classList.remove('ph-eye')
-        elememt.classList.add('ph-eye-slash')
-        passwordField.defaultValue = 'show'
-        passwordField.type = 'text'
-    }else {
-        elememt.classList.add('ph-eye')
-        elememt.classList.remove('ph-eye-slash')
-        passwordField.defaultValue = 'secret'
-        passwordField.type = 'password'
-    }
-})
 
 
 

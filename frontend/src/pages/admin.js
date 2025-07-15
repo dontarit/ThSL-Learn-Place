@@ -1,8 +1,99 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios'
+
+import NotFoundPage from '../pages/notfound.js';
+import getBase from '../js/getBase.js'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPage() {
+    getBase()
+    
+    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+    const [isAdmin, setIsAdmin] = useState('');
+
+    const isTokenExpired = () => {
+        const token = localStorage.getItem('authToken');
+
+        if (!token) return true;
+        if (token.split('.').length !== 3) {
+            console.error('Invalid token format');
+            return true;
+        }
+        
+        try {
+            const decodedToken = JSON.parse(atob(token.split('.')[1]));
+            return decodedToken.exp < Date.now() / 1000;
+        } catch (e) {
+            console.error('Error decoding token:', e);
+            return true;
+        }
+    };
+
+    async function checkState() {
+        await axios.post('/checkAdminServer', {token: authToken})
+            .then(res => {
+                setIsAdmin(res.data)
+                return
+            }).catch(err => {
+                setIsAdmin(false)
+                return
+            })
+    }
+    checkState()
+    
+    
+    useEffect(() => {
+        const checkState = async () => {
+            try {
+                const res = await axios.post('/checkAdminServer', { token: authToken });
+                setIsAdmin(res.data);
+            } catch (err) {
+                setIsAdmin(false);
+            }
+        };
+        checkState();
+  }, [authToken]);
+
+    if (isAdmin) {
+        import('../css/admin.css')
+        import('../css/admin/style.css')
+        import('../assets/font/font.css')
+        import('../css/admin/side_nav.css')
+        const main = document.querySelector('.mainContent-container');
+        const side = document.querySelector('.naviSidebar');
+        window.addEventListener('load', () => {
+            if (main && side) {
+            main.style.width = `calc(100% - ${side.offsetWidth}px)`;
+            }
+        });
+    }
+    if (!isAdmin) {
+        return <NotFoundPage />;
+    }
+
+    async function handleLogout() {
+        localStorage.setItem('authToken', 'none');
+        localStorage.setItem('name', '')
+        localStorage.setItem('email', '')
+        localStorage.setItem('profile', '')
+        setAuthToken(false);
+        await axios.post('/logoutServer')
+            .then(res => {
+                if (authToken && isTokenExpired()) {
+                    const linkButtonNavigate = document.createElement('a');
+                    linkButtonNavigate.href = '/home'
+                    linkButtonNavigate.click()
+                    return
+                } else {
+                    console.log('welcome');
+                }
+            })
+            .catch(err => {
+                console.log('error')
+            })
+    }
+
     const adminGeneralItems = [
         {
             id: 1,
@@ -26,19 +117,6 @@ export default function AdminPage() {
             color: '#f6cf55',
         },
     ]
-
-    useEffect(() => { 
-        import('../css/admin.css')
-        import('../css/admin/style.css')
-        import('../assets/font/font.css')
-        import('../css/admin/side_nav.css')
-
-        const main = document.querySelector('.mainContent-container')
-        const side = document.querySelector('.naviSidebar')
-        window.addEventListener('load', () => {
-            main.style.width = `calc(100% - ${side.offsetWidth}px)`
-        })
-    }, []);
 
     return (
         <>
@@ -123,7 +201,7 @@ export default function AdminPage() {
                                 </a>
                             </li>
                             <li className="sidebar__item">
-                                <a className="sidebar__link" href="" data-tooltip="Logout">
+                                <a className="sidebar__link" data-tooltip="Logout" onClick={handleLogout}>
                                     <span className="icon">
                                         <i className="ph ph-sign-out"></i>
                                     </span>

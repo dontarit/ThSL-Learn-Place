@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios'
 
 import openAlert from '../js/alert-box.js'
+import getBase from '../js/getBase.js'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
@@ -18,6 +19,14 @@ import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
 export default function LearnPlace() {
+    getBase()
+    import('../assets/font/font.css')
+    import('../css/learnPlace.css')
+    import('../css/sub/searchbox.css')
+    import('../css/sub/setting_page.css')
+    import('../css/sub/waveBtn.css')
+    import('../css/sub/alert_box.css')
+
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
 
     const isTokenExpired = () => {
@@ -45,13 +54,7 @@ export default function LearnPlace() {
             linkButtonNavigate.click()
             return
         }
-
-        import('../assets/font/font.css')
-        import('../css/learnPlace.css')
-        import('../css/sub/searchbox.css')
-        import('../css/sub/setting_page.css')
-        import('../css/sub/waveBtn.css')
-        import('../css/sub/alert_box.css')
+        
         import('../js/app-learnPlace.js')
         comfirmSetting(true)
     }, [authToken]);
@@ -62,7 +65,6 @@ export default function LearnPlace() {
         localStorage.setItem('email', '')
         localStorage.setItem('profile', '')
         setAuthToken(false);
-        console.log('hello');
         await axios.post('/logoutServer')
             .then(res => {
                 if (authToken && isTokenExpired()) {
@@ -332,7 +334,6 @@ export default function LearnPlace() {
                                 </button>
                             </div>
                             <div className="already-signin">
-                                {/* <p id="navHead-txt">USER NAME</p> */}
                                 <p id="navHead-txt" title='Hello'>{localStorage.getItem('name')}</p>
                                 <div id="usetime" className='make_text_gap'>
                                     <span>Time usage</span>
@@ -641,7 +642,7 @@ export default function LearnPlace() {
                                     <div className='sub-upper'>
                                         <p>Name</p>
                                         <div>
-                                            <input name="user-name" id="user-name" type="text" placeholder='User Name' autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
+                                            <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
                                             <i className="ph ph-pencil-simple field-icon"></i>
                                         </div>
                                     </div>
@@ -649,17 +650,20 @@ export default function LearnPlace() {
                                 <div className="sub-con" style={{justifyContent: 'center'}}>
                                     <div className='sub-upper'>
                                         <p title='Email'>Email</p>
-                                        <input type="text" placeholder='name@email.com' style={{minWidth: '100%'}} inert/>
+                                        <input type="text" placeholder='name@email.com' defaultValue={localStorage.getItem('email')} style={{minWidth: '100%'}} inert/>
                                     </div>
                                     <div className='sub-upper valueInsert'>
                                         <p title='Password'>Password</p>
                                         <div className="form-group">
                                             <div className="col-md-6">
-                                                <input id="password-field" type="password" className="form-control" name="password" style={{minWidth: '100%'}} inert/>
-                                                <button toggle="#password-field" id='toggle-password' className="ph ph-eye field-icon"></button>
+                                                <input id="password-field" type="password" className="form-control" defaultValue="........" name="password" style={{minWidth: '100%'}} inert/>
+                                                {/* <button toggle="#password-field" id='toggle-password' className="ph ph-eye field-icon"></button> */}
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div className="sub-con pswdChange">
+                                    <input id="changepswd_setting" type="button" defaultValue="Change password"/>
                                 </div>
                             </div>
                         </section>
