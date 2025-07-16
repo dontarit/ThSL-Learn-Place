@@ -15,7 +15,7 @@ export default function AdminPageItems() {
 
     const id = useParams()
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
-    const [isAdmin, setIsAdmin] = useState('');
+    const [isAdmin, setIsAdmin] = useState();
 
     const isTokenExpired = () => {
         const token = localStorage.getItem('authToken');
@@ -33,29 +33,33 @@ export default function AdminPageItems() {
             return true;
         }
     };
-
-    const adminGeneralItems = [
-        {
-            id: 1,
-            link: 'create',
-            icon: 'ph-camera',
-            title: 'Create Data'
-        },
-        {
-            id: 2,
-            link: 'user',
-            icon: 'ph-identification-card',
-            title: 'User Management'
-        },
-        {
-            id: 3,
-            link: 'thsl',
-            icon: 'ph-database',
-            title: 'ThSL Management'
-        },
-    ]
+    async function checkState() {
+        await axios.post('/checkAdminServer', {token: authToken})
+            .then(res => {
+                setIsAdmin(res.data)
+                return
+            }).catch(err => {
+                setIsAdmin(false)
+                return
+            })
+    }
+    checkState()
     
     useEffect(() => {
+        if (!authToken && isTokenExpired()) {
+            const linkButtonNavigate = document.createElement('a');
+            linkButtonNavigate.href = '/home'
+            linkButtonNavigate.click()
+            return
+        }
+        if (isAdmin) {
+            const main = document.querySelector('.mainContent-container')
+            const side = document.querySelector('.naviSidebar')
+            window.addEventListener('load', () => {
+                main.style.width = `calc(100% - ${side.offsetWidth}px)`
+            })
+        } else { return }
+
         if (id.page == 'create') {
             import('../css/admin/create.css')
             const script = [
@@ -79,9 +83,13 @@ export default function AdminPageItems() {
             })
         }
     }, [authToken, isAdmin]);
+    
+    if (!isAdmin) {
+        return <NotFoundPage />;
+    }
 
     async function handleLogout() {
-        localStorage.setItem('authToken', 'none');
+        localStorage.removeItem('authToken')
         localStorage.setItem('name', '')
         localStorage.setItem('email', '')
         localStorage.setItem('profile', '')
@@ -93,14 +101,33 @@ export default function AdminPageItems() {
                     linkButtonNavigate.href = '/home'
                     linkButtonNavigate.click()
                     return
-                } else {
-                    console.log('welcome');
                 }
             })
             .catch(err => {
                 console.log('error')
             })
     }
+
+    const adminGeneralItems = [
+        {
+            id: 1,
+            link: 'create',
+            icon: 'ph-camera',
+            title: 'Create Data'
+        },
+        {
+            id: 2,
+            link: 'user',
+            icon: 'ph-identification-card',
+            title: 'User Management'
+        },
+        {
+            id: 3,
+            link: 'thsl',
+            icon: 'ph-database',
+            title: 'ThSL Management'
+        },
+    ]
 
     let pageMount
     let asideBar = (

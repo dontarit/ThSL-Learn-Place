@@ -47,7 +47,10 @@ export default function LearnPlace() {
     };
 
     useEffect(() => {
-        if (authToken && isTokenExpired()) {
+        console.log(`no Token : ${!Boolean(authToken)}`);
+        console.log(`is Expired : ${isTokenExpired()}`);
+
+        if (!authToken && isTokenExpired()) {
             const linkButtonNavigate = document.createElement('a');
             linkButtonNavigate.href = '/home'
             linkButtonNavigate.click()
@@ -59,7 +62,7 @@ export default function LearnPlace() {
     }, [authToken]);
 
     async function handleLogout() {
-        localStorage.setItem('authToken', 'none');
+        localStorage.removeItem('authToken')
         localStorage.setItem('name', '')
         localStorage.setItem('email', '')
         localStorage.setItem('profile', '')
@@ -71,8 +74,6 @@ export default function LearnPlace() {
                     linkButtonNavigate.href = '/home'
                     linkButtonNavigate.click()
                     return
-                } else {
-                    console.log('welcome');
                 }
                 openAlert(res.data.theme, res.data.title, res.data.content)
             })

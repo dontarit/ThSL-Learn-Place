@@ -14,7 +14,7 @@ export default function AdminPage() {
     import('../css/admin/side_nav.css')
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
-    const [isAdmin, setIsAdmin] = useState('');
+    const [isAdmin, setIsAdmin] = useState();
 
     const isTokenExpired = () => {
         const token = localStorage.getItem('authToken');
@@ -32,7 +32,6 @@ export default function AdminPage() {
             return true;
         }
     };
-
     async function checkState() {
         await axios.post('/checkAdminServer', {token: authToken})
             .then(res => {
@@ -45,24 +44,20 @@ export default function AdminPage() {
     }
     checkState()
     
-    
     useEffect(() => {
-        const checkState = async () => {
-            try {
-                const res = await axios.post('/checkAdminServer', { token: authToken });
-                setIsAdmin(res.data);
-            } catch (err) {
-                setIsAdmin(false);
-            }
-        };
-        checkState();
+        if (!authToken && isTokenExpired()) {
+            const linkButtonNavigate = document.createElement('a');
+            linkButtonNavigate.href = '/home'
+            linkButtonNavigate.click()
+            return
+        }
         if (isAdmin) {
+            const main = document.querySelector('.mainContent-container')
+            const side = document.querySelector('.naviSidebar')
             window.addEventListener('load', () => {
-                const main = document.querySelector('.mainContent-container')
-                const side = document.querySelector('.naviSidebar')
                 main.style.width = `calc(100% - ${side.offsetWidth}px)`
             })
-        }
+        } else { return }
     }, [authToken, isAdmin]);
     
     if (!isAdmin) {
@@ -70,7 +65,7 @@ export default function AdminPage() {
     }
 
     async function handleLogout() {
-        localStorage.setItem('authToken', 'none');
+        localStorage.removeItem('authToken')
         localStorage.setItem('name', '')
         localStorage.setItem('email', '')
         localStorage.setItem('profile', '')
@@ -82,8 +77,6 @@ export default function AdminPage() {
                     linkButtonNavigate.href = '/home'
                     linkButtonNavigate.click()
                     return
-                } else {
-                    console.log('welcome');
                 }
             })
             .catch(err => {

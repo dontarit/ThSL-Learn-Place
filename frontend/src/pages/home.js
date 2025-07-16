@@ -34,16 +34,19 @@ export default function HomePage() {
     checkState()
 
     useEffect(() => {
-        if (authToken && isTokenExpired()) {
+        console.log(`no Token : ${!Boolean(authToken)}`);
+        console.log(`is Expired : ${isTokenExpired()}`);
+        
+        if (!authToken && isTokenExpired()) {
             refreshToken();
         }
-        else if (isAdmin) {
+        else if (authToken && !isTokenExpired() && isAdmin) {
             const linkButtonNavigate = document.createElement('a');
             linkButtonNavigate.href = '/admin'
             linkButtonNavigate.click()
             return
         }
-        else {
+        else if (authToken && !isTokenExpired()) {
             const linkButtonNavigate = document.createElement('a');
             linkButtonNavigate.href = '/learn'
             linkButtonNavigate.click()
