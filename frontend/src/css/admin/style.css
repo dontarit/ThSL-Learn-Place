@@ -1,0 +1,39 @@
+body {
+    background: 
+        linear-gradient(-90deg, rgba(79, 79, 79, 0.063) 1px, transparent 1px),
+        linear-gradient(rgba(79, 79, 79, 0.063) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-color: #121212;
+}
+
+.con-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+}
+.con-header .main-logo {
+    transition: transform 100ms;
+}
+.con-header .main-logo:hover {
+    transform: scale(1.12);
+}
+.con-header .main-logo img {
+    width: calc(1.8em * 2.2);
+}
+
+.con-header .header-nav {
+    display: flex;
+    gap: 2em;
+}
+.con-header .header-nav .btnSlc {
+    display: flex;
+    text-decoration: none;
+    font-size: 1.4em;
+    color: #a5bad7;
+    cursor: pointer;
+    transition: color 100ms;
+}
+.con-header .header-nav .btnSlc:hover {
+    color: #363c99;
+}

@@ -1,0 +1,34 @@
+.loading-overlay {
+    display: flex;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    align-items: center;
+    backface-visibility: hidden;
+    background-color: rgb(190, 190, 190, 0.3);
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 200ms;
+    z-index: 200;
+}
+.loading-overlay .spinner {
+    width: 56px;
+   height: 56px;
+   --c: radial-gradient(farthest-side,#474bff 92%,#0000);
+   background: var(--c) 50% 0, var(--c) 50% 100%, var(--c) 100% 50%, var(--c) 0 50%;
+   background-size: 13.4px 13.4px;
+   background-repeat: no-repeat;
+   animation: spinner-kh173p 1s infinite;
+}
+
+@keyframes spinner-kh173p {
+    to {
+        transform: rotate(.5turn);
+    }
+}
+
+.loaded .loading-overlay {
+    opacity: 0;
+}

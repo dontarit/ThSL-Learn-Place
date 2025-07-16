@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap'); 
+@font-face {
+    font-family: 'm_1mregular';
+    src: url('M+ 1m regular/mplus-1m-regular-webfont.woff2') format('woff2'),
+         url('M+ 1m regular/mplus-1m-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'book_antiquaregular';
+    src: url('bookantiqua/bookantiqua-webfont.woff2') format('woff2'),
+         url('bookantiqua/bookantiqua-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Code:ital,wght@0,200..700;1,200..700&display=swap');
+@font-face {
+    font-family: 'agencyfblightregular';
+    src: url('agency_fb_light/agency_fb_light-webfont.woff2') format('woff2'),
+         url('agency_fb_light/agency_fb_light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
