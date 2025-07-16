@@ -1,0 +1,37 @@
+.headerSection {
+    position: static;
+}
+
+.mainContent-container {
+    width: 100%;
+    /* min-width: 768px; */
+    height: calc(100vh - 4em);
+    padding-top: 0em;
+    padding-bottom: 0em;
+}
+.mainContent-container .input_video {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.mainContent-container .input_video.selfie {
+    transform: scale(-1, 1);
+}
+.mainContent-container .input_image {
+    position: absolute;
+}
+
+.camera-content {
+    height: calc(100vh - 4em);
+    background-color: #151515;
+    
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 1500px;
+    flex-wrap: wrap;
+    margin: auto;
+}

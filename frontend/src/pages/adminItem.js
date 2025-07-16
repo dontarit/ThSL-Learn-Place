@@ -50,7 +50,6 @@ export default function AdminPageItems() {
             const linkButtonNavigate = document.createElement('a');
             linkButtonNavigate.href = '/home'
             linkButtonNavigate.click()
-            return
         }
         if (isAdmin) {
             const main = document.querySelector('.mainContent-container')
@@ -58,29 +57,23 @@ export default function AdminPageItems() {
             window.addEventListener('load', () => {
                 main.style.width = `calc(100% - ${side.offsetWidth}px)`
             })
-        } else { return }
-
-        if (id.page == 'create') {
-            import('../css/admin/create.css')
-            const script = [
-                "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js",
-                "https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js",
-                "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js",
-                "https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js"
-            ];
-            script.forEach(srcJs => {
-                const script = document.createElement('script');
-                script.src = srcJs;
-                script.async = true;
-                script.crossOrigin = "anonymous";
-                document.head.appendChild(script);
-            })
-            const main = document.querySelector('.mainContent-container')
-            const side = document.querySelector('.naviSidebar')
-            window.addEventListener('load', () => {
-                main.style.width = `calc(100% - ${side.offsetWidth}px)`
+            if (id.page == 'create') {
+                import('../css/admin/create.css')
+                const script = [
+                    "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js",
+                    "https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js",
+                    "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js",
+                    "https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js"
+                ];
+                script.forEach(srcJs => {
+                    const script = document.createElement('script');
+                    script.src = srcJs;
+                    script.async = true;
+                    script.crossOrigin = "anonymous";
+                    document.head.appendChild(script);
+                })
                 import('../js/admin-create.js')
-            })
+            }
         }
     }, [authToken, isAdmin]);
     

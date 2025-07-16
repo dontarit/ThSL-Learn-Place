@@ -34,9 +34,6 @@ export default function HomePage() {
     checkState()
 
     useEffect(() => {
-        console.log(`no Token : ${!Boolean(authToken)}`);
-        console.log(`is Expired : ${isTokenExpired()}`);
-        
         if (!authToken && isTokenExpired()) {
             refreshToken();
         }

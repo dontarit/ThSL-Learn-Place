@@ -26,7 +26,7 @@ export default function LearnPlace() {
     import('../css/sub/setting_page.css')
     import('../css/sub/waveBtn.css')
     import('../css/sub/alert_box.css')
-
+    
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
 
     const isTokenExpired = () => {
@@ -47,16 +47,12 @@ export default function LearnPlace() {
     };
 
     useEffect(() => {
-        console.log(`no Token : ${!Boolean(authToken)}`);
-        console.log(`is Expired : ${isTokenExpired()}`);
-
         if (!authToken && isTokenExpired()) {
             const linkButtonNavigate = document.createElement('a');
             linkButtonNavigate.href = '/home'
             linkButtonNavigate.click()
             return
         }
-        
         import('../js/app-learnPlace.js')
         comfirmSetting(true)
     }, [authToken]);
@@ -223,6 +219,21 @@ export default function LearnPlace() {
         // time
         timeShow.value = time
     }
+
+    function SpinCheck(elememt) {
+        if (elememt.classList.contains('Spin-n')) {
+            elememt.classList.add('Spin-y')
+            elememt.classList.remove('Spin-n')
+            elememt.style.transform = 'rotate(0deg)'
+            elememt.style.transition = 'transform 500ms'
+        }
+        else if (elememt.classList.contains('Spin-y')) {
+            elememt.classList.add('Spin-n')
+            elememt.classList.remove('Spin-y')
+            elememt.style.transform = 'rotate(360deg)'
+            elememt.style.transition = 'transform 500ms'
+        }
+    }
     
     const [use_hour, setUse_hour] = useState(0)
     const [use_min, setUse_min] = useState(0)
@@ -272,7 +283,9 @@ export default function LearnPlace() {
                         </div>
                     </div>
                 </div>
-                <div className="open-setting me-hed-btn settingIconOpen Spin-n">
+                <div className="open-setting open-setting-to-animate me-hed-btn settingIconOpen Spin-n"
+                    onClick={e => { SpinCheck(e.target) }}
+                >
                     <i className="ph-fill ph-gear-six"></i>
                 </div>
             </div>
@@ -495,7 +508,13 @@ export default function LearnPlace() {
                     <p>Search for a word</p>
                     <i className="ph ph-magnifying-glass"></i>
                 </button>
-                <button className="cameraBoxBtn btnAnimate">
+                <button className="cameraBoxBtn btnAnimate" 
+                    onClick={() => {
+                        const linkButtonNavigate = document.createElement('a');
+                        linkButtonNavigate.href = '/camera'
+                        linkButtonNavigate.click()
+                    }}
+                >
                     <p>Translate with camera</p>
                     <i className="ph-fill ph-camera"></i>
                 </button>

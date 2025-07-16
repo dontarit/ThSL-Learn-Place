@@ -71,6 +71,7 @@ forceCloseMenu.addEventListener('click', () => {
 const searchBtn = document.querySelectorAll('#activateSearch')
 const searchCon = document.querySelector('.search-container')
 const searchInput = document.getElementById('search-box')
+const mainLogo = document.querySelector('.main-logo')
 const headBtn = document.querySelectorAll('.me-hed-btn')
 
 function openSearch() {
@@ -80,6 +81,8 @@ function openSearch() {
             elememt.style.transition = 'opacity 300ms'
             elememt.style.opacity = '0'
         });
+        mainLogo.style.transition = 'opacity 300ms'
+        mainLogo.style.opacity = '0'
     }
     searchCon.inert = false
     searchCon.style.transition = 'ease top 300ms'
@@ -87,13 +90,13 @@ function openSearch() {
     searchInput.focus()
 }
 function closeSearch() {
-    if (window.innerWidth < 768) {
-        headBtn.forEach(element => {
-            element.inert = false
-            element.style.transition = 'opacity 300ms'
-            element.style.opacity = '1'
-        });
-    }
+    headBtn.forEach(element => {
+        element.inert = false
+        element.style.transition = 'opacity 300ms'
+        element.style.opacity = '1'
+    });
+    mainLogo.style.transition = 'opacity 300ms'
+    mainLogo.style.opacity = '1'
     searchCon.inert = true
     searchCon.style.transition = 'ease top 300ms'
     searchCon.style.top = '-50%'
@@ -105,20 +108,6 @@ searchBtn.forEach(element => {
         openSearch()
     })
 });
-
-
-
-// Spin animation, use when open setting page with gear icon
-function SpinCheck(elememt) {
-    if (elememt.classList.contains('Spin-n')) {
-        elememt.classList.remove('Spin-n')
-        elememt.classList.add('Spin-y')
-    }
-    else if (elememt.classList.contains('Spin-y')) {
-        elememt.classList.remove('Spin-y')
-        elememt.classList.add('Spin-n')
-    }
-}
 
 
 
@@ -170,7 +159,6 @@ topSelect.forEach(element => {
 const overlaySettingTime = 250
 openSetting.forEach(element => {
     element.addEventListener('click', () => {
-        SpinCheck(element)
         topSelect[0].click()
         overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
         overlaySetting.style.display = 'block'
