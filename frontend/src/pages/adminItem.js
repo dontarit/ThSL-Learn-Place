@@ -8,10 +8,13 @@ import getBase from '../js/getBase.js'
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPageItems() {
+    const loadCssFiles = async () => {
+        await import('../assets/font/font.css')
+        await import('../css/admin/style.css')
+        await import('../css/admin/side_nav.css')
+    };
+    loadCssFiles();
     getBase()
-    import('../assets/font/font.css')
-    import('../css/admin/style.css')
-    import('../css/admin/side_nav.css')
 
     const id = useParams()
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
@@ -51,29 +54,22 @@ export default function AdminPageItems() {
             linkButtonNavigate.href = '/home'
             linkButtonNavigate.click()
         }
-        if (isAdmin) {
-            const main = document.querySelector('.mainContent-container')
-            const side = document.querySelector('.naviSidebar')
-            window.addEventListener('load', () => {
-                main.style.width = `calc(100% - ${side.offsetWidth}px)`
+        if (id.page == 'create') {
+            import('../css/admin/create.css')
+            const script = [
+                "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js",
+                "https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js",
+                "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js",
+                "https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js"
+            ];
+            script.forEach(srcJs => {
+                const script = document.createElement('script');
+                script.src = srcJs;
+                script.async = true;
+                script.crossOrigin = "anonymous";
+                document.head.appendChild(script);
             })
-            if (id.page == 'create') {
-                import('../css/admin/create.css')
-                const script = [
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js",
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js",
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js",
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js"
-                ];
-                script.forEach(srcJs => {
-                    const script = document.createElement('script');
-                    script.src = srcJs;
-                    script.async = true;
-                    script.crossOrigin = "anonymous";
-                    document.head.appendChild(script);
-                })
-                import('../js/admin-create.js')
-            }
+            import('../js/admin-create.js')
         }
     }, [authToken, isAdmin]);
     

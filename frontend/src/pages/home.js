@@ -9,12 +9,15 @@ import openAlert from '../js/alert-box.js'
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function HomePage() {
+    const loadCssFiles = async () => {
+        await import('../assets/font/font.css');
+        await import('../css/home.css');
+        await import('../css/sub/waveBtn.css');
+        await import('../css/sub/logsignForm.css');
+        await import('../css/sub/alert_box.css');
+    };
+    loadCssFiles();
     getBase()
-    import('../assets/font/font.css')
-    import('../css/home.css')
-    import('../css/sub/waveBtn.css')
-    import('../css/sub/logsignForm.css')
-    import('../css/sub/alert_box.css')
 
     const [name_f, setName] = useState('')
     const [email_f, setEmail] = useState('')

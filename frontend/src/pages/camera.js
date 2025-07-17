@@ -7,11 +7,14 @@ import getBase from '../js/getBase.js'
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function CameraTranslate() {
+    const loadCssFiles = async () => {
+        await import('../assets/font/font.css')
+        await import('../css/learnPlace.css')
+        await import('../css/sub/searchbox.css')
+        await import('../css/sub/alert_box.css')
+    };
+    loadCssFiles();
     getBase()
-    import('../assets/font/font.css')
-    import('../css/learnPlace.css')
-    import('../css/sub/searchbox.css')
-    import('../css/sub/alert_box.css')
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [settingStore, setSettingStore] = useState({

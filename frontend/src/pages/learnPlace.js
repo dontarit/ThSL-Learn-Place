@@ -19,13 +19,16 @@ import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
 export default function LearnPlace() {
+    const loadCssFiles = async () => {
+        await import('../assets/font/font.css')
+        await import('../css/learnPlace.css')
+        await import('../css/sub/searchbox.css')
+        await import('../css/sub/setting_page.css')
+        await import('../css/sub/waveBtn.css')
+        await import('../css/sub/alert_box.css')
+    };
+    loadCssFiles();
     getBase()
-    import('../assets/font/font.css')
-    import('../css/learnPlace.css')
-    import('../css/sub/searchbox.css')
-    import('../css/sub/setting_page.css')
-    import('../css/sub/waveBtn.css')
-    import('../css/sub/alert_box.css')
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
 

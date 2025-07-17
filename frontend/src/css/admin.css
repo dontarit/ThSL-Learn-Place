@@ -8,14 +8,14 @@
     flex-direction: column;
     width: 100%;
     right: 0;
+    width: calc(100% - 270px);
+    padding: 0 2em;
 }
 .mainContent-container section {
-    margin: auto;
-    width: 80%;
+    width: 100%;
 }
 
 .IntroText {
-    /* z-index: 10; */
     padding: 1.6em 0;
     font-size: clamp(.8em, 2vw, 1.2em);
     display: flex;
@@ -51,6 +51,7 @@
     padding: 50px;
     background-color: #212121;
     border-radius: 20px;
+    max-width: 1200px;
 }
 .menuSelect .topic {
     font-size: 32px;

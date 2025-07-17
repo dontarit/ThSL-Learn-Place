@@ -7,11 +7,14 @@ import getBase from '../js/getBase.js'
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPage() {
+    const loadCssFiles = async () => {
+        await import('../css/admin.css')
+        await import('../css/admin/style.css')
+        await import('../assets/font/font.css')
+        await import('../css/admin/side_nav.css')
+    };
+    loadCssFiles();
     getBase()
-    import('../css/admin.css')
-    import('../css/admin/style.css')
-    import('../assets/font/font.css')
-    import('../css/admin/side_nav.css')
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [isAdmin, setIsAdmin] = useState();
@@ -51,14 +54,7 @@ export default function AdminPage() {
             linkButtonNavigate.click()
             return
         }
-        if (isAdmin) {
-            const main = document.querySelector('.mainContent-container')
-            const side = document.querySelector('.naviSidebar')
-            window.addEventListener('load', () => {
-                main.style.width = `calc(100% - ${side.offsetWidth}px)`
-            })
-        } else { return }
-    }, [authToken, isAdmin]);
+    }, [authToken]);
     
     if (!isAdmin) {
         return <NotFoundPage />;

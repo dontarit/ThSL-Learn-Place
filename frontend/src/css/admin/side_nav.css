@@ -39,7 +39,8 @@
     inline-size: var(--expanded);
     left: 0;
     top: 0;
-    width: 500px;
+    width: 250px;
+    background-color: red;
     height: 100vh;
     box-sizing: border-box;
 }
@@ -48,7 +49,7 @@
     background: var(--bg--primary);
     display: flex;
     flex-flow: column;
-    /* min-width: var(--collapsed); */
+    min-width: 100%;
     flex: 0 0 auto;
     transition: flex-basis 300ms ease-out;
     will-change: flex-basis;
