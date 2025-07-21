@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import "aos/dist/aos.css";
-import AOS from "aos";
 import axios from 'axios'
 
 import getBase from '../js/getBase.js'
@@ -52,11 +50,6 @@ export default function HomePage() {
             linkButtonNavigate.click()
             return
         }
-        
-        AOS.init({
-            duration: 800,
-            once: false,
-        });
 
         import('../js/app-home.js')
 
@@ -212,9 +205,9 @@ export default function HomePage() {
         </div>
         <section id="home" className="hero">
             <div className="container">
-                <h2 data-aos="fade-up" data-aos-once="true" data-aos-duration="1200">Welcome to <span className="accent">ThSL learn place</span></h2>
-                <p data-aos="fade-up" data-aos-delay="100" data-aos-once="true" data-aos-duration="1200">A fun, free and awesome way to learn languages!</p>
-                <div className="social" data-aos="fade-up" data-aos-once="true" data-aos-delay="200" data-aos-duration="1200">
+                <h2>Welcome to <span className="accent">ThSL learn place</span></h2>
+                <p>A fun, free and awesome way to learn languages!</p>
+                <div className="social">
                     <i className="ph ph-hand-palm"></i>
                     <i className="ph ph-hand-peace"></i>
                     <i className="ph ph-hand-pointing"></i>
@@ -222,16 +215,16 @@ export default function HomePage() {
                     <i className="ph ph-hands-praying"></i>
                     <i className="ph ph-hand-grabbing"></i>
                 </div>
-                <a className="btn" id='loginClick' data-aos-once="true" data-aos="zoom-in-up" data-aos-delay="300" data-aos-duration="1000">Let's Start</a>
+                <a className="btn" id='loginClick'>Let's Start</a>
             </div>
         </section>
         <div className="sectionAbout" id="about">
             <section className="section aboutSec">
-                <div className="container grid-2" data-aos="fade-left">
+                <div className="container grid-2">
                     <img className='image' src="https://placehold.co/500x500" alt="Profile"/>
                     <div className="text">
-                        <h3 className="whatHead" data-aos="zoom-in-right" data-aos-duration="750">What is this?</h3>
-                        <p className='thaiSpread' data-aos="zoom-in-right" data-aos-duration="800">
+                        <h3 className="whatHead">What is this?</h3>
+                        <p className='thaiSpread'>
                             Thai Sign Language is the primary language for the hearing impaired to communicate in Thailand. However, 
                             Thai society still lacks easily accessible and quality tools for learning and interpreting sign language systematically. 
                             This project aims to develop a platform that uses technology to help reduce the communication gap and increase learning opportunities for everyone in society. 
@@ -258,10 +251,10 @@ export default function HomePage() {
             </section>
             <br></br>
             <section className="section aboutSec">
-                <div className="container grid-2" data-aos="fade-right">
+                <div className="container grid-2">
                     <div className="text">
-                        <h3 className="whatHead" data-aos="zoom-in-right" data-aos-duration="750">About us</h3>
-                        <p className='thaiSpread' data-aos="zoom-in-right" data-aos-duration="800">
+                        <h3 className="whatHead">About us</h3>
+                        <p className='thaiSpread'>
                             We are a group of students from Nongbua Pittayakarn School who have developed this web application to provide a convenient and accessible tool for those interested in learning Thai Sign Language. 
                             It uses motion detection technology through video cameras to translate sign language into text in real-time.
                         </p>
@@ -288,7 +281,7 @@ export default function HomePage() {
         </div>
         <section id="content" className="section dark">
             <div className="container">
-                <h3 className="section-title" data-aos="zoom-in-up" data-aos-once='true'>Why choose us?</h3>
+                <h3 className="section-title">Why choose us?</h3>
                 <div id="project-grid" className="grid-3"></div>
             </div>
         </section>
