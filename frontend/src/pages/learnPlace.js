@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
+import { matchPath, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
-import openAlert from '../js/alert-box.js'
+import lpMain from '../css/learnPlace.module.css'
+import lpSearch from '../css/sub/searchbox.module.css'
+import lpSetting from '../css/sub/setting_page.module.css'
 import getBase from '../js/getBase.js'
+import openAlert from '../js/alert-box.js'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
@@ -19,15 +23,7 @@ import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
 export default function LearnPlace() {
-    const loadCssFiles = async () => {
-        await import('../assets/font/font.css')
-        await import('../css/learnPlace.css')
-        await import('../css/sub/searchbox.css')
-        await import('../css/sub/setting_page.css')
-        await import('../css/sub/waveBtn.css')
-        await import('../css/sub/alert_box.css')
-    };
-    loadCssFiles();
+    const navigate = useNavigate();
     getBase()
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
@@ -51,12 +47,244 @@ export default function LearnPlace() {
 
     useEffect(() => {
         if (!authToken && isTokenExpired()) {
-            const linkButtonNavigate = document.createElement('a');
-            linkButtonNavigate.href = '/home'
-            linkButtonNavigate.click()
+            // const linkButtonNavigate = document.createElement('a');
+            // linkButtonNavigate.href = '/home'
+            // linkButtonNavigate.click()
+            navigate('/home')
             return
         }
-        import('../js/app-learnPlace.js')
+
+        // Button animation on click
+        console.log(document.querySelector(`.${lpMain.btnAnimate}`));
+        const append_btnAnimate = document.querySelectorAll(`.${lpMain.btnAnimate}`)
+        append_btnAnimate.forEach(element => {
+            element.addEventListener('click', () => {
+                element.transition = 'transform 100ms'
+                element.style.transform = 'translateY(-5%) scale(1.02)'
+                setTimeout(() => {
+                    element.style.transform = 'translateY(0%) scale(1)'
+                }, 100);
+            })
+        });
+
+        // Menu toggle button
+        const sideMenu = document.getElementById("sideMenu");
+        const menuBtn = document.getElementById("menuBtn");
+        const menuBtn_out = document.querySelectorAll(`.${lpMain.open_menu} .${lpMain.menu_btn_out}`);
+        const menuBtn_in = document.querySelector(`.${lpMain.open_menu} .${lpMain.menu_btn_in}`)
+        const sideItem = document.querySelectorAll(`.${lpMain.nav_bar} .${lpMain.typeNav} div`)
+
+        function openMenu() {
+            sideMenu.inert = false
+            sideMenu.style.transform = "translateX(0%)";
+            sideMenu.setAttribute("aria-hidden", "false");
+            menuBtn.classList.remove('hdrmnbtn_close')
+            menuBtn.classList.add('hdrmnbtn_open')
+            menuBtn_in.style.transform = 'rotate(90deg)'
+            menuBtn_out.forEach(element => {
+                element.style.opacity = 0
+            });
+            let itemCount = 0
+            sideItem.forEach(element => {
+                setTimeout(() => {
+                    element.style.transform = 'translateX(0%)'
+                }, itemCount);
+                itemCount += 50
+            })
+        }
+        function closeMenu() {
+            sideMenu.inert = true
+            sideMenu.style.transform = "translateX(-100%)";
+            sideMenu.setAttribute("aria-hidden", "true");
+            menuBtn.classList.remove('hdrmnbtn_open')
+            menuBtn.classList.add('hdrmnbtn_close')
+            menuBtn_in.style.transform = 'rotate(0deg)'
+            menuBtn_out.forEach(element => {
+                element.style.opacity = 1
+            });
+            sideItem.forEach(element => {
+                element.style.transform = 'translateX(-50%)'
+            })
+        }
+
+        menuBtn.addEventListener("click", () => {
+            if (sideMenu.getAttribute('aria-hidden') == 'true') {
+                openMenu()
+            }else {
+                closeMenu()
+            }
+        });
+
+        const forceCloseMenu = document.querySelector('.forceCloseMenu')
+        forceCloseMenu.addEventListener('click', () => {
+            closeMenu()
+        })
+
+        // Search button animation
+        const searchBtn = document.querySelectorAll('#activateSearch')
+        const searchCon = document.querySelector(`.${lpMain.search_container}`)
+        const searchInput = document.getElementById('search-box')
+        const mainLogo = document.querySelector(`.${lpMain.main_logo}`)
+        const headBtn = document.querySelectorAll(`.${lpMain.me_hed_btn}`)
+
+        function openSearch() {
+            if (window.innerWidth < 768) {
+                headBtn.forEach(elememt => {
+                    elememt.inert = true
+                    elememt.style.transition = 'opacity 300ms'
+                    elememt.style.opacity = '0'
+                });
+                mainLogo.style.transition = 'opacity 300ms'
+                mainLogo.style.opacity = '0'
+            }
+            searchCon.inert = false
+            searchCon.style.transition = 'ease top 300ms'
+            searchCon.style.top = '50%'
+            searchInput.focus()
+        }
+        function closeSearch() {
+            headBtn.forEach(element => {
+                element.inert = false
+                element.style.transition = 'opacity 300ms'
+                element.style.opacity = '1'
+            });
+            mainLogo.style.transition = 'opacity 300ms'
+            mainLogo.style.opacity = '1'
+            searchCon.inert = true
+            searchCon.style.transition = 'ease top 300ms'
+            searchCon.style.top = '-50%'
+            searchInput.value = ''
+        }
+
+        searchBtn.forEach(element => {
+            element.addEventListener('click', () => {
+                openSearch()
+            })
+        });
+
+        // Change setting option
+        const settingBody = document.querySelector(`.${lpMain.setting_container}`)
+        const openSetting = document.querySelectorAll(`.${lpMain.open_setting}`)
+        const overlaySetting = document.getElementById('overlay-setting-container')
+        const closeStBtn = document.querySelector(`.${lpMain.setting_container} .${lpMain.con_out} .ph-x`)
+        const quesStBtn = document.querySelector(`.${lpMain.setting_container} .${lpMain.con_out} .ph-question-mark`)
+
+        const slideContent = document.querySelector(`.${lpMain.conFor_mainCon}`)
+        const contentOption = document.querySelectorAll(`.${lpMain.main_content}`)
+        const topSelect = document.querySelectorAll(`.${lpMain.topSelect} p`)
+
+        let option_numberID = ""
+        let option_Value = '0'
+
+        topSelect.forEach(element => {
+            element.addEventListener('click', () => {
+                option_numberID = element.id
+                let option_Value = parseInt(option_numberID.match(/\d+/)[0])
+                slideContent.style.transform = `translateX(${option_Value * -100}%)`
+                topSelect.forEach(inner => {
+                    inner.classList.add('set-at-sub')
+                    inner.classList.remove('set-at-main')
+                })
+
+                topSelect[option_Value].classList.add('set-at-main')
+                topSelect[option_Value].classList.remove('set-at-sub')
+                if (option_Value == 0) {
+                    contentOption[option_Value].style.opacity = '1'
+                    contentOption[option_Value + 1].style.opacity = '0'
+                }
+                else if (option_Value + 1 == topSelect.length) {
+                    contentOption[option_Value].style.opacity = '1'
+                    contentOption[option_Value - 1].style.opacity = '0'
+                }
+                else {
+                    contentOption[option_Value].style.opacity = '1'
+                    contentOption[option_Value + 1].style.opacity = '0'
+                    contentOption[option_Value - 1].style.opacity = '0'
+                }
+            })
+        });
+
+        // Open and Close setting
+        const overlaySettingTime = 250
+        openSetting.forEach(element => {
+            element.addEventListener('click', () => {
+                topSelect[0].click()
+                overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
+                overlaySetting.style.display = 'block'
+                setTimeout(() => {
+                    overlaySetting.style.opacity = '1'
+                }, overlaySettingTime);
+                settingBody.classList.remove('setting-container-close')
+                settingBody.classList.add('setting-container-open')
+                settingBody.inert = false
+            })
+        });
+
+        function closeSettingFunc() {
+            overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
+            overlaySetting.style.opacity = '0'
+            setTimeout(() => {
+                overlaySetting.style.display = 'none'
+            }, overlaySettingTime);
+            settingBody.classList.remove('setting-container-open')
+            settingBody.classList.add('setting-container-close')
+            settingBody.inert = true
+        }
+
+        const advanceSetting = document.getElementById('advance_setting')
+        const submitSetting = document.getElementById('submit_setting')
+        const closeSetting = document.querySelectorAll(`.closeSetting`)
+
+        closeSetting.forEach(element => {
+            element.addEventListener('click', () => {
+                closeSettingFunc()
+            })
+        });
+
+        // // Window event
+        // window.addEventListener("keydown", (e) => {
+        //     if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
+        //         closeMenu()   
+        //     }
+        //     if (e.key === "Escape" && settingBody.getAttribute('aria-hidden') == 'false') {
+        //         closeSettingFunc()
+        //     }
+        // });
+        // window.addEventListener("click", (e) => {
+        //     if (
+        //         sideMenu.getAttribute('aria-hidden') == 'false' &&
+        //         !sideMenu.contains(e.target) &&
+        //         e.target !== menuBtn
+        //     ) {
+        //         closeMenu();
+        //     }
+        //     if (!searchCon.contains(e.target) && e.target.id !== 'activateSearch') {
+        //         closeSearch();
+        //     }
+        // });
+        // window.addEventListener('scroll', () => {
+        //     if (sideMenu.ariaHidden == 'false') {
+        //         closeMenu()
+        //     }
+        // })
+        // window.addEventListener('load', () => {
+        //     document.body.style.transition = 'background-color 500ms ease-in-out';
+        //     document.querySelector('.headerSection').style.transition = '500ms ease-in-out';
+        //     document.getElementById('sideMenu').style.transition = 'transform 300ms';
+            
+        //     const transitions = [
+        //         { selector: '.tableColumn span', style: 'scale 1s' },
+        //         { selector: '.tableColumn i', style: 'opacity 1s' },
+        //         { selector: '.open-menu .menu-btn-out', style: '500ms' },
+        //         { selector: '.open-menu .menu-btn-in', style: '500ms' }
+        //     ];
+
+        //     transitions.forEach(({ selector, style }) => {
+        //         document.querySelectorAll(selector).forEach(element => {
+        //             element.style.transition = style;
+        //         });
+        //     });
+        // });
         comfirmSetting(true)
     }, [authToken]);
 
@@ -69,9 +297,10 @@ export default function LearnPlace() {
         await axios.post('/logoutServer')
             .then(res => {
                 if (authToken && isTokenExpired()) {
-                    const linkButtonNavigate = document.createElement('a');
-                    linkButtonNavigate.href = '/home'
-                    linkButtonNavigate.click()
+                    // const linkButtonNavigate = document.createElement('a');
+                    // linkButtonNavigate.href = '/home'
+                    // linkButtonNavigate.click()
+                    navigate('/home')
                     return
                 }
                 openAlert(res.data.theme, res.data.title, res.data.content)
@@ -148,7 +377,7 @@ export default function LearnPlace() {
     })
     
     function changeStrTable(row, col) {
-        const tableStr = document.querySelector('.showTableStr')
+        const tableStr = document.querySelector(`.${lpMain.showTableStr}`)
         tableStr.innerHTML = ''
         for (let i = 1; i <= row; i++) {
             let theRow = document.createElement('div')
@@ -172,12 +401,12 @@ export default function LearnPlace() {
             }
             tableStr.appendChild(theRow)
         }
-        document.querySelector('.tableColumn').style.width = 'calc(50% / (7 / 1.5))'
+        document.querySelector(`.${lpMain.tableColumn}`).style.width = 'calc(50% / (7 / 1.5))'
     }
     function disableStreak(disable) {
         let time = 500
-        const main = document.querySelector('.mainContent-container')
-        const schedule = document.querySelector('.schedule')
+        const main = document.querySelector(`.${lpMain.mainContent_container}`)
+        const schedule = document.querySelector(`.${lpMain.schedule}`)
         main.style.transition = `${time}ms`
         schedule.style.transition = `${time}ms`
         if (disable) {
@@ -191,7 +420,7 @@ export default function LearnPlace() {
     function checkTheme(theme) {
         const validThemes = ['light', 'dark', 'ocean'];
         if (validThemes.includes(theme)) {
-            document.querySelector('body').setAttribute('data-theme', theme);
+            document.querySelector(`.${lpMain.body}`).setAttribute('data-theme', theme);
         }
     }
 
@@ -249,53 +478,53 @@ export default function LearnPlace() {
 
 
     return (
-        <>
-        <header className='headerSection'>
-            <div className="con-header">
-                <div className="open-menu me-hed-btn" id="menuBtn">
-                        <span className="menu-btn-out"></span>
-                        <div className="menu-btn-gruop">
-                            <span className="menu-btn-in"></span>
-                            <span className="menu-btn-in"></span>
+        <div className={lpMain.body}>
+        <header className={lpMain.headerSection}>
+            <div className={lpMain.con_header}>
+                <div className={`${lpMain.open_menu} ${lpMain.me_hed_btn}`} id="menuBtn">
+                        <span className={lpMain.menu_btn_out}></span>
+                        <div className={lpMain.menu_btn_gruop}>
+                            <span className={lpMain.menu_btn_in}></span>
+                            <span className={lpMain.menu_btn_in}></span>
                         </div>
-                        <span className="menu-btn-out"></span>
+                        <span className={lpMain.menu_btn_out}></span>
                 </div>
-                <div className="main-logo">
-                    <img src={TSLlogo} alt='logo'/>
+                <div className={lpMain.main_logo}>
+                    <img src={lpMain.TSLlogo} alt='logo'/>
                 </div>
-                <div className="search-container" inert>
+                <div className={lpMain.search_container} inert>
                     <div>
-                        <form className="input-place" onSubmit={handleSearch}>
-                            <button className="sideSearchSend" type='submit'>
+                        <form className={lpMain.input_place} onSubmit={handleSearch}>
+                            <button className={lpMain.sideSearchSend} type='submit'>
                                 <i className="ph ph-magnifying-glass"></i>
                             </button>
-                            <input type="text" name="word" id="search-box" autoComplete="off" 
+                            <input type="text" name="word" id="search-box" className={lpMain.search_box} autoComplete="off" 
                                 onChange={e => {typingSearch(e.target.value)}}
                             />
                         </form>
-                        <div className="free-option">
-                            <div className="clipboard">
+                        <div className={lpMain.free_option}>
+                            <div className={lpMain.clipboard}>
                                 <i className="ph ph-clipboard"></i>
                             </div>
-                            <div className="history">
+                            <div className={lpMain.history}>
                                 <i className="ph ph-clock-counter-clockwise"></i>
                             </div>
-                            <div className="question">
+                            <div className={lpMain.question}>
                                 <i className="ph ph-question"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="open-setting open-setting-to-animate me-hed-btn settingIconOpen Spin-n"
+                <div className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} ${lpMain.me_hed_btn} ${lpMain.settingIconOpen} ${lpMain.Spin_n}`}
                     onClick={e => { SpinCheck(e.target) }}
                 >
                     <i className="ph-fill ph-gear-six"></i>
                 </div>
             </div>
         </header>
-        <div className="search-result" style={{display: 'none'}}>
-            <div className="history-list">
-                <div className="word-container">
+        <div className={lpMain.search_result} style={{display: 'none'}}>
+            <div className={lpMain.history_list}>
+                <div className={lpMain.word_container}>
                     <div>
                         <p>Hello</p>
                     </div>
@@ -304,7 +533,7 @@ export default function LearnPlace() {
                         <p id="group">3</p> 
                     </div>
                 </div>
-                <div className="word-container">
+                <div className={lpMain.word_container}>
                     <div>
                         <p>Hello</p>
                     </div>
@@ -313,16 +542,7 @@ export default function LearnPlace() {
                         <p id="group">3</p> 
                     </div>
                 </div>
-                <div className="word-container">
-                    <div>
-                        <p>Hello</p>
-                    </div>
-                    <div>
-                        <p id="meaning">The way to greeting</p>
-                        <p id="group">3</p> 
-                    </div>
-                </div>
-                <div className="word-container">
+                <div className={lpMain.word_container}>
                     <div>
                         <p>Hello</p>
                     </div>
@@ -332,129 +552,122 @@ export default function LearnPlace() {
                     </div>
                 </div>
             </div>
-            <div className="search-list"></div>
+            {/* <div className="search-list"></div> */}
         </div>
-        <nav id="sideMenu" aria-hidden="true" role="navigation" aria-label="Side menu" inert>
-            <div className="user-info">
-                <div className="user-container">
-                    <div className="user">
-                        <div className="avatar">
+        <nav id="sideMenu" className={lpMain.sideMenu} aria-hidden="true" role="navigation" aria-label="Side menu" inert>
+            <div className={lpMain.user_info}>
+                <div className={lpMain.user_container}>
+                    <div className={lpMain.user}>
+                        <div className={lpMain.avatar}>
                             <img src={blankProfile} alt='blank profile'/>
                         </div>
-                        <div className="name-usetime">
-                            <div className="not-signin" style={{display: 'none'}}>
-                                <p>Haven't signed in yet?</p>
-                                <button className="sign-button .sign-button-hover" role="button">
-                                    <span id="navHead-txt">Sign In</span>
-                                    <div className="liquid"></div>
-                                </button>
-                            </div>
-                            <div className="already-signin">
-                                <p id="navHead-txt" title='Hello'>{localStorage.getItem('name')}</p>
-                                <div id="usetime" className='make_text_gap'>
+                        <div className={lpMain.name_usetime}>
+                            <div className={lpMain.already_signin}>
+                                <p id="navHead_txt" className={lpMain.navHead_txt} title='Hello'>{localStorage.getItem('name')}</p>
+                                <div id="usetime" className={`${lpMain.make_text_gap} ${lpMain.usetime}`}>
                                     <span>Time usage</span>
-                                    <span className='usage-number'>0</span>
+                                    <span className={lpMain.usage_number}>0</span>
                                     <span>h</span>
-                                    <span className='usage-number'>0</span>
+                                    <span className={lpMain.usage_number}>0</span>
                                     <span>m</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="stars">
-                        <div className="newStar learn-star">
+                    <div className={lpMain.stars}>
+                        <div className={`${lpMain.newStar} ${lpMain.learn_star}`}>
                             <img src={newStar}/>
                             <p id="newSP">0</p>
                         </div>
-                        <div className="littleStar learn-star">
+                        <div className={`${lpMain.littleStar} ${lpMain.learn_star}`}>
                             <img src={littleStar}/>
                             <p id="littleSP">0</p>
                         </div>
-                        <div className="fullStar learn-star">
+                        <div className={`${lpMain.fullStar} ${lpMain.learn_star}`}>
                             <img src={fullStar}/>
                             <p id="fullSP">0</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="nav-bar">
-                <div className="first-nav typeNav">
-                    <div className="searchBtn iconBtn forceCloseMenu" id="activateSearch">
+            <div className={lpMain.nav_bar}>
+                <div className={`${lpMain.first_nav} ${lpMain.typeNav}`}>
+                    <div className={`${lpMain.searchBtn} ${lpMain.iconBtn} ${lpMain.forceCloseMenu} ${lpMain.activateSearch}`} id="activateSearch">
                         <img src={searchBtn}/>
                         <p>Search</p>
                     </div>
-                    <div className="favBtn iconBtn btnAnimate">
+                    <div className={`${lpMain.favBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`}>
                         <img src={favBtn}/>
                         <p>Favorite</p>
                     </div>
                 </div>
-                <div className="second-nav typeNav">
-                    <div className="positionBtn iconBtn btnAnimate">
+                <div className={`${lpMain.second_nav} ${lpMain.typeNav}`}>
+                    <div className={`${lpMain.positionBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`}>
                         <img src={handPosBtn}/>
                         <p>Hand Position</p>
                     </div>
-                    <div className="shapeBtn iconBtn btnAnimate">
+                    <div className={`${lpMain.shapeBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`}>
                         <img src={handShapeBtn}/>
                         <p>Hand Shape</p>
                     </div>
-                    <div className="turningBtn iconBtn btnAnimate">
+                    <div className={`${lpMain.turningBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`}>
                         <img src={palmTurnBtn}/>
                         <p>Palm Turning</p>
                     </div>
                 </div>
-                <div className="third-nav typeNav">
-                    <div className="settingBtn iconBtn forceCloseMenu open-setting">
+                <div className={`${lpMain.third_nav} ${lpMain.typeNav}`}>
+                    <div className={`${lpMain.settingBtn} ${lpMain.iconBtn} ${lpMain.forceCloseMenu} ${lpMain.open_setting}`}>
                         <img src={settingBtn}/>
                         <p>Setting</p>
                     </div>
-                    <div className="daynightBtn iconBtn btnAnimate" id='logoutBtnFnc' onClick={handleLogout}>
+                    <div className={`${lpMain.daynightBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`} id='logoutBtnFnc' onClick={handleLogout}>
                         <img src={logoutBtn}/>
                         <p>Logout</p>
                     </div>
                 </div>
             </div>
         </nav>
-        <div className="mainContent-container">
-            <section className="schedule">
-                <div className="tell-streak">
-                    <div className="streak-container stnow">
+        <div className={lpMain.mainContent_container}>
+            <section className={lpMain.schedule}>
+                <div className={lpMain.tell_streak}>
+                    <div className={`${lpMain.streak_container} ${lpMain.stnow}`}>
                         <p>Current streak</p>
-                        <p id="dayStr" className='make_text_gap'>
+                        <p id="dayStr" className={lpMain.make_text_gap}>
                             <span>2</span>
                             <span>DAY</span>
                         </p>
                     </div>
-                    <div className="streak-container stbest">
+                    <div className={`${lpMain.streak_container} ${lpMain.stbest}`}>
                         <p>Best streak</p>
-                        <p id="bestStr" className='make_text_gap'>
+                        <p id="bestStr" className={lpMain.make_text_gap}>
                             <span>16</span>
                             <span>DAY</span>
                         </p>
                     </div>
                 </div>
-                <div className="showTableStr"></div>
-                <div className="tell-history">
+                <div className={lpMain.showTableStr}></div>
+                <div className={lpMain.tell_history}>
                     <p id="last-use">21/5/2025</p>
                     <p id="study-time">No History</p>
                 </div>
             </section>
-            <section className="lvl-review">
-                <div className="charecter-box">
+            <section className={lpMain.lvl_review}>
+                <div className={lpMain.charecter_box}>
                     <img src={mascot}/>
-                    <div className="textBox">
-                        <div className="box1">
+                    <div className={lpMain.textBox}>
+                        <div className={lpMain.box1}>
                             <div>
                                 <span>You are currently studying</span>
                             </div>
-                            <div className='make_text_gap'>
-                                <span id='txthilig'>134</span>
+                            <div className={lpMain.make_text_gap}>
+                                <span className={lpMain.txthilig} id='txthilig'>134</span>
                                 <span>Thai Sign word.</span>
                             </div>
                         </div>
-                        <div className="box2">
-                            <div className='make_text_gap'>
+                        <div className={lpMain.box2}>
+                            <div className={lpMain.make_text_gap}>
                                 <span>Now you have</span>
-                                <span id='txthilig'>10</span>
+                                <span className={lpMain.txthilig} id='txthilig'>10</span>
                                 <span>word</span>
                             </div>
                             <div>
@@ -463,66 +676,64 @@ export default function LearnPlace() {
                         </div>
                     </div>
                 </div>
-                <div className="level-show">
-                    <div className="level-current">
-                        <p className='make_text_gap'>
+                <div className={lpMain.level_show}>
+                    <div className={lpMain.level_current}>
+                        <p className={lpMain.make_text_gap}>
                             <span>Level</span>
-                            <span id='levamt'>3-8</span>
+                            <span className={lpMain.levamt} id='levamt'>3-8</span>
                         </p>
-                        <p className='make_text_gap'>
+                        <p className={lpMain.make_text_gap}>
                             <span>Next Level</span>
-                            <span id='levamt'>144</span>
+                            <span className={lpMain.levamt} id='levamt'>144</span>
                             <span>XP</span>
                         </p>
                     </div>
-                    <progress id="UserLvl" value="32" max="100"></progress>
+                    <progress className={lpMain.UserLvl} id="UserLvl" value="32" max="100"></progress>
                 </div>
-                <div className="progress-word">
-                    <div className="progress-0">
+                <div className={lpMain.progress_word}>
+                    <div className={lpMain.progress_0}>
                         <p id="wordNumber">10</p>
                         <p>0% - 24%</p>
                     </div>
-                    <div className="progress-1">
+                    <div className={lpMain.progress_1}>
                         <p id="wordNumber">10</p>
                         <p>25% - 49%</p>
                     </div>
-                    <div className="progress-2">
+                    <div className={lpMain.progress_2}>
                         <p id="wordNumber">10</p>
                         <p>50% - 74%</p>
                     </div>
-                    <div className="progress-3">
+                    <div className={lpMain.progress_3}>
                         <p id="wordNumber">10</p>
                         <p>75% - 99%</p>
                     </div>
-                    <div className="progress-4">
+                    <div className={lpMain.progress_4}>
                         <p id="wordNumber">10</p>
                         <p><span>---</span>100%<span>---</span></p>
                     </div>
                 </div>
-                <div className="revBtn_container">
-                    <button id="reviewBtn" className="btnAnimate">
+                <div className={lpMain.revBtn_container}>
+                    <button id="reviewBtn" className={`${lpMain.btnAnimate} ${lpMain.reviewBtn}`}>
                         <span>START REVIEW</span>
                         <span>(10)</span>
                     </button>
                 </div>
             </section>
-            <section className="Cam-Search">
-                <button className="searchBoxBtn search-animate btnAnimate" id="activateSearch">
+            <section className={lpMain.Cam_Search}>
+                <button className={`${lpMain.searchBoxBtn} ${lpMain.search_animate} ${lpMain.btnAnimate} ${lpMain.activateSearch}`} id="activateSearch">
                     <p>Search for a word</p>
                     <i className="ph ph-magnifying-glass"></i>
                 </button>
-                <button className="cameraBoxBtn btnAnimate" 
+                <button className={`${lpMain.cameraBoxBtn} ${lpMain.btnAnimate}`}
                     onClick={() => {
-                        const linkButtonNavigate = document.createElement('a');
-                        linkButtonNavigate.href = '/camera'
-                        linkButtonNavigate.click()
+                        navigate('/camera')
                     }}
                 >
                     <p>Translate with camera</p>
                     <i className="ph-fill ph-camera"></i>
                 </button>
             </section>
-            <section className="To-Signin">
+            {/* <section className="To-Signin">
                 <div className="Backup-info">
                     <p>Backup Info</p>
                     <div>
@@ -534,30 +745,30 @@ export default function LearnPlace() {
                     <span>Sign In</span>
                     <div className="liquid"></div>
                 </button>
-            </section>
+            </section> */}
         </div>
-        <div className="setting-container">
-            <div className="con-out">
+        <div className={lpSetting.setting_container}>
+            <div className={lpSetting.con_out}>
                 <p>Setting</p>
                 <div>
                     <i className="ph ph-question-mark"></i>
                     <i className="ph ph-x closeSetting"></i>
                 </div>
             </div>
-            <div className="con-in">
-                <div className="topSelect">
-                    <p id="stcon-topic-0" className="set-at-main">Main</p>
-                    <p id="stcon-topic-1" className="set-at-sub">Profile</p>
+            <div className={lpSetting.con_in}>
+                <div className={lpSetting.topSelect}>
+                    <p id="stcon-topic-0" className={lpSetting.set_at_main}>Main</p>
+                    <p id="stcon-topic-1" className={lpSetting.set_at_sub}>Profile</p>
                 </div>
-                <div className="conFor-mainCon">
-                    <div className="main main-content">
+                <div className={lpSetting.conFor_mainCon}>
+                    <div className={`${lpSetting.main} ${lpSetting.main_content}`}>
                         <section>
-                            <div className="head-group">
-                                <p className="head">Lession</p>
-                                <span className="head-break"></span>
+                            <div className={lpSetting.head_group}>
+                                <p className={lpSetting.head}>Lession</p>
+                                <span className={lpSetting.head_break}></span>
                             </div>
-                            <div className="content">
-                                <div className="sub-con valueInsert">
+                            <div className={lpSetting.content}>
+                                <div className={`${lpSetting.sub_con} ${lpSetting.valueInsert}`}>
                                     <p title='Study history'>Study History</p>
                                     <input name="history-show" id="history-show" type="number" placeholder="4 week" autoComplete='off'
                                         onBlur={(e) => {
@@ -592,7 +803,7 @@ export default function LearnPlace() {
                                         }}
                                     />
                                 </div>
-                                <div className="sub-con valueInsert">
+                                <div className={`${lpSetting.sub_con} ${lpSetting.valueInsert}`}>
                                     <p title='Show streak'>Show Streak</p>
                                     <input name="streak-show" id="streak-show" type="checkbox"
                                         onClick={(e) => {
@@ -606,7 +817,7 @@ export default function LearnPlace() {
                                         }}
                                     />
                                 </div>
-                                <div className="sub-con">
+                                <div className={lpSetting.sub_con}>
                                     <p title='Theme set'>Theme Set</p>
                                     <select name="theme" id="theme-show" defaultValue="light"
                                         onChange={(e) => {
@@ -630,12 +841,12 @@ export default function LearnPlace() {
                             </div>
                         </section>
                         <section>
-                            <div className="head-group">
-                                <p className="head">User Interface</p>
-                                <span className="head-break"></span>
+                            <div className={lpSetting.head_group}>
+                                <p className={lpSetting.head}>User Interface</p>
+                                <span className={lpSetting.head_break}></span>
                             </div>
-                            <div className="content">
-                                <div className="sub-con valueInsert">
+                            <div className={lpSetting.content}>
+                                <div className={`${lpSetting.sub_con} ${lpSetting.valueInsert}`}>
                                     <p title='Daily Goals'>Daily Goals</p>
                                     <input name="time-show" id="time-show" type="time" defaultValue='00:10' 
                                         onChange={(e) => {
@@ -652,46 +863,46 @@ export default function LearnPlace() {
                             </div>
                         </section>
                     </div>
-                    <div className="profile main-content">
+                    <div className={`${lpSetting.profile} ${lpSetting.main_content}`}>
                         <section>
-                            <div className="head-group">
-                                <p className="head">Information</p>
-                                <span className="head-break"></span>
+                            <div className={lpSetting.head_group}>
+                                <p className={lpSetting.head}>Information</p>
+                                <span className={lpSetting.head_break}></span>
                             </div>
-                            <div className="content">
-                                <div className="sub-con avata_setting">
+                            <div className={lpSetting.content}>
+                                <div className={`${sub_con} ${avata_setting}`}>
                                     <img src={blankProfile} alt='blank profile'/>
-                                    <div className='sub-upper'>
+                                    <div className={lpSetting.sub_upper}>
                                         <p>Name</p>
                                         <div>
                                             <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
-                                            <i className="ph ph-pencil-simple field-icon"></i>
+                                            <i className={`ph ph-pencil-simple ${lpSettingfield_icon}`}></i>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="sub-con" style={{justifyContent: 'center'}}>
-                                    <div className='sub-upper'>
+                                <div className={lpSetting.field_icon} style={{justifyContent: 'center'}}>
+                                    <div className='sub_upper'>
                                         <p title='Email'>Email</p>
                                         <input type="text" placeholder='name@email.com' defaultValue={localStorage.getItem('email')} style={{minWidth: '100%'}} inert/>
                                     </div>
-                                    <div className='sub-upper valueInsert'>
+                                    <div className='sub_upper valueInsert'>
                                         <p title='Password'>Password</p>
-                                        <div className="form-group">
-                                            <div className="col-md-6">
-                                                <input id="password-field" type="password" className="form-control" defaultValue="........" name="password" style={{minWidth: '100%'}} inert/>
+                                        <div className="form_group">
+                                            <div className="col_md_6">
+                                                <input id="password-field" type="password" className="form_control" defaultValue="........" name="password" style={{minWidth: '100%'}} inert/>
                                                 {/* <button toggle="#password-field" id='toggle-password' className="ph ph-eye field-icon"></button> */}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="sub-con pswdChange">
+                                <div className="sub_con pswdChange">
                                     <input id="changepswd_setting" type="button" defaultValue="Change password"/>
                                 </div>
                             </div>
                         </section>
                     </div>
                 </div>
-                <div className="bottom-deck">
+                <div className="bottom_deck">
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
                     <div className="inner">
                         <input id="submit_setting" type="button" defaultValue="Ok" className='closeSetting' onClick={() => {comfirmSetting(true)}}/>
@@ -700,7 +911,7 @@ export default function LearnPlace() {
                 </div>
             </div>
         </div>
-        <div id="overlay-setting-container"></div>
-        </>
+        <div id="overlay-setting-container" className='overlay_setting_container'></div>
+        </div>
     );
 }

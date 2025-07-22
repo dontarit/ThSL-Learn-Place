@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom/client';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 
 import './app.css';
+import './assets/font/font.css'
+import './css/sub/alert_box.css'
+
 import NotFoundPage from './pages/notfound.js';
 import HomePage from './pages/home.js';
 import LearnPlace from './pages/learnPlace.js';
@@ -26,9 +29,9 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-    // <React.StrictMode>
-    //     <RouterProvider router={router}/>
-    // </React.StrictMode>
-    <RouterProvider router={router}/>
+    <React.StrictMode>
+        <RouterProvider router={router}/>
+    </React.StrictMode>
+    // <RouterProvider router={router}/>
 );
 reportWebVitals();

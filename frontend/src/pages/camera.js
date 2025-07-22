@@ -8,10 +8,10 @@ import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function CameraTranslate() {
     const loadCssFiles = async () => {
-        await import('../assets/font/font.css')
-        await import('../css/learnPlace.css')
-        await import('../css/sub/searchbox.css')
-        await import('../css/sub/alert_box.css')
+        // await import('../assets/font/font.css')
+        // await import('../css/learnPlace.css')
+        // await import('../css/sub/searchbox.css')
+        // await import('../css/sub/alert_box.css')
     };
     loadCssFiles();
     getBase()

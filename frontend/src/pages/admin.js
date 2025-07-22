@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
 import NotFoundPage from '../pages/notfound.js';
@@ -7,6 +8,7 @@ import getBase from '../js/getBase.js'
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPage() {
+    const navigate = useNavigate();
     const loadCssFiles = async () => {
         await import('../css/admin.css')
         await import('../css/admin/style.css')
@@ -49,9 +51,10 @@ export default function AdminPage() {
     
     useEffect(() => {
         if (!authToken && isTokenExpired()) {
-            const linkButtonNavigate = document.createElement('a');
-            linkButtonNavigate.href = '/home'
-            linkButtonNavigate.click()
+            // const linkButtonNavigate = document.createElement('a');
+            // linkButtonNavigate.href = '/home'
+            // linkButtonNavigate.click()
+            navigate('/home')
             return
         }
     }, [authToken]);
@@ -69,9 +72,10 @@ export default function AdminPage() {
         await axios.post('/logoutServer')
             .then(res => {
                 if (authToken && isTokenExpired()) {
-                    const linkButtonNavigate = document.createElement('a');
-                    linkButtonNavigate.href = '/home'
-                    linkButtonNavigate.click()
+                    // const linkButtonNavigate = document.createElement('a');
+                    // linkButtonNavigate.href = '/home'
+                    // linkButtonNavigate.click()
+                    navigate('/home')
                     return
                 }
             })

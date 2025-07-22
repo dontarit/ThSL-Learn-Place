@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 
 import NotFoundPage from '../pages/notfound.js';
@@ -8,6 +8,7 @@ import getBase from '../js/getBase.js'
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPageItems() {
+    const navigate = useNavigate();
     const loadCssFiles = async () => {
         await import('../assets/font/font.css')
         await import('../css/admin/style.css')
@@ -50,9 +51,10 @@ export default function AdminPageItems() {
     
     useEffect(() => {
         if (!authToken && isTokenExpired()) {
-            const linkButtonNavigate = document.createElement('a');
-            linkButtonNavigate.href = '/home'
-            linkButtonNavigate.click()
+            // const linkButtonNavigate = document.createElement('a');
+            // linkButtonNavigate.href = '/home'
+            // linkButtonNavigate.click()
+            navigate('/home')
         }
         if (id.page == 'create') {
             import('../css/admin/create.css')
@@ -86,9 +88,10 @@ export default function AdminPageItems() {
         await axios.post('/logoutServer')
             .then(res => {
                 if (authToken && isTokenExpired()) {
-                    const linkButtonNavigate = document.createElement('a');
-                    linkButtonNavigate.href = '/home'
-                    linkButtonNavigate.click()
+                    // const linkButtonNavigate = document.createElement('a');
+                    // linkButtonNavigate.href = '/home'
+                    // linkButtonNavigate.click()
+                    navigate('/home')
                     return
                 }
             })

@@ -6,6 +6,8 @@ const crypto = require('crypto')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const puppeteer = require('puppeteer')
+const https = require('https');
+const fs = require('fs');
 
 // const port = process.env.PORT || 5000
 const port = 5000
@@ -13,6 +15,10 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors())
+
+const privateKey = fs.readFileSync('../mysite.key', 'utf8');
+const certificate = fs.readFileSync('../mysite.crt', 'utf8');
+const credentials = { key: privateKey, cert: certificate};
 
 const ACCESS_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
 const REFRESH_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
@@ -194,6 +200,9 @@ app.post('/learnServer', async (req, res) => {
     await browser.close()
 })
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`)
-})
+app.get('/', (req, res) => {
+    res.send('Hello HTTPS');
+});
+https.createServer(credentials, app).listen(port, () => {
+    console.log(`Server running on https://localhost:${port}`);
+});

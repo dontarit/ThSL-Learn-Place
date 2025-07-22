@@ -1,0 +1,131 @@
+.mainForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 500px;
+    overflow: hidden;
+    display: none;
+    opacity: 0;
+    font-family: 'Jost', sans-serif;
+    background:
+        linear-gradient(-90deg, rgba(194, 194, 194, 0.063) 1px, transparent 1px),
+        linear-gradient(rgba(194, 194, 194, 0.063) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-color: #292929;
+    backdrop-filter: blur(25px);
+    border-radius: 10px;
+    box-shadow: 5px 20px 50px #000;
+    user-select: none;
+    z-index: 3;
+    transition: all 250ms;
+}
+
+.overlay_setting_container {
+    display: none;
+    position: fixed;
+    opacity: 0;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(41, 41, 41, .3);
+    transition: opacity 100ms;
+    z-index: 2;
+}
+
+.chkFormSec {
+  display: none !important;
+}
+
+.signup {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.logsign_container {
+  display: grid;
+  gap: 1rem;
+  max-width: 600px;
+  margin: auto;
+}
+
+.handler {
+  min-width: 100%;
+  color: #fff;
+  font-size: 2.3em;
+  justify-content: center;
+  display: flex;
+  margin-top: 32px;
+  font-weight: bold;
+  text-align: center;
+  text-wrap: nowrap;
+  overflow-wrap: break-word;
+  cursor: pointer;
+  transition: .5s ease-in-out;
+}
+
+.inputform {
+  width: 60%;
+  height: 10px;
+  background: #e0dede;
+  font-family: 'Jost', sans-serif;
+  justify-content: center;
+  font-size: 1em;
+  display: flex;
+  margin: 16px auto;
+  padding: 16px;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+}
+
+
+.btnform {
+  width: 60%;
+  height: 40px;
+  margin: 10px auto;
+  justify-content: center;
+  display: block;
+  color: #fff;
+  background: #6e4adb;
+  font-size: 1em;
+  font-weight: bold;
+  margin-top: 30px;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  transition: .2s ease-in;
+  cursor: pointer;
+}
+
+.btnform:hover {
+  background: rgb(82, 34, 170);
+}
+
+.login {
+    height: 460px;
+    background-color: #a0aacf;
+    border-radius: 80% / 10%;
+    height: 100%;
+    transform: translateY(-106px);
+    transition: .6s ease-in-out;
+}
+
+.login .handler {
+    color: #573b8a;
+    transform: scale(.6);
+}
+
+.chkFormSec:checked ~ .login {
+  transform: translateY(-400px);
+}
+
+.chkFormSec:checked ~ .login .handler {
+  transform: scale(1);
+}
+
+.chkFormSec:checked ~ .signup .handler {
+  transform: scale(.6);
+}

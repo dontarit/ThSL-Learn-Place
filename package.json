@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd backend && npm start",
-    "client": "cd frontend && npm start"
+    "server": "cd backend && cross-env HTTPS=true npm start",
+    "client": "cd frontend && cross-env HTTPS=true npm start"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
   "description": "",
   "dependencies": {
     "concurrently": "^9.2.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
