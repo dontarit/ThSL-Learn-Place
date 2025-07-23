@@ -37,3 +37,39 @@ body {
 .con-header .header-nav .btnSlc:hover {
     color: #363c99;
 }
+
+@media (max-width: 768px) {
+    .mainWithSidebar {
+        display: flex;
+        flex-direction: column;
+        .mainContent-container {
+            order: 1;
+        }
+        .vertical-sidebar {
+            order: 2;
+        }
+    }
+
+    .vertical-sidebar {
+        position: static !important;
+        background-color: red;
+        min-width: 100% !important;
+    }
+    .mainContent-container {
+        position: static !important;
+        min-width: 100%;
+        margin: auto;
+    }
+
+    .menuSelect .container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .menuSelect .btnSlc {
+        width: 100%;
+        height: auto;
+    }
+
+
+}

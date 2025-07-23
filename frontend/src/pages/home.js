@@ -51,9 +51,9 @@ export default function HomePage() {
             isAdmin ? navigate('/admin') : navigate('/learn')
             return
         }).catch(err => {
-            // if (token != null) {
-            //     openAlert('danger', 'Error', "Something went wrong")
-            // }
+            if (token != null) {
+                openAlert('danger', 'Error', "Something went wrong")
+            }
             return
         })
     }
