@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { matchPath, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
 import lpMain from '../css/learnPlace.module.css'
 import lpSearch from '../css/sub/searchbox.module.css'
 import lpSetting from '../css/sub/setting_page.module.css'
+import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
 
@@ -27,6 +28,7 @@ export default function LearnPlace() {
     getBase()
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+    const didRun = useRef(false);
 
     const isTokenExpired = () => {
         const token = localStorage.getItem('authToken');
@@ -45,261 +47,15 @@ export default function LearnPlace() {
         }
     };
 
-    useEffect(() => {
-        if (!authToken && isTokenExpired()) {
-            // const linkButtonNavigate = document.createElement('a');
-            // linkButtonNavigate.href = '/home'
-            // linkButtonNavigate.click()
-            navigate('/home')
-            return
-        }
-
-        // Button animation on click
-        console.log(document.querySelector(`.${lpMain.btnAnimate}`));
-        const append_btnAnimate = document.querySelectorAll(`.${lpMain.btnAnimate}`)
-        append_btnAnimate.forEach(element => {
-            element.addEventListener('click', () => {
-                element.transition = 'transform 100ms'
-                element.style.transform = 'translateY(-5%) scale(1.02)'
-                setTimeout(() => {
-                    element.style.transform = 'translateY(0%) scale(1)'
-                }, 100);
-            })
-        });
-
-        // Menu toggle button
-        const sideMenu = document.getElementById("sideMenu");
-        const menuBtn = document.getElementById("menuBtn");
-        const menuBtn_out = document.querySelectorAll(`.${lpMain.open_menu} .${lpMain.menu_btn_out}`);
-        const menuBtn_in = document.querySelector(`.${lpMain.open_menu} .${lpMain.menu_btn_in}`)
-        const sideItem = document.querySelectorAll(`.${lpMain.nav_bar} .${lpMain.typeNav} div`)
-
-        function openMenu() {
-            sideMenu.inert = false
-            sideMenu.style.transform = "translateX(0%)";
-            sideMenu.setAttribute("aria-hidden", "false");
-            menuBtn.classList.remove('hdrmnbtn_close')
-            menuBtn.classList.add('hdrmnbtn_open')
-            menuBtn_in.style.transform = 'rotate(90deg)'
-            menuBtn_out.forEach(element => {
-                element.style.opacity = 0
-            });
-            let itemCount = 0
-            sideItem.forEach(element => {
-                setTimeout(() => {
-                    element.style.transform = 'translateX(0%)'
-                }, itemCount);
-                itemCount += 50
-            })
-        }
-        function closeMenu() {
-            sideMenu.inert = true
-            sideMenu.style.transform = "translateX(-100%)";
-            sideMenu.setAttribute("aria-hidden", "true");
-            menuBtn.classList.remove('hdrmnbtn_open')
-            menuBtn.classList.add('hdrmnbtn_close')
-            menuBtn_in.style.transform = 'rotate(0deg)'
-            menuBtn_out.forEach(element => {
-                element.style.opacity = 1
-            });
-            sideItem.forEach(element => {
-                element.style.transform = 'translateX(-50%)'
-            })
-        }
-
-        menuBtn.addEventListener("click", () => {
-            if (sideMenu.getAttribute('aria-hidden') == 'true') {
-                openMenu()
-            }else {
-                closeMenu()
-            }
-        });
-
-        const forceCloseMenu = document.querySelector('.forceCloseMenu')
-        forceCloseMenu.addEventListener('click', () => {
-            closeMenu()
-        })
-
-        // Search button animation
-        const searchBtn = document.querySelectorAll('#activateSearch')
-        const searchCon = document.querySelector(`.${lpMain.search_container}`)
-        const searchInput = document.getElementById('search-box')
-        const mainLogo = document.querySelector(`.${lpMain.main_logo}`)
-        const headBtn = document.querySelectorAll(`.${lpMain.me_hed_btn}`)
-
-        function openSearch() {
-            if (window.innerWidth < 768) {
-                headBtn.forEach(elememt => {
-                    elememt.inert = true
-                    elememt.style.transition = 'opacity 300ms'
-                    elememt.style.opacity = '0'
-                });
-                mainLogo.style.transition = 'opacity 300ms'
-                mainLogo.style.opacity = '0'
-            }
-            searchCon.inert = false
-            searchCon.style.transition = 'ease top 300ms'
-            searchCon.style.top = '50%'
-            searchInput.focus()
-        }
-        function closeSearch() {
-            headBtn.forEach(element => {
-                element.inert = false
-                element.style.transition = 'opacity 300ms'
-                element.style.opacity = '1'
-            });
-            mainLogo.style.transition = 'opacity 300ms'
-            mainLogo.style.opacity = '1'
-            searchCon.inert = true
-            searchCon.style.transition = 'ease top 300ms'
-            searchCon.style.top = '-50%'
-            searchInput.value = ''
-        }
-
-        searchBtn.forEach(element => {
-            element.addEventListener('click', () => {
-                openSearch()
-            })
-        });
-
-        // Change setting option
-        const settingBody = document.querySelector(`.${lpMain.setting_container}`)
-        const openSetting = document.querySelectorAll(`.${lpMain.open_setting}`)
-        const overlaySetting = document.getElementById('overlay-setting-container')
-        const closeStBtn = document.querySelector(`.${lpMain.setting_container} .${lpMain.con_out} .ph-x`)
-        const quesStBtn = document.querySelector(`.${lpMain.setting_container} .${lpMain.con_out} .ph-question-mark`)
-
-        const slideContent = document.querySelector(`.${lpMain.conFor_mainCon}`)
-        const contentOption = document.querySelectorAll(`.${lpMain.main_content}`)
-        const topSelect = document.querySelectorAll(`.${lpMain.topSelect} p`)
-
-        let option_numberID = ""
-        let option_Value = '0'
-
-        topSelect.forEach(element => {
-            element.addEventListener('click', () => {
-                option_numberID = element.id
-                let option_Value = parseInt(option_numberID.match(/\d+/)[0])
-                slideContent.style.transform = `translateX(${option_Value * -100}%)`
-                topSelect.forEach(inner => {
-                    inner.classList.add('set-at-sub')
-                    inner.classList.remove('set-at-main')
-                })
-
-                topSelect[option_Value].classList.add('set-at-main')
-                topSelect[option_Value].classList.remove('set-at-sub')
-                if (option_Value == 0) {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value + 1].style.opacity = '0'
-                }
-                else if (option_Value + 1 == topSelect.length) {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value - 1].style.opacity = '0'
-                }
-                else {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value + 1].style.opacity = '0'
-                    contentOption[option_Value - 1].style.opacity = '0'
-                }
-            })
-        });
-
-        // Open and Close setting
-        const overlaySettingTime = 250
-        openSetting.forEach(element => {
-            element.addEventListener('click', () => {
-                topSelect[0].click()
-                overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
-                overlaySetting.style.display = 'block'
-                setTimeout(() => {
-                    overlaySetting.style.opacity = '1'
-                }, overlaySettingTime);
-                settingBody.classList.remove('setting-container-close')
-                settingBody.classList.add('setting-container-open')
-                settingBody.inert = false
-            })
-        });
-
-        function closeSettingFunc() {
-            overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
-            overlaySetting.style.opacity = '0'
-            setTimeout(() => {
-                overlaySetting.style.display = 'none'
-            }, overlaySettingTime);
-            settingBody.classList.remove('setting-container-open')
-            settingBody.classList.add('setting-container-close')
-            settingBody.inert = true
-        }
-
-        const advanceSetting = document.getElementById('advance_setting')
-        const submitSetting = document.getElementById('submit_setting')
-        const closeSetting = document.querySelectorAll(`.closeSetting`)
-
-        closeSetting.forEach(element => {
-            element.addEventListener('click', () => {
-                closeSettingFunc()
-            })
-        });
-
-        // // Window event
-        // window.addEventListener("keydown", (e) => {
-        //     if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
-        //         closeMenu()   
-        //     }
-        //     if (e.key === "Escape" && settingBody.getAttribute('aria-hidden') == 'false') {
-        //         closeSettingFunc()
-        //     }
-        // });
-        // window.addEventListener("click", (e) => {
-        //     if (
-        //         sideMenu.getAttribute('aria-hidden') == 'false' &&
-        //         !sideMenu.contains(e.target) &&
-        //         e.target !== menuBtn
-        //     ) {
-        //         closeMenu();
-        //     }
-        //     if (!searchCon.contains(e.target) && e.target.id !== 'activateSearch') {
-        //         closeSearch();
-        //     }
-        // });
-        // window.addEventListener('scroll', () => {
-        //     if (sideMenu.ariaHidden == 'false') {
-        //         closeMenu()
-        //     }
-        // })
-        // window.addEventListener('load', () => {
-        //     document.body.style.transition = 'background-color 500ms ease-in-out';
-        //     document.querySelector('.headerSection').style.transition = '500ms ease-in-out';
-        //     document.getElementById('sideMenu').style.transition = 'transform 300ms';
-            
-        //     const transitions = [
-        //         { selector: '.tableColumn span', style: 'scale 1s' },
-        //         { selector: '.tableColumn i', style: 'opacity 1s' },
-        //         { selector: '.open-menu .menu-btn-out', style: '500ms' },
-        //         { selector: '.open-menu .menu-btn-in', style: '500ms' }
-        //     ];
-
-        //     transitions.forEach(({ selector, style }) => {
-        //         document.querySelectorAll(selector).forEach(element => {
-        //             element.style.transition = style;
-        //         });
-        //     });
-        // });
-        comfirmSetting(true)
-    }, [authToken]);
-
     async function handleLogout() {
         localStorage.removeItem('authToken')
-        localStorage.setItem('name', '')
+        localStorage.setItem('name', 'Unknow')
         localStorage.setItem('email', '')
         localStorage.setItem('profile', '')
         setAuthToken(false);
         await axios.post('/logoutServer')
             .then(res => {
                 if (authToken && isTokenExpired()) {
-                    // const linkButtonNavigate = document.createElement('a');
-                    // linkButtonNavigate.href = '/home'
-                    // linkButtonNavigate.click()
                     navigate('/home')
                     return
                 }
@@ -317,7 +73,6 @@ export default function LearnPlace() {
             searchController.abort()
         }
     }
-
     async function typingSearch(value) {
         clearTimeout(searchingIdelay);
         if (value == '') {
@@ -360,29 +115,13 @@ export default function LearnPlace() {
         e.preventDefault()
     }
     
-    // Svae setting config
-    const [settingStore, setSettingStore] = useState({
-        setValue: {
-            schedule: 4,
-            streak: false,
-            theme: 'light',
-            time: '00:10'
-        },
-        value: {
-            schedule: 4,
-            streak: false,
-            theme: 'light',
-            time: '00:10'
-        }
-    })
-    
     function changeStrTable(row, col) {
         const tableStr = document.querySelector(`.${lpMain.showTableStr}`)
         tableStr.innerHTML = ''
         for (let i = 1; i <= row; i++) {
             let theRow = document.createElement('div')
             theRow.classList.add(`row-${i}`)
-            theRow.classList.add("tableRow")
+            theRow.classList.add(lpMain.tableRow)
 
             for (let j = 1; j <= col; j++) {
                 let theColumn = document.createElement('div')
@@ -391,6 +130,7 @@ export default function LearnPlace() {
 
                 theColumn.classList.add(`col-${j}`)
                 theColumn.classList.add("tableColumn")
+                theColumn.classList.add(lpMain.tableColumn)
                 progress.type = 'button'
                 i.classList.add('ph-fill')
                 i.classList.add('ph-check-circle')
@@ -401,7 +141,7 @@ export default function LearnPlace() {
             }
             tableStr.appendChild(theRow)
         }
-        document.querySelector(`.${lpMain.tableColumn}`).style.width = 'calc(50% / (7 / 1.5))'
+        document.querySelector('.tableColumn').style.width = 'calc(50% / (7 / 1.5))'
     }
     function disableStreak(disable) {
         let time = 500
@@ -424,16 +164,39 @@ export default function LearnPlace() {
         }
     }
 
+    // Svae setting config
+    const [validSetting, setValidSetting] = useState(true)
+    const [settingStore, setSettingStore] = useState({
+        setValue: {
+            schedule: 4,
+            streak: false,
+            theme: 'light',
+            time: '00:10'
+        },
+        value: {
+            schedule: 4,
+            streak: false,
+            theme: 'light',
+            time: '00:10'
+        }
+    })
+
     function comfirmSetting(apply) {
         const historyShow = document.getElementById('history-show')
         const streakShow = document.getElementById('streak-show')
         const themeShow = document.getElementById('theme-show')
         const timeShow = document.getElementById('time-show')
+
         if (apply) {
             Object.entries(settingStore.setValue).forEach(thevalue => {
                 settingStore.value[thevalue[0]] = thevalue[1]
             })
+        } else {
+            Object.entries(settingStore.value).forEach(thevalue => {
+                settingStore.setValue[thevalue[0]] = thevalue[1]
+            })
         }
+
         const schedule = settingStore.value.schedule
         const streak = settingStore.value.streak
         const theme = settingStore.value.theme
@@ -474,6 +237,246 @@ export default function LearnPlace() {
         //     setInterval
         // }, 1000);
     }
+
+    useEffect(() => {
+        if (didRun.current) return;
+        didRun.current = true;
+
+        if (!authToken && isTokenExpired()) {
+            navigate('/home')
+            return
+        }
+
+        // Button animation on click
+        const append_btnAnimate = document.querySelectorAll('.btnAnimate')
+        append_btnAnimate.forEach(element => {
+            element.addEventListener('click', () => {
+                element.transition = 'transform 100ms'
+                element.style.transform = 'translateY(-5%) scale(1.02)'
+                setTimeout(() => {
+                    element.style.transform = 'translateY(0%) scale(1)'
+                }, 100);
+            })
+        });
+
+        // Menu toggle button
+        const sideMenu = document.getElementById("sideMenu");
+        const menuBtn = document.getElementById("menuBtn");
+        const menuBtn_out = document.querySelectorAll(`.${lpMain.open_menu} .${lpMain.menu_btn_out}`);
+        const menuBtn_in = document.querySelector(`.${lpMain.open_menu} .${lpMain.menu_btn_in}`)
+        const sideItem = document.querySelectorAll(`.${lpMain.nav_bar} .${lpMain.typeNav} div`)
+
+        function openMenu() {
+            sideMenu.inert = false
+            sideMenu.style.transform = "translateX(0%)";
+            sideMenu.setAttribute("aria-hidden", "false");
+            menuBtn.classList.remove(lpMain.hdrmnbtn_close)
+            menuBtn.classList.add(lpMain.hdrmnbtn_open)
+            menuBtn_in.style.transform = 'rotate(90deg)'
+            menuBtn_out.forEach(element => {
+                element.style.opacity = 0
+            });
+            let itemCount = 0
+            sideItem.forEach(element => {
+                setTimeout(() => {
+                    element.style.transform = 'translateX(0%)'
+                }, itemCount);
+                itemCount += 50
+            })
+        }
+        function closeMenu() {
+            sideMenu.inert = true
+            sideMenu.style.transform = "translateX(-100%)";
+            sideMenu.setAttribute("aria-hidden", "true");
+            menuBtn.classList.remove(lpMain.hdrmnbtn_open)
+            menuBtn.classList.add(lpMain.hdrmnbtn_close)
+            menuBtn_in.style.transform = 'rotate(0deg)'
+            menuBtn_out.forEach(element => {
+                element.style.opacity = 1
+            });
+            sideItem.forEach(element => {
+                element.style.transform = 'translateX(-50%)'
+            })
+        }
+
+        menuBtn.addEventListener("click", () => {
+            if (sideMenu.getAttribute('aria-hidden') == 'true') {
+                openMenu()
+            }else {
+                closeMenu()
+            }
+        });
+
+        const forceCloseMenu = document.querySelector('.forceCloseMenu')
+        forceCloseMenu.addEventListener('click', () => {
+            closeMenu()
+        })
+
+        // Search button animation
+        const searchBtn = document.querySelectorAll('#activateSearch')
+        const searchCon = document.getElementById('search-container')
+        const searchInput = document.getElementById('search-box')
+        const mainLogo = document.querySelector(`.${lpMain.main_logo}`)
+        const headBtn = document.querySelectorAll('.me_hed_btn')
+
+        function openSearch() {
+            if (window.innerWidth < 768) {
+                headBtn.forEach(elememt => {
+                    elememt.inert = true
+                    elememt.style.transition = 'opacity 300ms'
+                    elememt.style.opacity = '0'
+                });
+                mainLogo.style.transition = 'opacity 300ms'
+                mainLogo.style.opacity = '0'
+            }
+            searchCon.inert = false
+            searchCon.style.transition = 'ease top 300ms'
+            searchCon.style.top = '50%'
+            searchInput.focus()
+        }
+        function closeSearch() {
+            headBtn.forEach(element => {
+                element.inert = false
+                element.style.transition = 'opacity 300ms'
+                element.style.opacity = '1'
+            });
+            mainLogo.style.transition = 'opacity 300ms'
+            mainLogo.style.opacity = '1'
+            searchCon.inert = true
+            searchCon.style.transition = 'ease top 300ms'
+            searchCon.style.top = '-50%'
+            searchInput.value = ''
+        }
+
+        searchBtn.forEach(element => {
+            element.addEventListener('click', () => {
+                openSearch()
+            })
+        });
+
+        // Change setting option
+        const settingBody = document.querySelector(`.${lpSetting.setting_container}`)
+        const openSetting = document.querySelectorAll(`.${lpMain.open_setting}`)
+        const overlaySetting = document.getElementById('overlay-setting-container')
+        const quesStBtn = document.querySelector(`.${lpSetting.setting_container} .${lpSetting.con_out} .${lpSetting.topSettingBtn_Question}`)
+        const closeStBtn = document.querySelector(`.${lpSetting.setting_container} .${lpSetting.con_out} .${lpSetting.topSettingBtn_Close}`)
+        const slideContent = document.querySelector(`.${lpSetting.conFor_mainCon}`)
+        const contentOption = document.querySelectorAll(`.${lpSetting.main_content}`)
+        const topSelect = document.querySelectorAll(`.${lpSetting.topSelect} p`)
+
+        let option_numberID = ""
+        let option_Value = '0'
+        
+        topSelect.forEach(element => {
+            element.addEventListener('click', () => {
+                option_numberID = element.id
+                let option_Value = parseInt(option_numberID.match(/\d+/)[0])
+                slideContent.style.transform = `translateX(${option_Value * -100}%)`
+                topSelect.forEach(inner => {
+                    inner.classList.add('set-at-sub')
+                    inner.classList.remove('set-at-main')
+                })
+
+                topSelect[option_Value].classList.add('set-at-main')
+                topSelect[option_Value].classList.remove('set-at-sub')
+                if (option_Value == 0) {
+                    contentOption[option_Value].style.opacity = '1'
+                    contentOption[option_Value + 1].style.opacity = '0'
+                }
+                else if (option_Value + 1 == topSelect.length) {
+                    contentOption[option_Value].style.opacity = '1'
+                    contentOption[option_Value - 1].style.opacity = '0'
+                }
+                else {
+                    contentOption[option_Value].style.opacity = '1'
+                    contentOption[option_Value + 1].style.opacity = '0'
+                    contentOption[option_Value - 1].style.opacity = '0'
+                }
+            })
+        });
+
+        // Open and Close setting
+        const overlaySettingTime = 250
+        openSetting.forEach(element => {
+            element.addEventListener('click', () => {
+                topSelect[0].click()
+                overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
+                overlaySetting.style.display = 'block'
+                setTimeout(() => {
+                    overlaySetting.style.opacity = '1'
+                }, overlaySettingTime);
+                settingBody.classList.remove(lpSetting.setting_container_close)
+                settingBody.classList.add(lpSetting.setting_container_open)
+                settingBody.inert = false
+            })
+        });
+        function closeSettingFunc() {
+            overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
+            overlaySetting.style.opacity = '0'
+            setTimeout(() => {
+                overlaySetting.style.display = 'none'
+            }, overlaySettingTime);
+            settingBody.classList.remove(lpSetting.setting_container_open)
+            settingBody.classList.add(lpSetting.setting_container_close)
+            settingBody.inert = true
+        }
+
+        const advanceSetting = document.getElementById('advance_setting')
+        const submitSetting = document.getElementById('submit_setting')
+        const closeSetting = document.querySelectorAll(`.closeSetting`)
+
+        closeSetting.forEach(element => {
+            element.addEventListener('click', () => {
+                closeSettingFunc()
+            })
+        });
+
+        // Window event
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
+                closeMenu()   
+            }
+            if (e.key === "Escape" && settingBody.getAttribute('aria-hidden') == 'false') {
+                closeSettingFunc()
+            }
+        });
+        window.addEventListener("click", (e) => {
+            if (
+                sideMenu.getAttribute('aria-hidden') == 'false' &&
+                !sideMenu.contains(e.target) &&
+                e.target !== menuBtn
+            ) {
+                closeMenu();
+            }
+            if (!searchCon.contains(e.target) && e.target.id !== 'activateSearch') {
+                closeSearch();
+            }
+        });
+        window.addEventListener('scroll', () => {
+            if (sideMenu.ariaHidden == 'false') {
+                closeMenu()
+            }
+        })
+        window.addEventListener('load', () => {
+            document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
+            document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
+            document.getElementById('sideMenu').style.transition = 'transform 300ms';
+            
+            const transitions = [
+                { selector: '.tableColumn span', style: 'scale 1s' },
+                { selector: '.tableColumn i', style: 'opacity 1s' },
+                { selector: '.open-menu .menu-btn-out', style: '500ms' },
+                { selector: '.open-menu .menu-btn-in', style: '500ms' }
+            ];
+
+            transitions.forEach(({ selector, style }) => {
+                document.querySelectorAll(selector).forEach(element => {
+                    element.style.transition = style;
+                });
+            });
+        });
+        comfirmSetting(true)
+    }, [authToken]);
     
 
 
@@ -481,7 +484,7 @@ export default function LearnPlace() {
         <div className={lpMain.body}>
         <header className={lpMain.headerSection}>
             <div className={lpMain.con_header}>
-                <div className={`${lpMain.open_menu} ${lpMain.me_hed_btn}`} id="menuBtn">
+                <div className={`${lpMain.open_menu} me_hed_btn`} id="menuBtn">
                         <span className={lpMain.menu_btn_out}></span>
                         <div className={lpMain.menu_btn_gruop}>
                             <span className={lpMain.menu_btn_in}></span>
@@ -490,32 +493,32 @@ export default function LearnPlace() {
                         <span className={lpMain.menu_btn_out}></span>
                 </div>
                 <div className={lpMain.main_logo}>
-                    <img src={lpMain.TSLlogo} alt='logo'/>
+                    <img src={TSLlogo} alt='logo'/>
                 </div>
-                <div className={lpMain.search_container} inert>
+                <div id='search-container' className={`${lpMain.search_container_mainModule} ${lpSearch.search_container_subModule}`} inert>
                     <div>
-                        <form className={lpMain.input_place} onSubmit={handleSearch}>
-                            <button className={lpMain.sideSearchSend} type='submit'>
+                        <form className={lpSearch.input_place} onSubmit={handleSearch}>
+                            <button className={lpSearch.sideSearchSend} type='submit'>
                                 <i className="ph ph-magnifying-glass"></i>
                             </button>
-                            <input type="text" name="word" id="search-box" className={lpMain.search_box} autoComplete="off" 
+                            <input type="text" name="word" id="search-box" className={lpSearch.search_box} autoComplete="off" 
                                 onChange={e => {typingSearch(e.target.value)}}
                             />
                         </form>
-                        <div className={lpMain.free_option}>
-                            <div className={lpMain.clipboard}>
+                        <div className={lpSearch.free_option}>
+                            <div className={lpSearch.clipboard}>
                                 <i className="ph ph-clipboard"></i>
                             </div>
-                            <div className={lpMain.history}>
+                            <div className={lpSearch.history}>
                                 <i className="ph ph-clock-counter-clockwise"></i>
                             </div>
-                            <div className={lpMain.question}>
+                            <div className={lpSearch.question}>
                                 <i className="ph ph-question"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} ${lpMain.me_hed_btn} ${lpMain.settingIconOpen} ${lpMain.Spin_n}`}
+                <div className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} me_hed_btn ${lpMain.settingIconOpen} ${lpMain.Spin_n}`}
                     onClick={e => { SpinCheck(e.target) }}
                 >
                     <i className="ph-fill ph-gear-six"></i>
@@ -592,35 +595,35 @@ export default function LearnPlace() {
             </div>
             <div className={lpMain.nav_bar}>
                 <div className={`${lpMain.first_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.searchBtn} ${lpMain.iconBtn} ${lpMain.forceCloseMenu} ${lpMain.activateSearch}`} id="activateSearch">
+                    <div className={`${lpMain.searchBtn} ${lpMain.iconBtn} ${lpMain.activateSearch} forceCloseMenu`} id="activateSearch">
                         <img src={searchBtn}/>
                         <p>Search</p>
                     </div>
-                    <div className={`${lpMain.favBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`}>
+                    <div className={`${lpMain.favBtn} ${lpMain.iconBtn} btnAnimate`}>
                         <img src={favBtn}/>
                         <p>Favorite</p>
                     </div>
                 </div>
                 <div className={`${lpMain.second_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.positionBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`}>
+                    <div className={`${lpMain.positionBtn} ${lpMain.iconBtn} btnAnimate`}>
                         <img src={handPosBtn}/>
                         <p>Hand Position</p>
                     </div>
-                    <div className={`${lpMain.shapeBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`}>
+                    <div className={`${lpMain.shapeBtn} ${lpMain.iconBtn} btnAnimate`}>
                         <img src={handShapeBtn}/>
                         <p>Hand Shape</p>
                     </div>
-                    <div className={`${lpMain.turningBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`}>
+                    <div className={`${lpMain.turningBtn} ${lpMain.iconBtn} btnAnimate`}>
                         <img src={palmTurnBtn}/>
                         <p>Palm Turning</p>
                     </div>
                 </div>
                 <div className={`${lpMain.third_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.settingBtn} ${lpMain.iconBtn} ${lpMain.forceCloseMenu} ${lpMain.open_setting}`}>
+                    <div className={`${lpMain.settingBtn} ${lpMain.iconBtn} ${lpMain.open_setting} forceCloseMenu`}>
                         <img src={settingBtn}/>
                         <p>Setting</p>
                     </div>
-                    <div className={`${lpMain.daynightBtn} ${lpMain.iconBtn} ${lpMain.btnAnimate}`} id='logoutBtnFnc' onClick={handleLogout}>
+                    <div className={`${lpMain.daynightBtn} ${lpMain.iconBtn} btnAnimate`} id='logoutBtnFnc' onClick={handleLogout}>
                         <img src={logoutBtn}/>
                         <p>Logout</p>
                     </div>
@@ -713,46 +716,44 @@ export default function LearnPlace() {
                     </div>
                 </div>
                 <div className={lpMain.revBtn_container}>
-                    <button id="reviewBtn" className={`${lpMain.btnAnimate} ${lpMain.reviewBtn}`}>
+                    <button id="reviewBtn" className={`${lpMain.reviewBtn} btnAnimate`}>
                         <span>START REVIEW</span>
                         <span>(10)</span>
                     </button>
                 </div>
             </section>
             <section className={lpMain.Cam_Search}>
-                <button className={`${lpMain.searchBoxBtn} ${lpMain.search_animate} ${lpMain.btnAnimate} ${lpMain.activateSearch}`} id="activateSearch">
+                <button className={`${lpMain.camsearchInside} ${lpMain.searchBoxBtn} ${lpMain.activateSearch} btnAnimate`} id="activateSearch">
                     <p>Search for a word</p>
                     <i className="ph ph-magnifying-glass"></i>
                 </button>
-                <button className={`${lpMain.cameraBoxBtn} ${lpMain.btnAnimate}`}
-                    onClick={() => {
-                        navigate('/camera')
-                    }}
+                <button className={`${lpMain.camsearchInside} ${lpMain.cameraBoxBtn} btnAnimate`}
+                    onClick={() => {navigate('/camera')}}
                 >
                     <p>Translate with camera</p>
                     <i className="ph-fill ph-camera"></i>
                 </button>
             </section>
-            {/* <section className="To-Signin">
-                <div className="Backup-info">
+            <section className={lpMain.To_Signin}>
+                <div className={lpMain.Backup_info}>
                     <p>Backup Info</p>
                     <div>
                         <span>You are not signed in yet.</span>
                         <span>Your information will not be saved.</span>
                     </div>
                 </div>
-                <button className="sign-button btnAnimate" role="button">
+                <button className={`${lpWave.sign_button} ${lpWave.btnAnimate}`} role="button">
                     <span>Sign In</span>
-                    <div className="liquid"></div>
+                    <div className={lpWave.liquid}></div>
                 </button>
-            </section> */}
+            </section>
         </div>
         <div className={lpSetting.setting_container}>
             <div className={lpSetting.con_out}>
                 <p>Setting</p>
                 <div>
-                    <i className="ph ph-question-mark"></i>
-                    <i className="ph ph-x closeSetting"></i>
+                    <i className={`ph ph-question-mark ${lpSetting.topSettingBtn} ${lpSetting.topSettingBtn_Question}`}></i>
+                    <i className={`ph ph-x closeSetting ${lpSetting.topSettingBtn} ${lpSetting.topSettingBtn_Close}`}></i>
                 </div>
             </div>
             <div className={lpSetting.con_in}>
@@ -761,7 +762,7 @@ export default function LearnPlace() {
                     <p id="stcon-topic-1" className={lpSetting.set_at_sub}>Profile</p>
                 </div>
                 <div className={lpSetting.conFor_mainCon}>
-                    <div className={`${lpSetting.main} ${lpSetting.main_content}`}>
+                    <div className={`${lpSetting.main_content}`}>
                         <section>
                             <div className={lpSetting.head_group}>
                                 <p className={lpSetting.head}>Lession</p>
@@ -863,55 +864,55 @@ export default function LearnPlace() {
                             </div>
                         </section>
                     </div>
-                    <div className={`${lpSetting.profile} ${lpSetting.main_content}`}>
+                    <div className={`${lpSetting.main_content}`}>
                         <section>
                             <div className={lpSetting.head_group}>
                                 <p className={lpSetting.head}>Information</p>
                                 <span className={lpSetting.head_break}></span>
                             </div>
                             <div className={lpSetting.content}>
-                                <div className={`${sub_con} ${avata_setting}`}>
+                                <div className={`${lpSetting.sub_con} ${lpSetting.avata_setting}`}>
                                     <img src={blankProfile} alt='blank profile'/>
                                     <div className={lpSetting.sub_upper}>
                                         <p>Name</p>
                                         <div>
                                             <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
-                                            <i className={`ph ph-pencil-simple ${lpSettingfield_icon}`}></i>
+                                            <i className={`ph ph-pencil-simple ${lpSetting.field_icon}`}></i>
                                         </div>
                                     </div>
                                 </div>
                                 <div className={lpSetting.field_icon} style={{justifyContent: 'center'}}>
-                                    <div className='sub_upper'>
+                                    <div className={lpSetting.sub_upper}>
                                         <p title='Email'>Email</p>
                                         <input type="text" placeholder='name@email.com' defaultValue={localStorage.getItem('email')} style={{minWidth: '100%'}} inert/>
                                     </div>
-                                    <div className='sub_upper valueInsert'>
+                                    <div className={`${lpSetting.sub_upper} ${lpSetting.valueInsert}`}>
                                         <p title='Password'>Password</p>
-                                        <div className="form_group">
-                                            <div className="col_md_6">
-                                                <input id="password-field" type="password" className="form_control" defaultValue="........" name="password" style={{minWidth: '100%'}} inert/>
+                                        <div className={lpSetting.form_group}>
+                                            <div className={lpSetting.col_md_6}>
+                                                <input id="password-field" type="password" className={lpSetting.form_control} defaultValue="........" name="password" style={{minWidth: '100%'}} inert/>
                                                 {/* <button toggle="#password-field" id='toggle-password' className="ph ph-eye field-icon"></button> */}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="sub_con pswdChange">
+                                <div className={`${lpSetting.sub_con} ${lpSetting.pswdChange}`}>
                                     <input id="changepswd_setting" type="button" defaultValue="Change password"/>
                                 </div>
                             </div>
                         </section>
                     </div>
                 </div>
-                <div className="bottom_deck">
+                <div className={lpSetting.bottom_deck}>
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
-                    <div className="inner">
-                        <input id="submit_setting" type="button" defaultValue="Ok" className='closeSetting' onClick={() => {comfirmSetting(true)}}/>
-                        <input id="cancle_setting" type="button" defaultValue="Cancle" className='closeSetting' onClick={()  => {comfirmSetting(false)}}/>
+                    <div className={lpSetting.inner}>
+                        <input id="submit_setting" type="button" defaultValue="Ok" className={lpSetting.closeSetting} onClick={() => {comfirmSetting(true)}}/>
+                        <input id="cancle_setting" type="button" defaultValue="Cancle" className={lpSetting.closeSetting} onClick={()  => {comfirmSetting(false)}}/>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="overlay-setting-container" className='overlay_setting_container'></div>
+        <div id="overlay-setting-container" className={lpSetting.overlay_setting_container}></div>
         </div>
     );
 }

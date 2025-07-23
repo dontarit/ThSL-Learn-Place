@@ -155,7 +155,7 @@
     width: calc(1.8em * 2.2);
 }
 
-.search_container i {
+.search_container_mainModule i {
     cursor: pointer;
     font-size: 28px;
     transition: transform 200ms;
@@ -408,9 +408,9 @@
     transition: 300ms;
 }
 .activateSearch {
-    position: relative;
+    position: relative !important;
 }
-.activateSearch::after {
+.activateSearch::before {
     content: url("");
     position: absolute;
     top: 0;
@@ -760,6 +760,7 @@
 }
 
 .Cam_Search {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -769,7 +770,11 @@
     outline: none;
 }
 
-.Cam_Search button {
+.Cam_Search {
+    width: 100%;
+}
+
+.Cam_Search .camsearchInside {
     all: unset;
     display: flex;
     justify-content: center;
@@ -784,7 +789,7 @@
     transition: transform 200ms;
 }
 
-.Cam_Search button i {
+.Cam_Search .camsearchInside i {
     font-size: 1.2em;
 }
 
@@ -852,7 +857,7 @@
     .sideMenu {
         width: 80%;
     }
-    .search_container {
+    .search_container_mainModule {
         max-width: none;
         width: calc(80% - 25px);
     }
@@ -873,7 +878,7 @@
             order: 2;
         }
     }
-    .search_container {
+    .search_container_mainModule {
         max-width: none;
         width: calc(100% - 25px);
     }

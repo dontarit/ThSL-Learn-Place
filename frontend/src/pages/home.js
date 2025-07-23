@@ -16,7 +16,6 @@ export default function HomePage() {
     const [name_f, setName] = useState('')
     const [email_f, setEmail] = useState('')
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
-    const [isAdmin, setIsAdmin] = useState();
     const didRun = useRef(false);
     const projects = [
         {
@@ -45,18 +44,22 @@ export default function HomePage() {
             img: "https://placehold.co/600x350?text=Image",
         }
     ];
-
-    async function checkState() {
-        await axios.post('/checkAdminServer', {token: authToken})
-            .then(res => {
-                setIsAdmin(res.data)
-                return
-            }).catch(err => {
-                setIsAdmin(false)
-                return
-            })
+    
+    async function checkState(token) {
+        await axios.post('/checkAdminServer', {token}).then(res => {
+            const isAdmin = res.data
+            isAdmin ? navigate('/admin') : navigate('/learn')
+            return
+        }).catch(err => {
+            if (token != null) {
+                openAlert('danger', 'Error', "Something went wrong")
+            }
+            return
+        })
     }
-    checkState()
+    checkState(authToken)
+
+
 
     useEffect(() => {
         if (didRun.current) return;
@@ -65,25 +68,20 @@ export default function HomePage() {
         if (!authToken && isTokenExpired()) {
             refreshToken();
         }
-        else if (authToken && !isTokenExpired() && isAdmin) {
-            navigate('/admin')
-            return
-        }
-        else if (authToken && !isTokenExpired()) {
-            navigate('/learn')
-            return
-        }
-
-
-        import('../js/app-home.js')
+        
+        const burger = document.getElementById("burger");
+        const navList = document.getElementById("nav-list");
+        burger.addEventListener("click", () => navList.classList.toggle("show"));
+        
+        document.getElementById("year").textContent = new Date().getFullYear();
 
         const grid = document.getElementById("project_grid");
         projects.forEach((p) => {
             const card = document.createElement("article");
             card.className = `${home.project_card} ${home.fade}`;
             card.innerHTML = `
-                <img src="${p.img}" alt="${p.title}">
-                <div class="${home.content}">
+                <img src="${p.img}" class="${home.img}" alt="${p.title}">
+                <div class="${`${home.content} ${home.image}`}">
                 <h4>${p.title}</h4>
                 <p>${p.desc}</p>
                 </div>
@@ -176,7 +174,7 @@ export default function HomePage() {
                 overlay.style.display = 'none'
             }, 250);
         })
-    }, [authToken, isAdmin]);
+    }, [authToken]);
 
 
 
@@ -231,8 +229,7 @@ export default function HomePage() {
                 localStorage.setItem('name', user_data.name)
                 localStorage.setItem('email', user_data.email)
                 localStorage.setItem('profile', user_data.profile)
-                setAuthToken(accessToken)
-                navigate('/learn')
+                checkState(accessToken)
             }
         }).catch(err => {
             console.error(err)
@@ -240,13 +237,13 @@ export default function HomePage() {
         })
     }
 
+
     async function refreshToken() {
         await axios.post('/tokenServer')
             .then(res => {
                 const accessToken = res.data.token
                 localStorage.setItem('authToken', accessToken)
                 setAuthToken(accessToken)
-                console.log(accessToken);
             })
             .catch(err => {
                 console.error('Error refreshing token:', err);
@@ -255,12 +252,7 @@ export default function HomePage() {
 
     const isTokenExpired = () => {
         const token = localStorage.getItem('authToken');
-
-        if (!token) return true;
-        if (token.split('.').length !== 3) {
-            console.error('Invalid token format');
-            return true;
-        }
+        if (!token || token.split('.').length !== 3) return true;
         
         try {
             const decodedToken = JSON.parse(atob(token.split('.')[1]));
@@ -274,15 +266,15 @@ export default function HomePage() {
 
 
     return (
-        <>
+        <div className={home.body}>
         <header id='header' className={home.header}>
             <div className={home.container}>
-                <img className={home.logo} src={TSLlogo} style={{width: 'calc(4.2em)'}}/>
-                <nav>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#content">Content</a></li>
+                <img className={`${home.logo} ${home.img}`} src={TSLlogo} style={{width: 'calc(4.2em)'}}/>
+                <nav className={home.nav}>
+                    <ul className={home.ul}>
+                        <li><a href="#home" className={home.a}>Home</a></li>
+                        <li><a href="#about" className={home.a}>About</a></li>
+                        <li><a href="#content" className={home.a}>Content</a></li>
                     </ul>
                     <button id='burger' className={home.burger}><i className="fa fa-bars"></i></button>
                 </nav>
@@ -324,9 +316,9 @@ export default function HomePage() {
         </div>
 
 
-        <section id='home' className={home.hero}>
+        <section id='home' className={`${home.section} ${home.hero}`}>
             <div className={home.container}>
-                <h2>Welcome to <span className={home.accent}>ThSL learn place</span></h2>
+                <h2 className={home.h2}>Welcome to <span className={home.accent}>ThSL learn place</span></h2>
                 <p>A fun, free and awesome way to learn languages!</p>
                 <div className={home.social}>
                     <i className="ph ph-hand-palm"></i>
@@ -336,12 +328,12 @@ export default function HomePage() {
                     <i className="ph ph-hands-praying"></i>
                     <i className="ph ph-hand-grabbing"></i>
                 </div>
-                <a className={home.btn} id='loginClick'>Let's Start</a>
+                <a className={`${home.btn} ${home.a}`} id='loginClick'>Let's Start</a>
             </div>
         </section>
         <div className={home.sectionAbout} id="about">
             <section className={`${home.section} ${home.aboutSec}`}>
-                <div className={`${home.container} ${home.grid_2}`}>
+                <div className={`${home.container} ${home.contentContainer} ${home.grid_2}`}>
                     <img className={home.image} src="https://placehold.co/500x500" alt="Profile"/>
                     <div className={home.text}>
                         <h3 className={home.whatHead}>What is this?</h3>
@@ -353,19 +345,19 @@ export default function HomePage() {
                         </p>
                         <br/>
                         <h4>Powered by</h4>
-                        <ul className={home.tech_list}>
+                        <ul className={`${home.tech_list} ${home.ul}`}>
                             <li>
-                                <img src="https://www.rapiddg.com/sites/default/files/imce-files/react.png"/>
+                                <i class="ph ph-atom"></i>
                                 <span></span>
                                 React
                             </li>
                             <li>
-                                <img src="https://viz.mediapipe.dev/logo.png"/>
+                                <i class="ph ph-article"></i>
                                 <span></span>
                                 Mediapipe
                             </li>
                             <li>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/800px-Heart_coraz%C3%B3n.svg.png"/>
+                                <i class="ph ph-heart"></i>
                                 <span></span>
                                 And Love
                             </li>
@@ -375,7 +367,7 @@ export default function HomePage() {
             </section>
             <br></br>
             <section className={`${home.section} ${home.aboutSec}`}>
-                <div className={`${home.container} ${home.grid_2}`}>
+                <div className={`${home.container} ${home.contentContainer} ${home.grid_2}`}>
                     <div className={home.text}>
                         <h3 className={home.whatHead}>About us</h3>
                         <p className={home.thaiSpread}>
@@ -384,7 +376,7 @@ export default function HomePage() {
                         </p>
                         <br/>
                         <h4>Participants</h4>
-                        <ul className={home.tech_list}>
+                        <ul className={`${home.tech_list} ${home.ul}`}>
                             <li>
                                 <i className="ph ph-user"></i>
                                 <span></span>
@@ -418,15 +410,15 @@ export default function HomePage() {
                     <p>Let's learn</p>
                     <p className={home.accent}>Thai Sign Language</p>
                 </h3>
-                <a href="#home" className={`${home.btn} ${home.small}`}>I'm ready</a>
+                <a href="#home" className={`${home.btn} ${home.small} ${home.a}`}>I'm ready</a>
             </div>
         </section>
-        <footer>
+        <footer className={home.footer}>
             <div className={home.container}>
                 <p>© <span id="year"></span> | Crafted with <i className="ph-fill ph-heart"></i> by Dontarit</p>
             </div>
         </footer>
         <div id="overlay-setting-container" className={logsignForm.overlay_setting_container}></div>
-        </>
+        </div>
     )
 }

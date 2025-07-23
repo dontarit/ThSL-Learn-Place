@@ -1,4 +1,4 @@
-.sign-button {
+.sign_button {
     all: unset;
     width: 100%;
     position: relative;
@@ -12,7 +12,7 @@
     cursor: pointer;
 }
 
-.sign-button span {
+.sign_button span {
     position: relative;
     z-index: 0;
     color: #fff;
@@ -20,7 +20,7 @@
     transition: color 0.6s;
 }
 
-.sign-button .liquid {
+.sign_button .liquid {
     position: absolute;
     top: -60px;
     left: 0;
@@ -32,8 +32,8 @@
     transition: 0.6s;
 }
 
-.sign-button .liquid::after,
-.sign-button .liquid::before {
+.sign_button .liquid::after,
+.sign_button .liquid::before {
     position: absolute;
     content: "";
     width: 200%;
@@ -43,24 +43,23 @@
     transform: translate(-25%, -75%);
 }
 
-.sign-button .liquid::after {
+.sign_button .liquid::after {
     border-radius: 45%;
     background: rgba(20, 20, 20, 1);
     box-shadow: 0 0 10px 5px linear-gradient(135deg, #980ccc 0%, #4487e9 100%);
-    animation: animate 5s linear infinite;
+    animation: animateBtn_liquid 5s linear infinite;
     opacity: 0.8;
 }
 
-.sign-button .liquid::before {
+.sign_button .liquid::before {
     border-radius: 40%;
     box-shadow: 0 0 10px rgba(26, 26, 26, 0.5),
         inset 0 0 5px rgba(26, 26, 26, 0.5);
     background: rgba(26, 26, 26, 0.5);
-
-    animation: animate 7s linear infinite;
+    animation: animateBtn_liquid 7s linear infinite;
 }
 
-@keyframes animate {
+@keyframes animateBtn_liquid {
     0% {
         transform: translate(-25%, -75%) rotate(0);
     }
@@ -69,6 +68,6 @@
     }
 }
 
-.sign-button:hover span{
+.sign_button:hover span{
     color: #e2e2e2;
 }

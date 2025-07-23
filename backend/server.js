@@ -22,8 +22,6 @@ const credentials = { key: privateKey, cert: certificate};
 
 const ACCESS_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
 const REFRESH_TOKEN_SECRET = crypto.randomBytes(32).toString('hex');
-console.log('ACCESS_TOKEN_SECRET:', ACCESS_TOKEN_SECRET);
-console.log('REFRESH_TOKEN_SECRET:', REFRESH_TOKEN_SECRET);
 
 const generateAccessToken = (user) => {
   return jwt.sign({ id: user.user_id, username: user.user_name, isAdmin: user.admin_state }, ACCESS_TOKEN_SECRET);
@@ -31,10 +29,7 @@ const generateAccessToken = (user) => {
 const generateRefreshToken = (user) => {
   return jwt.sign({ id: user.id, username: user.username, isAdmin: user.admin_state }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
 };
-
-let user = { id: 1, username: 'user1', password: bcrypt.hashSync('password123', 10) }
-console.log(generateAccessToken(user));
-console.log(generateRefreshToken(user));
+// let user = { id: 1, username: 'user1', password: bcrypt.hashSync('password123', 10) }
 
 const pool = mysql.createPool({
     connectionLimit : 10,

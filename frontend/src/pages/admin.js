@@ -2,20 +2,16 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
-import NotFoundPage from '../pages/notfound.js';
+import adAdmin from '../css/admin.css'
+import adMain from '../css/admin/style.css'
+import adSidebar from '../css/admin/side_nav.css'
 import getBase from '../js/getBase.js'
+import NotFoundPage from '../pages/notfound.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPage() {
     const navigate = useNavigate();
-    const loadCssFiles = async () => {
-        await import('../css/admin.css')
-        await import('../css/admin/style.css')
-        await import('../assets/font/font.css')
-        await import('../css/admin/side_nav.css')
-    };
-    loadCssFiles();
     getBase()
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
@@ -51,9 +47,6 @@ export default function AdminPage() {
     
     useEffect(() => {
         if (!authToken && isTokenExpired()) {
-            // const linkButtonNavigate = document.createElement('a');
-            // linkButtonNavigate.href = '/home'
-            // linkButtonNavigate.click()
             navigate('/home')
             return
         }

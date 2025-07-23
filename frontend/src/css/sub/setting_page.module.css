@@ -93,16 +93,16 @@
     gap: 10px;
 }
 
-.setting_container .con_out .ph {
+.setting_container .con_out .topSettingBtn {
     aspect-ratio: 1/1;
     cursor: pointer;
     font-weight: bolder;
     transition: color 200ms;
 }
-.setting_container .con_out .ph:nth-child(1):hover {
+.setting_container .con_out .topSettingBtn_Question:hover {
     color: #ffbf00;
 }
-.setting_container .con_out .ph:nth-child(2):hover {
+.setting_container .con_out .topSettingBtn_Close:hover {
     color: #ff2f00;
 }
 
