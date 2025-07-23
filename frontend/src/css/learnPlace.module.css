@@ -787,6 +787,7 @@
     font-family: "m_1mregular", "K2D", sans-serif;
     cursor: pointer;
     transition: transform 200ms;
+    box-sizing: border-box;
 }
 
 .Cam_Search .camsearchInside i {
