@@ -345,6 +345,5 @@
         display: flex;
         max-width: 650px;
         flex-direction: column;
-        background-color: red;
     }
 }

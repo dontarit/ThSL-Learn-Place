@@ -51,9 +51,9 @@ export default function HomePage() {
             isAdmin ? navigate('/admin') : navigate('/learn')
             return
         }).catch(err => {
-            if (token != null) {
-                openAlert('danger', 'Error', "Something went wrong")
-            }
+            // if (token != null) {
+            //     openAlert('danger', 'Error', "Something went wrong")
+            // }
             return
         })
     }
@@ -347,17 +347,17 @@ export default function HomePage() {
                         <h4>Powered by</h4>
                         <ul className={`${home.tech_list} ${home.ul}`}>
                             <li>
-                                <i class="ph ph-atom"></i>
+                                <i className="ph ph-atom"></i>
                                 <span></span>
                                 React
                             </li>
                             <li>
-                                <i class="ph ph-article"></i>
+                                <i className="ph ph-article"></i>
                                 <span></span>
                                 Mediapipe
                             </li>
                             <li>
-                                <i class="ph ph-heart"></i>
+                                <i className="ph ph-heart"></i>
                                 <span></span>
                                 And Love
                             </li>

@@ -196,7 +196,7 @@ app.post('/learnServer', async (req, res) => {
 })
 
 app.get('/', (req, res) => {
-    res.send('Hello HTTPS');
+    res.send('Hello World');
 });
 https.createServer(credentials, app).listen(port, () => {
     console.log(`Server running on https://localhost:${port}`);
