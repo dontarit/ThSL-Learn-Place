@@ -9,6 +9,7 @@ import './css/sub/alert_box.css'
 import NotFoundPage from './pages/notfound.js';
 import HomePage from './pages/home.js';
 import LearnPlace from './pages/learnPlace.js';
+import LearnPlaceItems from './pages/learnPlaceItem.js';
 import CameraTranslate from './pages/camera.js';
 import AdminPage from './pages/admin.js';
 import AdminPageItems from './pages/adminItem.js';
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
     {path: '/', element: <HomePage/>},
     {path: '/home', element: <HomePage/>},
     {path: '/learn', element: <LearnPlace/>},
+    {path: '/learn/search/:word', element: <LearnPlaceItems/>},
     {path: '/camera', element: <CameraTranslate/>},
     {path: '/admin', element: <AdminPage/>},
     {path: '/admin/:page', element: <AdminPageItems/>},

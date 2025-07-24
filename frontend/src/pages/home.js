@@ -47,13 +47,10 @@ export default function HomePage() {
     
     async function checkState(token) {
         await axios.post('/checkAdminServer', {token}).then(res => {
-            const isAdmin = res.data
+            const isAdmin = (res.data == 1 || res.data == 2) ? true : false
             isAdmin ? navigate('/admin') : navigate('/learn')
             return
         }).catch(err => {
-            if (token != null) {
-                openAlert('danger', 'Error', "Something went wrong")
-            }
             return
         })
     }
@@ -286,7 +283,7 @@ export default function HomePage() {
                 <form onSubmit={(e) => {signup(e)}} className={logsignForm.logsign_container}>
                     <label htmlFor="chkFormSecId" aria-hidden="true" className={logsignForm.handler}>Sign up</label>
                     <div id='signinBtnGroup'>
-                        <input type="text" name="name" placeholder="name" required 
+                        <input type="text" name="name" maxLength={15} placeholder="name" required 
                             className={`${logsignForm.inputform} name`} 
                             onChange={(e) => setName(e.target.value)}
                         />

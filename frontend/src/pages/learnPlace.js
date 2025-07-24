@@ -29,6 +29,7 @@ export default function LearnPlace() {
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const didRun = useRef(false);
+    const [searchRes, setSearchRes] = useState([]);
 
     const isTokenExpired = () => {
         const token = localStorage.getItem('authToken');
@@ -53,66 +54,60 @@ export default function LearnPlace() {
         localStorage.setItem('email', '')
         localStorage.setItem('profile', '')
         setAuthToken(false);
-        await axios.post('/logoutServer')
-            .then(res => {
-                if (authToken && isTokenExpired()) {
-                    navigate('/home')
-                    return
-                }
-                openAlert(res.data.theme, res.data.title, res.data.content)
-            })
-            .catch(err => {
-                console.log('error')
-            })
+        await axios.post('/logoutServer').then(res => {
+            if (authToken && isTokenExpired()) {
+                navigate('/home')
+                return
+            }
+            openAlert(res.data.theme, res.data.title, res.data.content)
+        }).catch(err => {
+            console.log('error')
+            openAlert('danger', 'Error', "Unable to logout")
+        })
     }
-
-    let searchingIdelay
-    let searchController
-    function cancelSearch() {
-        if (searchController) {
-            searchController.abort()
-        }
-    }
+    
     async function typingSearch(value) {
-        clearTimeout(searchingIdelay);
-        if (value == '') {
-            console.log(searchController);
-            cancelSearch()
-            console.log(searchController);
-        }else {
-            searchingIdelay = setTimeout(async () => {
-                searchController = new AbortController()
-                const signal = searchController.signal
-                console.log(searchController);
-                console.log(signal);
-    
-                try {
-                    // Make the initial request for the first page
-                    const res = await axios.post('http://localhost:5000/learnServer', {
-                        search_data: value,
-                        search_page: 1,
-                        signal: signal
-                    });
-                    console.log(res.data);
-    
-                    // Loop all pages from current to total
-                    for (let i = res.data['pageNow']; i < res.data['pageAll']; i++) {
-                        const pageRes = await axios.post('http://localhost:5000/learnServer', {
-                            search_data: value,
-                            search_page: i + 1,
-                            signal: signal
-                        });
-                        console.log(pageRes.data);
-                    }
-                } catch (err) {
-                    console.error('Error occurred during search:', err);
+        showSearchResult(true)
+        if (value != '') {
+            await axios.post('/searchWord', {search_data: value}).then(res => {
+                console.log(res.data);
+                if (res.data[0] != undefined) {
+                    setSearchRes(res.data)
                 }
-            }, 1000);
+            }).catch(err => {
+                console.log('error')
+                showSearchResult(false)
+            })
+        }else {
+            firstOpenSearch()
         }
     }
-    // Activate when user press enter while focus in searchbox
+    async function firstOpenSearch() {
+        const min = 1;
+        const max = 1000;
+        const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+        console.log(rand);
+
+        showSearchResult(true)
+        await axios.post('/searchWordFirst', {random_data: rand}).then(res => {
+            setSearchRes(res.data)
+        }).catch(err => {
+            console.log('error')
+            showSearchResult(false)
+        })
+    }
     function handleSearch(e) {
         e.preventDefault()
+        showSearchResult(false)
+    }
+
+    function showSearchResult(toShow) {
+        const element = document.querySelector(`.${lpMain.search_result}`)
+        if (toShow) {
+            element.style.display = "flex"
+        }else {
+            element.style.display = "none"
+        }
     }
     
     function changeStrTable(row, col) {
@@ -320,6 +315,8 @@ export default function LearnPlace() {
         const headBtn = document.querySelectorAll('.me_hed_btn')
 
         function openSearch() {
+            showSearchResult(true)
+            firstOpenSearch()
             if (window.innerWidth < 768) {
                 headBtn.forEach(elememt => {
                     elememt.inert = true
@@ -335,6 +332,7 @@ export default function LearnPlace() {
             searchInput.focus()
         }
         function closeSearch() {
+            showSearchResult(false)
             headBtn.forEach(element => {
                 element.inert = false
                 element.style.transition = 'opacity 300ms'
@@ -527,35 +525,20 @@ export default function LearnPlace() {
         </header>
         <div className={lpMain.search_result} style={{display: 'none'}}>
             <div className={lpMain.history_list}>
-                <div className={lpMain.word_container}>
-                    <div>
-                        <p>Hello</p>
+                {searchRes.map(data => (
+                    <div className={lpMain.word_container} key={data.id} onClick={(e) => {
+                        navigate(`/learn/search/${e.target.querySelector('div p').innerHTML}`)
+                    }}>
+                        <div>
+                            <p>{data.thsl_word}</p>
+                        </div>
+                        <div>
+                            <p id="meaning">{data.thsl_desc}</p>
+                            <p id="group"></p>
+                        </div>
                     </div>
-                    <div>
-                        <p id="meaning">The way to greeting</p>
-                        <p id="group">3</p> 
-                    </div>
-                </div>
-                <div className={lpMain.word_container}>
-                    <div>
-                        <p>Hello</p>
-                    </div>
-                    <div>
-                        <p id="meaning">The way to greeting</p>
-                        <p id="group">3</p> 
-                    </div>
-                </div>
-                <div className={lpMain.word_container}>
-                    <div>
-                        <p>Hello</p>
-                    </div>
-                    <div>
-                        <p id="meaning">The way to greeting</p>
-                        <p id="group">3</p> 
-                    </div>
-                </div>
+                ))}
             </div>
-            {/* <div className="search-list"></div> */}
         </div>
         <nav id="sideMenu" className={lpMain.sideMenu} aria-hidden="true" role="navigation" aria-label="Side menu" inert>
             <div className={lpMain.user_info}>

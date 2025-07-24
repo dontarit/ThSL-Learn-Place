@@ -7,6 +7,7 @@ import adMain from '../css/admin/style.css'
 import adSidebar from '../css/admin/side_nav.css'
 import getBase from '../js/getBase.js'
 import NotFoundPage from '../pages/notfound.js';
+import openAlert from '../js/alert-box.js'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
@@ -33,24 +34,24 @@ export default function AdminPage() {
             return true;
         }
     };
+
     async function checkState() {
-        await axios.post('/checkAdminServer', {token: authToken})
-            .then(res => {
-                setIsAdmin(res.data)
-                return
-            }).catch(err => {
-                setIsAdmin(false)
-                return
-            })
+        await axios.post('/checkAdminServer', {token: authToken}).then(res => {
+            setIsAdmin((res.data == 1 || res.data == 2) ? true : false)
+            return
+        }).catch(err => {
+            setIsAdmin(false)
+            return
+        })
     }
     checkState()
     
-    useEffect(() => {
-        if (!authToken && isTokenExpired()) {
-            navigate('/home')
-            return
-        }
-    }, [authToken]);
+    // useEffect(() => {
+    //     if (!authToken && isTokenExpired()) {
+    //         navigate('/home')
+    //         return
+    //     }
+    // }, [authToken]);
     
     if (!isAdmin) {
         return <NotFoundPage />;
@@ -65,9 +66,6 @@ export default function AdminPage() {
         await axios.post('/logoutServer')
             .then(res => {
                 if (authToken && isTokenExpired()) {
-                    // const linkButtonNavigate = document.createElement('a');
-                    // linkButtonNavigate.href = '/home'
-                    // linkButtonNavigate.click()
                     navigate('/home')
                     return
                 }
