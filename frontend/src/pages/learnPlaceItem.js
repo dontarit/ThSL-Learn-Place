@@ -72,7 +72,6 @@ export default function LearnPlace() {
         showSearchResult(true)
         if (value != '') {
             await axios.post('/searchWord', {search_data: value}).then(res => {
-                console.log(res.data);
                 if (res.data[0] != undefined) {
                     setSearchRes(res.data)
                 }
@@ -88,7 +87,6 @@ export default function LearnPlace() {
         const min = 1;
         const max = 1000;
         const rand = Math.floor(Math.random() * (max - min + 1)) + min;
-        console.log(rand);
 
         showSearchResult(true)
         await axios.post('/searchWordFirst', {random_data: rand}).then(res => {
@@ -539,6 +537,7 @@ export default function LearnPlace() {
                 {searchRes.map(data => (
                     <div className={lpMain.word_container} key={data.id} onClick={(e) => {
                         navigate(`/learn/search/${e.target.querySelector('div p').innerHTML}`)
+                        searchWordData(data.thsl_word)
                     }}>
                         <div>
                             <p>{data.thsl_word}</p>
@@ -624,7 +623,7 @@ export default function LearnPlace() {
                 </div>
             </div>
         </nav>
-        <div className={lpMain.mainContent_container} style={{maxWidth: 'unset', alignItems: 'center'}}>
+        <div className={lpMain.mainContent_container} style={{maxWidth: 'unset', alignItems: 'center', paddingBottom: '4em'}}>
             <section className={lpMain.schedule} style={{display: 'none', maxWidth: '500px'}}>
                 <div className={lpMain.tell_streak}>
                     <div className={`${lpMain.streak_container} ${lpMain.stnow}`}>
@@ -734,51 +733,25 @@ export default function LearnPlace() {
                     <i className="ph ph-house-line"></i>
                 </button>
             </section>
-            <section className={lpMain.To_Signin} style={{maxWidth: '1200px'}}>
-                <div>
-                    <div className={lpMain.Backup_info}>
-                        <p className={lpMain.title}></p>
-                        <div>
-                            <span>-----------------------------------------------------------------</span>
-                        </div>
-                    </div>
-                    <div className={`${lpWave.sign_button} ${lpWave.btnAnimate}`} style={{cursor: 'default'}}>
-                        <span>{id.word}</span>
-                        <div className={lpWave.liquid}></div>
-                    </div>
-                    <div className={lpMain.Backup_info}>
-                        <p className={lpMain.title}></p>
-                        <div>
-                            <span>-----------------------------------------------------------------</span>
-                        </div>
-                    </div>
-                </div>
-                <div className={lpMain.SearchResultData}>
-                    <div className={lpMain.SearchResultData_sub}>
-                        <a href='/learn' className={lpMain.dataMainCard}>
-                            <img className={lpMain.searchImage} src='https://www.th-sl.com/wp-content/uploads/2025/07/2568-0260.gif'></img>
-                            <h1>To Main</h1>
-                        </a>
-                        <a href='/learn' className={lpMain.dataMainCard}>
-                            <img className={lpMain.searchImage} src='https://www.th-sl.com/wp-content/uploads/2025/07/2568-0260.gif'></img>
-                            <h1>To Main</h1>
-                        </a>
-                        {siteSearch.map((item) => (
-                            // console.log(item)
-                            // <a href={`admin/${item.link}`} className='btnSlc' key={item.id} style={{backgroundColor: item.color}}>
-                            //     <i className={`ph ${item.icon}`}></i>
-                            //     <h1>{item.title}</h1>
-                            // </a>
-                            <a href='/learn' className={lpMain.dataMainCard} key={item.id}>
-                                <img className={lpMain.searchImage} src='https://www.th-sl.com/wp-content/uploads/2025/07/2568-0260.gif'></img>
-                                {/* <img src={`/image/${item.id}`} alt={item.thsl_word} /> */}
-                                <h1>{item.thsl_word}</h1>
-                            </a>
-                        ))}
-                    </div>
-                </div>
-            </section>
         </div>
+        <section className={lpMain.SearchResult_Container}>
+            <div className={lpMain.SearchResultData}>
+                <div className={lpMain.SearchResultData_sub}>
+                    {siteSearch.map((item) => (
+                        <a href={`admin/${item.thsl_word}`} className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id} style={{ backgroundColor: item.color }}>
+                            <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
+                                onLoad={e => {
+                                    let parent = e.currentTarget.parentElement
+                                    parent.classList.remove(lpMain.loading)
+                                }}
+                            />
+                            <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
+                        </a>
+                    ))}
+
+                </div>
+            </div>
+        </section>
         <div className={lpSetting.setting_container}>
             <div className={lpSetting.con_out}>
                 <p>Setting</p>

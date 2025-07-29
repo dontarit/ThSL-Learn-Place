@@ -238,15 +238,14 @@ const saveWordData = async (word_data) => {
         const imageUrl = data.image;
 
         try {
-            const imageBuffer = await downloadImage(imageUrl);
-            const query = 'INSERT INTO thsl_words (thsl_word, thsl_image, thsl_src) VALUES (?, ?, ?)';
+            const query = 'INSERT INTO thsl_words (thsl_word, thsl_src) VALUES (?, ?)';
 
             pool.getConnection((err, connection) => {
                 if (err) {
                     console.error('Error getting connection:', err)
                     return res.json({theme: 'danger', title: 'Error', content: "Can't connect to database"})
                 }
-                connection.query(query, [textTitle, imageBuffer, imageUrl], (err, result) => {
+                connection.query(query, [textTitle, imageUrl], (err, result) => {
                     connection.release()
                     if (err) {
                         console.error('Error saving image to database:', err);
