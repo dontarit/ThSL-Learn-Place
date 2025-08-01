@@ -77,7 +77,7 @@
 }
 
 .open_menu::after {
-    content: url('');
+    content: "";
     position: absolute;
     width: 100%;
     height: 100%;
@@ -175,7 +175,7 @@
     position: relative;
 }
 .open_setting_to_animate::after {
-    content: url("");
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -229,7 +229,7 @@
     transition: background-color 50ms;
 }
 .search_result .history_list .word_container::after {
-    content: url('');
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -388,7 +388,7 @@
 }
 
 .nav_bar .typeNav:not(:nth-child(3))::after {
-    content: url('');
+    content: "";
     position: absolute;
     width: 100%;
     height: 2px;
@@ -411,7 +411,7 @@
     position: relative !important;
 }
 .activateSearch::before {
-    content: url("");
+    content: "";
     position: absolute;
     top: 0;
     width: 100%;
@@ -538,7 +538,7 @@
     cursor: pointer;
 }
 .tableColumn::after {
-    content: url("");
+    content: "";
     position: absolute;
     top: 0;
     width: 100%;
@@ -900,45 +900,17 @@
     width: fit-content;
     justify-self: center;
 }
-.SearchResultData_sub .dataMainCard.loading {
-    .searchImage {
-        opacity: 0;
-    }
-    .searchTitleName {
-        opacity: 0;
-    }
-}
-.SearchResultData_sub .dataMainCard.loading::before {
-    content: url("");
+/* .SearchResultData_sub .dataMainCard::after {
+    content: "";
     position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
+    width: 82%;
+    height: 80%;
+    border-radius: 0 0 5px 5px;
     top: 0;
-    border-radius: 5px;
-    background-color: #323232;
-    animation: skeleton-loading-searchResult 800ms infinite alternate;
-}
-.SearchResultData_sub .dataMainCard.loading::after {
-    content: url("");
-    position: absolute;
-    width: 80%;
-    height: 10%;
-    left: 50%;
-    bottom: calc(0% + 12px);
-    transform: translateX(-50%);
-    border-radius: 5px;
-    background-color: #bcbcbc;
-    animation: skeleton-loading-searchResult 800ms infinite alternate;
-}
-@keyframes skeleton-loading-searchResult {
-    0% {
-        opacity: .65;
-    }
-    100% {
-        opacity: .95;
-    }
-}
+    margin: auto;
+    background-color: blue;
+    z-index: 100;
+} */
 .SearchResultData_sub .dataMainCard .searchImage {
     position: relative;
     max-width: 180px;
@@ -958,6 +930,45 @@
     text-align: center;
     transition: all 500ms ease;
 }
+.SearchResultData_sub .dataMainCard.loading {
+    .searchImage {
+        opacity: 0;
+    }
+    .searchTitleName {
+        opacity: 0;
+    }
+}
+.SearchResultData_sub .dataMainCard.loading::before {
+    content: "";
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 0;
+    margin: auto;
+    border-radius:  0 0 5px 5px;
+    background-color: rgba(150, 150, 150, 0.8);
+    animation: skeleton-loading-searchResult 800ms infinite alternate;
+}
+.SearchResultData_sub .dataMainCard.loading::after {
+    content: "";
+    position: absolute;
+    width: 80%;
+    height: 10%;
+    left: 50%;
+    bottom: calc(0% + 12px);
+    transform: translateX(-50%);
+    border-radius: 5px;
+    background-color: rgba(150, 150, 150, 0.8);
+    animation: skeleton-loading-searchResult 800ms infinite alternate;
+}
+@keyframes skeleton-loading-searchResult {
+    0% {
+        opacity: .65;
+    }
+    100% {
+        opacity: .95;
+    }
+}
 
 
 
@@ -968,10 +979,6 @@
     .search_container_mainModule {
         max-width: none;
         width: calc(80% - 25px);
-    }
-    .search_result {
-        /* height: 50%; */
-        /* background-color: red; */
     }
 }
 

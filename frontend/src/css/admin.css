@@ -82,7 +82,7 @@
     cursor: pointer;
 }
 .menuSelect .btnSlc::after {
-    content: url("");
+    content: "";
     position: absolute;
     top: 0;
     width: 100%;

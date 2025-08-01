@@ -889,8 +889,8 @@ export default function LearnPlace() {
                 <div className={lpSetting.bottom_deck}>
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
                     <div className={lpSetting.inner}>
-                        <input id="submit_setting" type="button" defaultValue="Ok" className={lpSetting.closeSetting} onClick={() => {comfirmSetting(true)}}/>
-                        <input id="cancle_setting" type="button" defaultValue="Cancle" className={lpSetting.closeSetting} onClick={()  => {comfirmSetting(false)}}/>
+                        <input id="submit_setting" type="button" defaultValue="Ok" className="closeSetting" onClick={() => {comfirmSetting(true)}}/>
+                        <input id="cancle_setting" type="button" defaultValue="Cancle" className="closeSetting" onClick={()  => {comfirmSetting(false)}}/>
                     </div>
                 </div>
             </div>
