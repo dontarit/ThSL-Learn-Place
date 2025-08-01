@@ -98,7 +98,10 @@ export default function LearnPlace() {
     }
     function handleSearch(e) {
         e.preventDefault()
+        let value = document.getElementById('search-box').value
         showSearchResult(false)
+        navigate(`/learn/search/${value}`)
+        searchWordData(value)
     }
 
     function showSearchResult(toShow) {
