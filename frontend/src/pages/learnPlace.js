@@ -8,6 +8,7 @@ import lpSetting from '../css/sub/setting_page.module.css'
 import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
+import { isTokenExpired } from '../js/tokenManipulate.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
@@ -27,26 +28,25 @@ export default function LearnPlace() {
     const navigate = useNavigate();
     getBase()
     
-    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const didRun = useRef(false);
+    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [searchRes, setSearchRes] = useState([]);
-
-    const isTokenExpired = () => {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) return true;
-        if (token.split('.').length !== 3) {
-            console.error('Invalid token format');
-            return true;
+    // Svae setting config
+    const [validSetting, setValidSetting] = useState(true)
+    const [settingStore, setSettingStore] = useState({
+        setValue: {
+            schedule: 4,
+            streak: false,
+            theme: 'light',
+            time: '00:10'
+        },
+        value: {
+            schedule: 4,
+            streak: false,
+            theme: 'light',
+            time: '00:10'
         }
-        try {
-            const decodedToken = JSON.parse(atob(token.split('.')[1]));
-            return decodedToken.exp < Date.now() / 1000;
-        } catch (e) {
-            console.error('Error decoding token:', e);
-            return true;
-        }
-    };
+    })
 
     async function handleLogout() {
         localStorage.removeItem('authToken')
@@ -100,9 +100,10 @@ export default function LearnPlace() {
         e.preventDefault()
         showSearchResult(false)
     }
-
+    
     function showSearchResult(toShow) {
         const element = document.querySelector(`.${lpMain.search_result}`)
+        if (!element) return
         if (toShow) {
             element.style.display = "flex"
         }else {
@@ -159,23 +160,6 @@ export default function LearnPlace() {
         }
     }
 
-    // Svae setting config
-    const [validSetting, setValidSetting] = useState(true)
-    const [settingStore, setSettingStore] = useState({
-        setValue: {
-            schedule: 4,
-            streak: false,
-            theme: 'light',
-            time: '00:10'
-        },
-        value: {
-            schedule: 4,
-            streak: false,
-            theme: 'light',
-            time: '00:10'
-        }
-    })
-
     function comfirmSetting(apply) {
         const historyShow = document.getElementById('history-show')
         const streakShow = document.getElementById('streak-show')
@@ -211,26 +195,22 @@ export default function LearnPlace() {
     }
 
     function SpinCheck(elememt) {
-        if (elememt.classList.contains('Spin-n')) {
-            elememt.classList.add('Spin-y')
-            elememt.classList.remove('Spin-n')
-            elememt.style.transform = 'rotate(0deg)'
-            elememt.style.transition = 'transform 500ms'
+        const setting = document.getElementById('open_setting_to_animate')
+        const settime = 250
+        console.log(setting);
+
+        if (elememt.classList.contains('Spin_n')) {
+            elememt.classList.add('Spin_y')
+            elememt.classList.remove('Spin_n')
+            setting.style.transition = `all ${settime}`
+            setting.style.rotate = '0deg'
         }
-        else if (elememt.classList.contains('Spin-y')) {
-            elememt.classList.add('Spin-n')
-            elememt.classList.remove('Spin-y')
-            elememt.style.transform = 'rotate(360deg)'
-            elememt.style.transition = 'transform 500ms'
+        else if (elememt.classList.contains('Spin_y')) {
+            elememt.classList.add('Spin_n')
+            elememt.classList.remove('Spin_y')
+            setting.style.transition = `all ${settime}`
+            setting.style.rotate = '360deg'
         }
-    }
-    
-    const [use_hour, setUse_hour] = useState(0)
-    const [use_min, setUse_min] = useState(0)
-    function countRecord() {
-        // setInterval(() => {
-        //     setInterval
-        // }, 1000);
     }
 
     useEffect(() => {
@@ -248,9 +228,9 @@ export default function LearnPlace() {
             element.addEventListener('click', () => {
                 element.transition = 'transform 100ms'
                 element.style.transform = 'translateY(-5%) scale(1.02)'
-                setTimeout(() => {
+                element.ontransitionend = () => {
                     element.style.transform = 'translateY(0%) scale(1)'
-                }, 100);
+                }
             })
         });
 
@@ -275,8 +255,7 @@ export default function LearnPlace() {
             sideItem.forEach(element => {
                 setTimeout(() => {
                     element.style.transform = 'translateX(0%)'
-                }, itemCount);
-                itemCount += 50
+                }, itemCount += 50);
             })
         }
         function closeMenu() {
@@ -483,12 +462,12 @@ export default function LearnPlace() {
         <header className={lpMain.headerSection}>
             <div className={lpMain.con_header}>
                 <div className={`${lpMain.open_menu} me_hed_btn`} id="menuBtn">
-                        <span className={lpMain.menu_btn_out}></span>
-                        <div className={lpMain.menu_btn_gruop}>
-                            <span className={lpMain.menu_btn_in}></span>
-                            <span className={lpMain.menu_btn_in}></span>
-                        </div>
-                        <span className={lpMain.menu_btn_out}></span>
+                    <span className={lpMain.menu_btn_out}></span>
+                    <div className={lpMain.menu_btn_gruop}>
+                        <span className={lpMain.menu_btn_in}></span>
+                        <span className={lpMain.menu_btn_in}></span>
+                    </div>
+                    <span className={lpMain.menu_btn_out}></span>
                 </div>
                 <div className={lpMain.main_logo}>
                     <img src={TSLlogo} alt='logo'/>
@@ -516,8 +495,8 @@ export default function LearnPlace() {
                         </div>
                     </div>
                 </div>
-                <div className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} me_hed_btn ${lpMain.settingIconOpen} ${lpMain.Spin_n}`}
-                    onClick={e => { SpinCheck(e.target) }}
+                <div id='open_setting_to_animate' className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} Spin_n me_hed_btn`}
+                    onClick={e => { SpinCheck(e.currentTarget) }}
                 >
                     <i className="ph-fill ph-gear-six"></i>
                 </div>
@@ -759,7 +738,6 @@ export default function LearnPlace() {
                                             let element = e.target
                                             let value = element.value == '' || element.value == null ? settingStore.value.schedule : element.value
                                             if (value > 100) {
-                                                let time = 750
                                                 let color = element.style.color
                                                 element.inert = true
                                                 element.setAttribute('type', 'text')
@@ -772,7 +750,7 @@ export default function LearnPlace() {
                                                     element.style.color = color
                                                     element.style.border = '3px solid #ccc'
                                                     element.value = ''
-                                                }, time);
+                                                }, 750);
                                             } else {
                                                 element.setAttribute('placeholder', `${value} week`)
                                                 setSettingStore(prevState => ({

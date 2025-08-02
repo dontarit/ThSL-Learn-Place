@@ -5,6 +5,7 @@ import axios from 'axios'
 import NotFoundPage from '../pages/notfound.js';
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
+import { isTokenExpired } from '../js/tokenManipulate.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
@@ -21,23 +22,6 @@ export default function AdminPageItems() {
     const [thsls, setThsls] = useState([]);
     const [options, setOptions] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    const isTokenExpired = () => {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) return true;
-        if (token.split('.').length !== 3) {
-            console.error('Invalid token format');
-            return true;
-        }
-        try {
-            const decodedToken = JSON.parse(atob(token.split('.')[1]));
-            return decodedToken.exp < Date.now() / 1000;
-        } catch (e) {
-            console.error('Error decoding token:', e);
-            return true;
-        }
-    };
 
     async function checkState() {
         await axios.post('/checkAdminServer', {token: authToken}).then(res => {
@@ -167,16 +151,21 @@ export default function AdminPageItems() {
     // -------- ThSL --------
 
     async function handleHookThSLData() {
-        const getPrompt = prompt(`To fetch data, all data will be replaced with the new one. To confirm, type "fetch" in the box below`)
+        const getPrompt = prompt(`This process will replaced all data with the new one. To confirm, type "fetch" in the box below`)
         if (getPrompt == 'fetch') {
-            openAlert('info', 'Hooking', "Trying to retrieve data. It may take a while. Closing or leave the site may cause major problems.")
+            openAlert('info', 'Called', "Trying to retrieve data, might take some time")
+            const hookProcess = new EventSource(`/hookDataThSL`)
+            hookProcess.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log("Live update from server:", data);
+            };
             axios.post(`/hookDataThSL`).then(res => {
                 openAlert(res.data.theme, res.data.title, res.data.content)
                 console.log(res.data.word);
             })
             .catch((error) => {
                 console.error(error);
-                openAlert('danger', 'Error', "Unable to save ThSL data")
+                openAlert('danger', 'Error', "Unable to save data")
             });
         } else {
             openAlert('info', 'Canceled', "Cancel fetching data")
@@ -498,7 +487,7 @@ export default function AdminPageItems() {
                                 {thsls.map((data) => (
                                     <tr className='contentTableRow' key={data.id}>
                                         <td className='setWidthFixtb'>{data.thsl_word}</td>
-                                        <td className='setWidthFixtb'>{data.thsl_desc}</td>
+                                        <td className='setWidthFixtb'>none</td>
                                         <td className='setWidthFixtb'>
                                             <a href={data.thsl_src} target="_blank" rel="noopener noreferrer">GIF Example</a>
                                         </td>

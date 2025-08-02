@@ -8,6 +8,7 @@ import adSidebar from '../css/admin/side_nav.css'
 import getBase from '../js/getBase.js'
 import NotFoundPage from '../pages/notfound.js';
 import openAlert from '../js/alert-box.js'
+import { isTokenExpired } from '../js/tokenManipulate.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
@@ -17,23 +18,6 @@ export default function AdminPage() {
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [isAdmin, setIsAdmin] = useState();
-
-    const isTokenExpired = () => {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) return true;
-        if (token.split('.').length !== 3) {
-            console.error('Invalid token format');
-            return true;
-        }
-        try {
-            const decodedToken = JSON.parse(atob(token.split('.')[1]));
-            return decodedToken.exp < Date.now() / 1000;
-        } catch (e) {
-            console.error('Error decoding token:', e);
-            return true;
-        }
-    };
 
     async function checkState() {
         await axios.post('/checkAdminServer', {token: authToken}).then(res => {

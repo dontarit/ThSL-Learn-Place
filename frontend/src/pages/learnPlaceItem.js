@@ -8,6 +8,7 @@ import lpSetting from '../css/sub/setting_page.module.css'
 import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
+import { isTokenExpired } from '../js/tokenManipulate.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
@@ -32,23 +33,6 @@ export default function LearnPlace() {
     const didRun = useRef(false);
     const [searchRes, setSearchRes] = useState([]);
     const [siteSearch, setSiteSearch] = useState([]);
-
-    const isTokenExpired = () => {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) return true;
-        if (token.split('.').length !== 3) {
-            console.error('Invalid token format');
-            return true;
-        }
-        try {
-            const decodedToken = JSON.parse(atob(token.split('.')[1]));
-            return decodedToken.exp < Date.now() / 1000;
-        } catch (e) {
-            console.error('Error decoding token:', e);
-            return true;
-        }
-    };
 
     async function handleLogout() {
         localStorage.removeItem('authToken')

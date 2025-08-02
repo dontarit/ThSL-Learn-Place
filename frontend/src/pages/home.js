@@ -6,6 +6,7 @@ import home from '../css/home.module.css'
 import logsignForm from '../css/sub/logsignForm.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
+import { refreshToken, isTokenExpired } from '../js/tokenManipulate.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
@@ -63,7 +64,7 @@ export default function HomePage() {
         didRun.current = true;
         
         if (!authToken && isTokenExpired()) {
-            refreshToken();
+            setAuthToken(refreshToken)
         }
         
         const burger = document.getElementById("burger");
@@ -233,32 +234,6 @@ export default function HomePage() {
             openAlert('danger', 'Error', "Unable to login via API")
         })
     }
-
-
-    async function refreshToken() {
-        await axios.post('/tokenServer')
-            .then(res => {
-                const accessToken = res.data.token
-                localStorage.setItem('authToken', accessToken)
-                setAuthToken(accessToken)
-            })
-            .catch(err => {
-                console.error('Error refreshing token:', err);
-            })
-    };
-
-    const isTokenExpired = () => {
-        const token = localStorage.getItem('authToken');
-        if (!token || token.split('.').length !== 3) return true;
-        
-        try {
-            const decodedToken = JSON.parse(atob(token.split('.')[1]));
-            return decodedToken.exp < Date.now() / 1000;
-        } catch (e) {
-            console.error('Error decoding token:', e);
-            return true;
-        }
-    };
 
 
 

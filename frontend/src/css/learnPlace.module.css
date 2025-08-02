@@ -72,7 +72,6 @@
     justify-content: center;
     position: relative;
     gap: 6px;
-    cursor: pointer;
     z-index: 1;
 }
 
@@ -88,6 +87,7 @@
     height: 3px;
     border-radius: 15px;
     background-color: #e2e2e2;
+    transition: all 0.5s;
 }
 
 .open_menu .menu_btn_gruop {
@@ -104,6 +104,7 @@
     border-radius: 15px;
     background-color: #e2e2e2;
     position: absolute;
+    transition: all 0.5s;
 }
 
 .hdrmnbtn_open {
@@ -181,15 +182,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-}
-
-.Spin_n {
-    transform: rotate(0deg);
-    transition: transform 500ms;
-}
-.Spin_y {
-    transform: rotate(360deg);
-    transition: transform 500ms;
 }
 
 .search_result {

@@ -236,21 +236,22 @@ const saveWordData = async (word_data) => {
     for (const data of word_data) {
         const textTitle = data.text;
         const imageUrl = data.image;
+        const descript = JSON.stringify(data.description)
 
         try {
-            const query = 'INSERT INTO thsl_words (thsl_word, thsl_src) VALUES (?, ?)';
+            const query = 'INSERT INTO thsl_words (thsl_word, thsl_src, thsl_desc) VALUES (?, ?, ?)';
 
             pool.getConnection((err, connection) => {
                 if (err) {
                     console.error('Error getting connection:', err)
                     return res.json({theme: 'danger', title: 'Error', content: "Can't connect to database"})
                 }
-                connection.query(query, [textTitle, imageUrl], (err, result) => {
+                connection.query(query, [textTitle, imageUrl, descript], (err) => {
                     connection.release()
                     if (err) {
                         console.error('Error saving image to database:', err);
                     } else {
-                        console.log(`Fetch "${textTitle}" to database`);
+                        console.log(`Fetch "${textTitle}" into database`);
                     }
                 });
             })
@@ -261,13 +262,19 @@ const saveWordData = async (word_data) => {
 };
 
 app.post('/hookDataThSL', async (req, res) => {
+    // res.setHeader('Content-Type', 'text/event-stream');
+    // res.setHeader('Cache-Control', 'no-cache');
+    // res.setHeader('Connection', 'keep-alive');
+
+    // res.write(`data: ${JSON.stringify({ status: "Starting process..." })}\n\n`);
+
     const browser = await puppeteer.launch()
-    const page = await browser.newPage()
-
-    await page.goto(`https://www.th-sl.com/search-by-act/`)
-    await page.waitForSelector('#ReactiveGridView', { visible: true });
-
-    const word_data = await page.evaluate(() => {
+    
+    // Get thai sign data
+    const ACT_PAGE = await browser.newPage()
+    await ACT_PAGE.goto(`https://www.th-sl.com/search-by-act/`)
+    await ACT_PAGE.waitForSelector('#ReactiveGridView', { visible: true });
+    const word_data = await ACT_PAGE.evaluate(() => {
         const ftc_1 = document.getElementById('ReactiveGridView')
         const ftc_2 = ftc_1.querySelectorAll('div')
         const ftc_3 = ftc_2[Object.entries(ftc_2).length - 1].querySelector('button')
@@ -278,7 +285,7 @@ app.post('/hookDataThSL', async (req, res) => {
         const fetchMoreData = async () => {
             const fetchMore = async () => {
                 const fetch_more = document.getElementById('FetchItems');
-                
+
                 if (fetch_more !== null && fetch_more !== undefined) {
                     fetch_more.click();
                     await fetchMore();
@@ -298,15 +305,56 @@ app.post('/hookDataThSL', async (req, res) => {
             await fetchMore();
         };
         fetchMoreData();
-        console.log(result);
         return result
     })
+
+    // Get description from thai dictionary
+    const DIC_PAGE = await browser.newPage()
+    await DIC_PAGE.goto(`https://dictionary.orst.go.th/`)
+    await DIC_PAGE.waitForSelector('#txt_input', { visible: true });
+    for (const data of word_data) {
+        const keyword = data.text.split(/[\s(]/)[0];
+        
+        await DIC_PAGE.evaluate((kw) => {
+            document.getElementById('txt_input').value = kw;
+            document.getElementById('btnSubmit').click();
+        }, keyword);
+
+        await DIC_PAGE.waitForSelector('.panel.panel-info');
+        
+        const description = await DIC_PAGE.evaluate((data) => {
+            const result = [];
+            let ele_1 = document.querySelector('.panel.panel-info');
+            let ele_2 = ele_1.querySelectorAll('.panel-body .panel.panel-info')
+            if (ele_2[0]) {
+                ele_2.forEach(panel => {
+                    const head = panel.querySelector('.panel-heading b').innerText;
+                    const text = panel.querySelector('.panel-body').innerText;
+                    result.push({ head, text });
+                });
+            } else {
+                result.push({ head : data.text, text : "" });
+            }
+            return result;
+        }, data);
+
+        data.description = description;
+        
+        await Promise.all([
+            DIC_PAGE.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+            DIC_PAGE.click('#index a')
+        ]);
+        
+        await DIC_PAGE.waitForSelector('#txt_input', { visible: true });
+        console.log(`Fetch title, description of "${data.text}"`);
+    }
     
     pool.getConnection((err, connection) => {
         const query = `TRUNCATE TABLE thsl_words`
         if (err) {
             console.error('Error getting connection:', err)
             return res.json({theme: 'danger', title: 'Error', content: "Can't connect to database"})
+            // return res.write(`data: ${JSON.stringify({ theme: 'danger', title: 'Error', content: "Can't connect to database" })}\n\n`);
         }
         connection.query(query, (err, result) => {
             connection.release()
@@ -321,7 +369,7 @@ app.post('/hookDataThSL', async (req, res) => {
     
     await new Promise(resolve => setTimeout(resolve, port))
     await browser.close()
-    return res.json({theme: 'info', title: 'Fetching', content: 'Data fetching don\'t closing or leave the site, you can see more details in the backend terminal.', word: word_data})
+    return res.json({theme: 'success', title: 'Fetched', content: 'Fetching data successfully, it may take some time to store in database', word: word_data})
 })
 
 app.post('/fetchThSLData', (req, res) => {
@@ -436,33 +484,6 @@ app.post('/changeThSL_Description', (req, res) => {
         })
     })
 })
-
-// app.get('/image/:id', (req, res) => {
-//     console.log('got');
-//     const imageId = req.params.id;
-//     const sql = 'SELECT thsl_image FROM thsl_words WHERE id = ?'
-
-//     pool.getConnection((err, connection) => {
-//         if (err) {
-//             console.error('Error getting connection:', err)
-//             return
-//         }
-//         connection.query(query, [imageId], (err, data) => {
-//             connection.release()
-//             if (err) {
-//                 console.error('Error executing query:', err)
-//             } else {
-//                 const imageBuffer = data[0]?.thsl_image;
-//                 if (imageBuffer) {
-//                     res.setHeader('Content-Type', 'image/gif');
-//                     res.send(imageBuffer);
-//                 } else {
-//                     res.status(404).send('Image not found');
-//                 }
-//             }
-//         })
-//     })
-// });
 
 // NOTE Main
 

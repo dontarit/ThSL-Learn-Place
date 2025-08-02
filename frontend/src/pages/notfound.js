@@ -5,15 +5,15 @@ export default function NotFoundPage() {
     return (
         <>
         <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100vh' ,
-                backgroundColor: '#ffffff'
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100vh' ,
+            backgroundColor: '#ffffff'
         }}>
             <img src={notFound} style={{ width: '150px'}} />
-            <h2 style={{marginBottom: '20px'}}>Oops! The page you're looking for doesn't exist.</h2>
+            <h2 style={{marginBottom: '20px', textAlign: 'center'}}>Oops! The page you're looking for doesn't exist.</h2>
             <Link to={"/"}>
                 <button style={{
                     backgroundColor: '#3498db',

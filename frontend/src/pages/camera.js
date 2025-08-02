@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import openAlert from '../js/alert-box.js'
 import getBase from '../js/getBase.js'
+import { isTokenExpired } from '../js/tokenManipulate.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
@@ -31,23 +32,6 @@ export default function CameraTranslate() {
             time: '00:10'
         }
     })
-
-    const isTokenExpired = () => {
-        const token = localStorage.getItem('authToken');
-
-        if (!token) return true;
-        if (token.split('.').length !== 3) {
-            console.error('Invalid token format');
-            return true;
-        }
-        try {
-            const decodedToken = JSON.parse(atob(token.split('.')[1]));
-            return decodedToken.exp < Date.now() / 1000;
-        } catch (e) {
-            console.error('Error decoding token:', e);
-            return true;
-        }
-    };
 
     useEffect(() => {
         if (!authToken && isTokenExpired()) {
