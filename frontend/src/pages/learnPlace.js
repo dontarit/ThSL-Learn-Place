@@ -512,7 +512,7 @@ export default function LearnPlace() {
                             <p>{data.thsl_word}</p>
                         </div>
                         <div>
-                            <p id="meaning">{data.thsl_desc}</p>
+                            {/* <p id="meaning">{data.thsl_desc}</p> */}
                             <p id="group"></p>
                         </div>
                     </div>

@@ -261,15 +261,43 @@ const saveWordData = async (word_data) => {
     }
 };
 
-app.post('/hookDataThSL', async (req, res) => {
-    // res.setHeader('Content-Type', 'text/event-stream');
-    // res.setHeader('Cache-Control', 'no-cache');
-    // res.setHeader('Connection', 'keep-alive');
+app.post('/checkHookState', (req, res) => {
+    pool.getConnection((err, connection) => {
+        const query = `SELECT fetching_state FROM back_manipulate`
+        if (err) {
+            console.error('Error getting connection:', err)
+            return res.json(false)
+        }
+        connection.query(query, (err, result) => {
+            connection.release()
+            if (err) {
+                console.error('Error changing state:', err);
+            } else {
+                return res.json(result[0].fetching_state)
+            }
+        });
+    })
+})
 
-    // res.write(`data: ${JSON.stringify({ status: "Starting process..." })}\n\n`);
+app.post('/hookDataThSL', async (req, res) => {
+    pool.getConnection((err, connection) => {
+        const query = `UPDATE back_manipulate SET fetching_state = 1`
+        if (err) {
+            console.error('Error getting connection:', err)
+            return res.json({theme: 'danger', title: 'Error', content: "Can't connect to database"})
+        }
+        connection.query(query, (err, result) => {
+            connection.release()
+            if (err) {
+                console.error('Error changing state:', err);
+            } else {
+                console.log('Set state to fetching');
+            }
+        });
+    })
 
     const browser = await puppeteer.launch()
-    
+
     // Get thai sign data
     const ACT_PAGE = await browser.newPage()
     await ACT_PAGE.goto(`https://www.th-sl.com/search-by-act/`)
@@ -354,7 +382,6 @@ app.post('/hookDataThSL', async (req, res) => {
         if (err) {
             console.error('Error getting connection:', err)
             return res.json({theme: 'danger', title: 'Error', content: "Can't connect to database"})
-            // return res.write(`data: ${JSON.stringify({ theme: 'danger', title: 'Error', content: "Can't connect to database" })}\n\n`);
         }
         connection.query(query, (err, result) => {
             connection.release()
@@ -367,6 +394,23 @@ app.post('/hookDataThSL', async (req, res) => {
         });
     })
     
+    pool.getConnection((err, connection) => {
+        const query = `UPDATE back_manipulate SET fetching_state = 0`
+        if (err) {
+            console.error('Error getting connection:', err)
+            return res.json({theme: 'danger', title: 'Error', content: "Can't connect to database"})
+        }
+        connection.query(query, (err, result) => {
+            connection.release()
+            if (err) {
+                console.error('Error changing state:', err);
+            } else {
+                console.log('Set state to fetching');
+                saveWordData(word_data);
+            }
+        });
+    })
+
     await new Promise(resolve => setTimeout(resolve, port))
     await browser.close()
     return res.json({theme: 'success', title: 'Fetched', content: 'Fetching data successfully, it may take some time to store in database', word: word_data})

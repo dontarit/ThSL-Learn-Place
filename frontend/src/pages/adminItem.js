@@ -18,6 +18,7 @@ export default function AdminPageItems() {
     const id = useParams()
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [isAdmin, setIsAdmin] = useState();
+    const [isFetching, setFetching] = useState(false);
     const [users, setUsers] = useState([]);
     const [thsls, setThsls] = useState([]);
     const [options, setOptions] = useState([]);
@@ -73,6 +74,28 @@ export default function AdminPageItems() {
         else if (id.page === 'thsl') {
             import('../css/admin/user.css')
             thsl_fetchData(0);
+
+            const fetchBtn = document.querySelector('.fetchDatatbThSLManage')
+            async function hookState() {
+                await axios.post('/checkHookState').then(res => {
+                    if (res.data) {
+                        setFetching(true)
+                        fetchBtn.inert = true
+                        fetchBtn.innerText = 'Fetching, please wait...'
+                        fetchBtn.style.backgroundColor = 'rgb(80, 75, 75)'
+                        fetchBtn.style.color = '#aaaaaa'
+                        return
+                    }
+                }).catch(err => {
+                    setFetching(true)
+                    fetchBtn.inert = true
+                    fetchBtn.innerText = 'Something went wrong'
+                    fetchBtn.style.backgroundColor = 'rgb(80, 75, 75)'
+                    fetchBtn.style.color = '#aaaaaa'
+                    return
+                })
+            }
+            hookState()
         }
         
         return () => {
@@ -150,17 +173,26 @@ export default function AdminPageItems() {
 
     // -------- ThSL --------
 
-    async function handleHookThSLData() {
+    async function handleHookThSLData(element) {
+        if (isFetching) return
+
         const getPrompt = prompt(`This process will replaced all data with the new one. To confirm, type "fetch" in the box below`)
+
         if (getPrompt == 'fetch') {
+            element.inert = true
+            element.innerText = 'Fetching, please wait...'
+            element.style.backgroundColor = 'rgb(80, 75, 75)'
+            element.style.color = '#aaaaaa'
+
             openAlert('info', 'Called', "Trying to retrieve data, might take some time")
-            const hookProcess = new EventSource(`/hookDataThSL`)
-            hookProcess.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                console.log("Live update from server:", data);
-            };
+            
             axios.post(`/hookDataThSL`).then(res => {
                 openAlert(res.data.theme, res.data.title, res.data.content)
+                setFetching(false)
+                element.inert = false
+                element.innerText = 'Fetch data'
+                element.style.backgroundColor = '#4CAF50'
+                element.style.color = '#fff'
                 console.log(res.data.word);
             })
             .catch((error) => {
@@ -451,7 +483,9 @@ export default function AdminPageItems() {
                 {asideBar}
                 <div className="mainContent-container">
                     <div className='fetchDatatbThSLManage_Cont'>
-                        <button className='fetchDatatbThSLManage' type="submit" onClick={() => {handleHookThSLData()}}>Fetch data</button>
+                        <button className='fetchDatatbThSLManage' type="submit" onClick={(e) => {
+                            handleHookThSLData(e.currentTarget)
+                        }}>Fetch data</button>
                     </div>
                     {loading ? (
                         <table className='wordDataTable_Container'>
