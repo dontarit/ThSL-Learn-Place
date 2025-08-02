@@ -55,34 +55,56 @@ export default function AdminPageItems() {
     checkState()
     
     useEffect(() => {
-        if (isAdmin) {
-            if (id.page == 'create') {
-                import('../css/admin/create.css')
-                const script = [
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js",
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js",
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js",
-                    "https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js"
-                ];
-                script.forEach(srcJs => {
-                    const script = document.createElement('script');
-                    script.src = srcJs;
-                    script.async = true;
-                    script.crossOrigin = "anonymous";
-                    document.head.appendChild(script);
-                })
-                import('../js/admin-create.js')
-            }
-            else if (id.page == 'user') {
-                import('../css/admin/user.css')
-                user_fetchData()
-            }
-            else if (id.page == 'thsl') {
-                import('../css/admin/user.css')
-                thsl_fetchData(0)
-            }
+        if (!isAdmin) return;
+
+        const addedScripts = [];
+        const addedStyles = [];
+        let cleanupFn = null;
+
+        const loadScript = (src) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            script.crossOrigin = 'anonymous';
+            document.head.appendChild(script);
+            addedScripts.push(script);
+        };
+
+        if (id.page === 'create') {
+            import('../css/admin/create.css')
+            const scripts = [
+                'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js',
+                'https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js',
+                'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js',
+                'https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js'
+            ];
+            scripts.forEach(loadScript);
+
+            import('../js/admin-create.js').then((module) => {
+                if (module && typeof module.cleanup === 'function') {
+                    cleanupFn = module.cleanup;
+                }
+            });
         }
+        else if (id.page === 'user') {
+            import('../css/admin/user.css')
+            user_fetchData();
+        }
+        else if (id.page === 'thsl') {
+            import('../css/admin/user.css')
+            thsl_fetchData(0);
+        }
+        
+        return () => {
+            addedScripts.forEach(script => {
+                if (script && script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+            });
+            if (cleanupFn) cleanupFn();
+        };
     }, [authToken, id.page, isAdmin]);
+
 
     if (!isAdmin) {
         return <NotFoundPage />;
