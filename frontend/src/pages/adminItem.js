@@ -9,13 +9,9 @@ import openAlert from '../js/alert-box.js'
 import TSLlogo from '../assets/img/TSLlogo.png';
 
 export default function AdminPageItems() {
+    import('../css/admin/style.css')
+    import('../css/admin/side_nav.css')
     const navigate = useNavigate();
-    const loadCssFiles = async () => {
-        await import('../assets/font/font.css')
-        await import('../css/admin/style.css')
-        await import('../css/admin/side_nav.css')
-    };
-    loadCssFiles();
     getBase()
 
     const id = useParams()
@@ -183,7 +179,7 @@ export default function AdminPageItems() {
                 openAlert('danger', 'Error', "Unable to save ThSL data")
             });
         } else {
-            openAlert('info', 'Cancel', "Cancel fetching data")
+            openAlert('info', 'Canceled', "Cancel fetching data")
         }
     }
     
@@ -503,10 +499,12 @@ export default function AdminPageItems() {
                                     <tr className='contentTableRow' key={data.id}>
                                         <td className='setWidthFixtb'>{data.thsl_word}</td>
                                         <td className='setWidthFixtb'>{data.thsl_desc}</td>
-                                        <td className='setWidthFixtb'>nothing</td>
+                                        <td className='setWidthFixtb'>
+                                            <a href={data.thsl_src} target="_blank" rel="noopener noreferrer">GIF Example</a>
+                                        </td>
                                         <td className='tbActionBtn_container setWidthFixtb'>
-                                            <button className='tbSetadBtn tbActionBtn tbChangeData' onClick={() => thsl_handleChange_Title(data.id, data.thsl_word)}>Change title</button>
-                                            <button className='tbSetadBtn tbActionBtn tbChangeData' onClick={() => thsl_handleChange_Description(data.id, data.thsl_word)}>Change desc</button>
+                                            <button className='tbSetadBtn tbActionBtn tbChangeData' onClick={() => thsl_handleChange_Title(data.id, data.thsl_word)}>Change Title</button>
+                                            <button className='tbSetadBtn tbActionBtn tbChangeData' onClick={() => thsl_handleChange_Description(data.id, data.thsl_word)}>Change Desc</button>
                                             {/* <button className='tbDeleteBtn tbActionBtn' onClick={() => thsl_handleDelete(data.id, data.thsl_word)}>Delete</button> */}
                                         </td>
                                     </tr>

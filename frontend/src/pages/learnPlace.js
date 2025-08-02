@@ -475,7 +475,7 @@ export default function LearnPlace() {
         });
         comfirmSetting(true)
     }, [authToken]);
-    
+
 
 
     return (
