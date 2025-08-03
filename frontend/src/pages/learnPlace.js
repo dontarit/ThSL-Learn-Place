@@ -71,7 +71,7 @@ export default function LearnPlace() {
         showSearchResult(true)
         if (value != '') {
             await axios.post('/searchWord', {search_data: value}).then(res => {
-                console.log(res.data);
+                // console.log(res.data);
                 if (res.data[0] != undefined) {
                     setSearchRes(res.data)
                 }
@@ -87,7 +87,6 @@ export default function LearnPlace() {
         const min = 1;
         const max = 1000;
         const rand = Math.floor(Math.random() * (max - min + 1)) + min;
-        console.log(rand);
 
         showSearchResult(true)
         await axios.post('/searchWordFirst', {random_data: rand}).then(res => {
@@ -153,10 +152,10 @@ export default function LearnPlace() {
         schedule.style.transition = `${time}ms`
         if (disable) {
             main.style.transform = `translateY(calc(0% - clamp(1.2em, 8vw, 5em) - ${schedule.offsetHeight}px))`
-            schedule.classList.add('disableSchedule')
+            schedule.classList.add(lpMain.disableSchedule)
         }else {
             main.style.transform = 'translateY(0%)'
-            schedule.classList.remove('disableSchedule')
+            schedule.classList.remove(lpMain.disableSchedule)
         }
     }
     function checkTheme(theme) {
@@ -166,7 +165,7 @@ export default function LearnPlace() {
         }
     }
 
-    function comfirmSetting(apply) {
+    async function comfirmSetting(apply, firstload) {
         const historyShow = document.getElementById('history-show')
         const streakShow = document.getElementById('streak-show')
         const themeShow = document.getElementById('theme-show')
@@ -182,10 +181,34 @@ export default function LearnPlace() {
             })
         }
 
-        const schedule = settingStore.value.schedule
-        const streak = settingStore.value.streak
-        const theme = settingStore.value.theme
-        const time = settingStore.value.time
+        let schedule = settingStore.value.schedule
+        let streak = settingStore.value.streak
+        let theme = settingStore.value.theme
+        let time = settingStore.value.time
+
+        if (firstload) {
+            await axios.post('/getSetting', {token: authToken}).then(res => {
+                const data = JSON.parse(res.data[0].user_setting);
+                schedule = data.schedule
+                streak = data.streak
+                theme = data.theme
+                time = data.time
+            })
+            .catch(err => {
+                console.error("Failed to load settings:", err);
+            });
+        }
+
+        let setting = {
+            schedule: schedule,
+            streak: streak,
+            theme: theme,
+            time: time
+        }
+
+        await axios.post('/saveSetting', {token: authToken, value: JSON.stringify(setting)}).catch(err => {
+            console.log('error save setting: ', err)
+        })
 
         // table
         changeStrTable(schedule, 7)
@@ -203,7 +226,6 @@ export default function LearnPlace() {
     function SpinCheck(elememt) {
         const setting = document.getElementById('open_setting_to_animate')
         const settime = 250
-        console.log(setting);
 
         if (elememt.classList.contains('Spin_n')) {
             elememt.classList.add('Spin_y')
@@ -356,12 +378,12 @@ export default function LearnPlace() {
                 let option_Value = parseInt(option_numberID.match(/\d+/)[0])
                 slideContent.style.transform = `translateX(${option_Value * -100}%)`
                 topSelect.forEach(inner => {
-                    inner.classList.add('set-at-sub')
-                    inner.classList.remove('set-at-main')
+                    inner.classList.remove(lpSetting.set_as_main)
+                    inner.classList.add(lpSetting.set_as_sub)
                 })
-
-                topSelect[option_Value].classList.add('set-at-main')
-                topSelect[option_Value].classList.remove('set-at-sub')
+                
+                topSelect[option_Value].classList.remove(lpSetting.set_as_sub)
+                topSelect[option_Value].classList.add(lpSetting.set_as_main)
                 if (option_Value == 0) {
                     contentOption[option_Value].style.opacity = '1'
                     contentOption[option_Value + 1].style.opacity = '0'
@@ -462,7 +484,7 @@ export default function LearnPlace() {
             document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
-        comfirmSetting(true)
+        comfirmSetting(true, true)
     }, [authToken, location]);
 
 
@@ -759,11 +781,11 @@ export default function LearnPlace() {
                                         onBlur={(e) => {
                                             let element = e.target
                                             let value = element.value == '' || element.value == null ? settingStore.value.schedule : element.value
-                                            if (value > 100) {
+                                            if (value >= 100 || value <= 0) {
                                                 let color = element.style.color
                                                 element.inert = true
                                                 element.setAttribute('type', 'text')
-                                                element.value = 'Over limit'
+                                                element.value = 'Invalid'
                                                 element.style.color = '#c32509'
                                                 element.style.border = '3px solid #c32509'
                                                 setTimeout(() => {

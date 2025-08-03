@@ -538,8 +538,56 @@ app.post('/changeThSL_Description', (req, res) => {
 
 // NOTE Main
 
+app.post('/getSetting', async (req, res) => {
+    const token = req.body.token
+    const query = "SELECT user_setting FROM user_data WHERE user_id = ?"
+    
+    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid token' });
+
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection:', err)
+            }
+            connection.query(query, [user.id], (err, data) => {
+                connection.release()
+                if (err) {
+                    console.error('Error executing query:', err)
+                }else {
+                    return res.json(data)
+                }
+            })
+        })
+    })
+})
+
+app.post('/saveSetting', async (req, res) => {
+    const token = req.body.token
+    const setting = req.body.value
+    const query = "UPDATE user_data SET user_setting = ? WHERE user_id = ?"
+    
+    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid token' });
+
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection:', err)
+            }
+            connection.query(query, [setting, user.id], (err, data) => {
+                connection.release()
+                if (err) {
+                    console.error('Error executing query:', err)
+                }else {
+                    return res.json(data)
+                }
+            })
+        })
+    })
+})
+
 app.post('/searchWord', async (req, res) => {
     const data = req.body.search_data
+    // const query = `SELECT * FROM thsl_words WHERE MATCH(thsl_word) AGAINST('${data}' IN NATURAL LANGUAGE MODE)`
     const query = `SELECT * FROM thsl_words WHERE thsl_word LIKE '${data}%'`
 
     pool.getConnection((err, connection) => {

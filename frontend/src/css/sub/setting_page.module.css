@@ -127,12 +127,12 @@
 .setting_container .con_in .topSelect p:last-child {
     border-radius: 0 6px 0 0;
 }
-.setting_container .con_in .topSelect .set_at_main {
+.setting_container .con_in .topSelect .set_as_main {
     border-bottom: solid 1px #b226e4;
     background-color: #b226e4;
     color: #f0f0f0;
 }
-.setting_container .con_in .topSelect .set_at_sub {
+.setting_container .con_in .topSelect .set_as_sub {
     border-bottom: solid 1px #8f3aae;
     background-color: #8f3aae;
     color: #ae8bb5;
@@ -327,7 +327,7 @@
 .field_icon {
     all: unset;
     position: relative;
-    margin-left: -25px;
+    /* margin-left: -25px; */
     margin-top: -25px;
     font-size: clamp(12px, 2vw, 16px);
     color: #000;
