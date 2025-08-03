@@ -190,7 +190,7 @@
     max-width: 575px;
     top: 4em;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -100%);
     background-color: rgb(33, 33, 33, 0.829);
     backdrop-filter: blur(26px);
     padding: 10px;
@@ -218,6 +218,7 @@
     /* font-family: "Poppins", sans-serif; */
     color: #e2e2e2;
     border-radius: 12px;
+    overflow: hidden;
     transition: background-color 50ms;
 }
 .search_result .history_list .word_container::after {
@@ -237,11 +238,26 @@
 .word_container div:nth-child(1) {
     display: flex;
     flex-direction: row;
+    width: 35%;
+    justify-content: start;
+    p {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 }
 .word_container div:nth-child(2) {
     display: flex;
     flex-direction: row;
     gap: 1em;
+    width: 60%;
+    justify-content: end;
+    p {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-align: right;
+    }
 }
 
 

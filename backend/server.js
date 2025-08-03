@@ -9,6 +9,7 @@ const puppeteer = require('puppeteer')
 const https = require('https');
 const fs = require('fs');
 const axios = require('axios')
+const OpenAI = require('openai')
 
 // const port = process.env.PORT || 5000
 const port = 5000
@@ -221,16 +222,23 @@ app.post('/setUserAdmin', (req, res) => {
     })
 })
 
-
-const downloadImage = async (imageUrl) => {
-    try {
-        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-        return Buffer.from(response.data);
-    } catch (error) {
-        console.error('Error downloading image:', error);
-        throw error;
-    }
-};
+app.post('/checkHookState', (req, res) => {
+    pool.getConnection((err, connection) => {
+        const query = `SELECT fetching_state FROM back_manipulate`
+        if (err) {
+            console.error('Error getting connection:', err)
+            return res.json(false)
+        }
+        connection.query(query, (err, result) => {
+            connection.release()
+            if (err) {
+                console.error('Error changing state:', err);
+            } else {
+                return res.json(result[0].fetching_state)
+            }
+        });
+    })
+})
 
 const saveWordData = async (word_data) => {
     for (const data of word_data) {
@@ -261,25 +269,8 @@ const saveWordData = async (word_data) => {
     }
 };
 
-app.post('/checkHookState', (req, res) => {
-    pool.getConnection((err, connection) => {
-        const query = `SELECT fetching_state FROM back_manipulate`
-        if (err) {
-            console.error('Error getting connection:', err)
-            return res.json(false)
-        }
-        connection.query(query, (err, result) => {
-            connection.release()
-            if (err) {
-                console.error('Error changing state:', err);
-            } else {
-                return res.json(result[0].fetching_state)
-            }
-        });
-    })
-})
-
 app.post('/hookDataThSL', async (req, res) => {
+    // Set fetching state
     pool.getConnection((err, connection) => {
         const query = `UPDATE back_manipulate SET fetching_state = 1`
         if (err) {
@@ -405,8 +396,7 @@ app.post('/hookDataThSL', async (req, res) => {
             if (err) {
                 console.error('Error changing state:', err);
             } else {
-                console.log('Set state to fetching');
-                saveWordData(word_data);
+                console.log('Set state to fetched');
             }
         });
     })
@@ -529,11 +519,28 @@ app.post('/changeThSL_Description', (req, res) => {
     })
 })
 
+// app.post('/callAI', async (req, res) => {
+//     console.log('call api');
+//     const openai = new OpenAI({
+//         apiKey: "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",
+//     });
+//     console.log('call api');
+//     const response = openai.responses.create({
+//         model: "gpt-4o-mini",
+//         input: "write a haiku about ai",
+//         store: true,
+//     });
+//     response.then((result) => {
+//         console.log(result.output_text)
+//         return res.json(result.output_text)
+//     });
+// })
+
 // NOTE Main
 
 app.post('/searchWord', async (req, res) => {
     const data = req.body.search_data
-    const query = `SELECT * FROM thsl_words WHERE MATCH(thsl_word) AGAINST('${data}' IN NATURAL LANGUAGE MODE)`
+    const query = `SELECT * FROM thsl_words WHERE thsl_word LIKE '${data}%'`
 
     pool.getConnection((err, connection) => {
         if (err) {
@@ -552,7 +559,7 @@ app.post('/searchWord', async (req, res) => {
 
 app.post('/searchWordFirst', async (req, res) => {
     let data = req.body.random_data
-    const query = `SELECT * FROM thsl_words WHERE id > ${data} ORDER BY id ASC LIMIT 10`
+    const query = `SELECT * FROM thsl_words WHERE id > ${data} ORDER BY id ASC LIMIT 20`
 
     pool.getConnection((err, connection) => {
         if (err) {

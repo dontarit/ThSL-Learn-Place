@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { matchPath, useNavigate } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
 import lpMain from '../css/learnPlace.module.css'
@@ -26,6 +26,7 @@ import mascot from '../assets/img/mascot.png';
 
 export default function LearnPlace() {
     const navigate = useNavigate();
+    const location = useLocation();
     getBase()
     
     const didRun = useRef(false);
@@ -98,16 +99,21 @@ export default function LearnPlace() {
     }
     function handleSearch(e) {
         e.preventDefault()
+        let value = document.getElementById('search-box').value
         showSearchResult(false)
+        navigate(`/learn/search/${value}`)
     }
     
     function showSearchResult(toShow) {
         const element = document.querySelector(`.${lpMain.search_result}`)
+        element.style.transition = 'all 250ms'
         if (!element) return
         if (toShow) {
-            element.style.display = "flex"
+            element.style.transform = 'translate(-50%, 0%)'
+            element.inert = false
         }else {
-            element.style.display = "none"
+            element.style.transform = 'translate(-50%, -150%)'
+            element.inert = true
         }
     }
     
@@ -438,7 +444,6 @@ export default function LearnPlace() {
             document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
             document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
-            
             const transitions = [
                 { selector: '.tableColumn span', style: 'scale 1s' },
                 { selector: '.tableColumn i', style: 'opacity 1s' },
@@ -452,8 +457,13 @@ export default function LearnPlace() {
                 });
             });
         });
+        setTimeout(() => {
+            document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
+            document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
+            document.getElementById('sideMenu').style.transition = 'transform 300ms';
+        }, 1500);
         comfirmSetting(true)
-    }, [authToken]);
+    }, [authToken, location]);
 
 
 
@@ -502,21 +512,33 @@ export default function LearnPlace() {
                 </div>
             </div>
         </header>
-        <div className={lpMain.search_result} style={{display: 'none'}}>
+        <div className={lpMain.search_result}>
             <div className={lpMain.history_list}>
-                {searchRes.map(data => (
-                    <div className={lpMain.word_container} key={data.id} onClick={(e) => {
-                        navigate(`/learn/search/${e.target.querySelector('div p').innerHTML}`)
-                    }}>
-                        <div>
-                            <p>{data.thsl_word}</p>
+                {searchRes.slice(0, 10).map(data => {
+                    const parsed = JSON.parse(data.thsl_desc);
+                    const definitions = parsed[0].text.split('\n')[0]
+                    const compoundWordsMatch = parsed[0].text.match(/ลูกคำของ.*คือ\s+(.+)$/);
+                    const compoundWords = compoundWordsMatch ? compoundWordsMatch[1].trim().split(/\s+/) : [];
+
+                    const result = {
+                        head: parsed[0].head,
+                        meanings: definitions == '' ? "ไม่พบคำอธิบาย" : definitions,
+                        compound_words: compoundWords
+                    };
+                    return (
+                        <div className={lpMain.word_container} key={data.id} onClick={(e) => {
+                            navigate(`/learn/search/${e.target.querySelector('div p').innerHTML}`);
+                        }}>
+                            <div>
+                                <p>{data.thsl_word}</p>
+                            </div>
+                            <div>
+                                <p id="meaning">{result.meanings}</p>
+                                <p id="group">{data.group}</p>
+                            </div>
                         </div>
-                        <div>
-                            {/* <p id="meaning">{data.thsl_desc}</p> */}
-                            <p id="group"></p>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
         <nav id="sideMenu" className={lpMain.sideMenu} aria-hidden="true" role="navigation" aria-label="Side menu" inert>

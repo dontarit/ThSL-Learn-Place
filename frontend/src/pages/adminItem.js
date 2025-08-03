@@ -342,7 +342,7 @@ export default function AdminPageItems() {
                             <h2 className="sidebar__item--heading textSetupSide">page</h2>
                         </li>
                         <li className="sidebar__item">
-                            <a className="sidebar__link" href="/home" data-tooltip="Home">
+                            <a className="sidebar__link" href="/home" data-tooltip="Home" target="_blank">
                                 <span className="icon">
                                     <i className="ph ph-house-line"></i>
                                 </span>
@@ -350,7 +350,7 @@ export default function AdminPageItems() {
                             </a>
                         </li>
                         <li className="sidebar__item">
-                            <a className="sidebar__link" href="/learn" data-tooltip="Main">
+                            <a className="sidebar__link" href="/learn" data-tooltip="Main" target="_blank">
                                 <span className="icon">
                                     <i className="ph ph-lightbulb"></i>
                                 </span>

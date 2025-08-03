@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { matchPath, useNavigate, useParams } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 
 import lpMain from '../css/learnPlace.module.css'
@@ -24,15 +24,32 @@ import logoutBtn from '../assets/img/logoutBtn.png';
 import settingBtn from '../assets/img/settingBtn.png';
 import mascot from '../assets/img/mascot.png';
 
-export default function LearnPlace() {
+export default function LearnPlaceItems() {
     const navigate = useNavigate();
+    const location = useLocation();
     getBase()
-    
     const id = useParams()
-    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
-    const didRun = useRef(false);
-    const [searchRes, setSearchRes] = useState([]);
     const [siteSearch, setSiteSearch] = useState([]);
+    
+    const didRun = useRef(false);
+    const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
+    const [searchRes, setSearchRes] = useState([]);
+    // Svae setting config
+    const [validSetting, setValidSetting] = useState(true)
+    const [settingStore, setSettingStore] = useState({
+        setValue: {
+            schedule: 4,
+            streak: false,
+            theme: 'light',
+            time: '00:10'
+        },
+        value: {
+            schedule: 4,
+            streak: false,
+            theme: 'light',
+            time: '00:10'
+        }
+    })
 
     async function handleLogout() {
         localStorage.removeItem('authToken')
@@ -56,6 +73,7 @@ export default function LearnPlace() {
         showSearchResult(true)
         if (value != '') {
             await axios.post('/searchWord', {search_data: value}).then(res => {
+                console.log(res.data);
                 if (res.data[0] != undefined) {
                     setSearchRes(res.data)
                 }
@@ -71,6 +89,7 @@ export default function LearnPlace() {
         const min = 1;
         const max = 1000;
         const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+        console.log(rand);
 
         showSearchResult(true)
         await axios.post('/searchWordFirst', {random_data: rand}).then(res => {
@@ -88,21 +107,25 @@ export default function LearnPlace() {
         searchWordData(value)
     }
 
-    function showSearchResult(toShow) {
-        const element = document.querySelector(`.${lpMain.search_result}`)
-        if (toShow) {
-            element.style.display = "flex"
-        }else {
-            element.style.display = "none"
-        }
-    }
-
     async function searchWordData(value) {
         await axios.post('/searchWord', {search_data: value}).then(res => {
             setSiteSearch(res.data)
         }).catch(() => {
             console.log('error')
         })
+    }
+    
+    function showSearchResult(toShow) {
+        const element = document.querySelector(`.${lpMain.search_result}`)
+        element.style.transition = 'all 250ms'
+        if (!element) return
+        if (toShow) {
+            element.style.transform = 'translate(-50%, 0%)'
+            element.inert = false
+        }else {
+            element.style.transform = 'translate(-50%, -150%)'
+            element.inert = true
+        }
     }
     
     function changeStrTable(row, col) {
@@ -154,23 +177,6 @@ export default function LearnPlace() {
         }
     }
 
-    // Svae setting config
-    const [validSetting, setValidSetting] = useState(true)
-    const [settingStore, setSettingStore] = useState({
-        setValue: {
-            schedule: 4,
-            streak: false,
-            theme: 'light',
-            time: '00:10'
-        },
-        value: {
-            schedule: 4,
-            streak: false,
-            theme: 'light',
-            time: '00:10'
-        }
-    })
-
     function comfirmSetting(apply) {
         const historyShow = document.getElementById('history-show')
         const streakShow = document.getElementById('streak-show')
@@ -206,26 +212,22 @@ export default function LearnPlace() {
     }
 
     function SpinCheck(elememt) {
-        if (elememt.classList.contains('Spin-n')) {
-            elememt.classList.add('Spin-y')
-            elememt.classList.remove('Spin-n')
-            elememt.style.transform = 'rotate(0deg)'
-            elememt.style.transition = 'transform 500ms'
+        const setting = document.getElementById('open_setting_to_animate')
+        const settime = 250
+        console.log(setting);
+
+        if (elememt.classList.contains('Spin_n')) {
+            elememt.classList.add('Spin_y')
+            elememt.classList.remove('Spin_n')
+            setting.style.transition = `all ${settime}`
+            setting.style.rotate = '0deg'
         }
-        else if (elememt.classList.contains('Spin-y')) {
-            elememt.classList.add('Spin-n')
-            elememt.classList.remove('Spin-y')
-            elememt.style.transform = 'rotate(360deg)'
-            elememt.style.transition = 'transform 500ms'
+        else if (elememt.classList.contains('Spin_y')) {
+            elememt.classList.add('Spin_n')
+            elememt.classList.remove('Spin_y')
+            setting.style.transition = `all ${settime}`
+            setting.style.rotate = '360deg'
         }
-    }
-    
-    const [use_hour, setUse_hour] = useState(0)
-    const [use_min, setUse_min] = useState(0)
-    function countRecord() {
-        // setInterval(() => {
-        //     setInterval
-        // }, 1000);
     }
 
     useEffect(() => {
@@ -243,9 +245,9 @@ export default function LearnPlace() {
             element.addEventListener('click', () => {
                 element.transition = 'transform 100ms'
                 element.style.transform = 'translateY(-5%) scale(1.02)'
-                setTimeout(() => {
+                element.ontransitionend = () => {
                     element.style.transform = 'translateY(0%) scale(1)'
-                }, 100);
+                }
             })
         });
 
@@ -270,8 +272,7 @@ export default function LearnPlace() {
             sideItem.forEach(element => {
                 setTimeout(() => {
                     element.style.transform = 'translateX(0%)'
-                }, itemCount);
-                itemCount += 50
+                }, itemCount += 50);
             })
         }
         function closeMenu() {
@@ -454,7 +455,6 @@ export default function LearnPlace() {
             document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
             document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
-            
             const transitions = [
                 { selector: '.tableColumn span', style: 'scale 1s' },
                 { selector: '.tableColumn i', style: 'opacity 1s' },
@@ -468,9 +468,14 @@ export default function LearnPlace() {
                 });
             });
         });
-        comfirmSetting(true)
+        setTimeout(() => {
+            document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
+            document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
+            document.getElementById('sideMenu').style.transition = 'transform 300ms';
+        }, 1500);
         searchWordData(id.word)
-    }, [authToken]);
+        comfirmSetting(true)
+    }, [authToken, location]);
     
 
 
@@ -519,22 +524,34 @@ export default function LearnPlace() {
                 </div>
             </div>
         </header>
-        <div className={lpMain.search_result} style={{display: 'none'}}>
+        <div className={lpMain.search_result}>
             <div className={lpMain.history_list}>
-                {searchRes.map(data => (
-                    <div className={lpMain.word_container} key={data.id} onClick={(e) => {
-                        navigate(`/learn/search/${e.target.querySelector('div p').innerHTML}`)
-                        searchWordData(data.thsl_word)
-                    }}>
-                        <div>
-                            <p>{data.thsl_word}</p>
+                {searchRes.slice(0, 10).map(data => {
+                    const parsed = JSON.parse(data.thsl_desc);
+                    const definitions = parsed[0].text.split('\n')[0]
+                    const compoundWordsMatch = parsed[0].text.match(/ลูกคำของ.*คือ\s+(.+)$/);
+                    const compoundWords = compoundWordsMatch ? compoundWordsMatch[1].trim().split(/\s+/) : [];
+
+                    const result = {
+                        head: parsed[0].head,
+                        meanings: definitions == '' ? "ไม่พบคำอธิบาย" : definitions,
+                        compound_words: compoundWords
+                    };
+                    return (
+                        <div className={lpMain.word_container} key={data.id} onClick={(e) => {
+                            navigate(`/learn/search/${e.currentTarget.querySelector('div p').innerHTML}`);
+                            searchWordData(data.thsl_word);
+                        }}>
+                            <div>
+                                <p>{data.thsl_word}</p>
+                            </div>
+                            <div>
+                                <p id="meaning">{result.meanings}</p>
+                                <p id="group">{data.group}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p id="meaning">{data.thsl_desc}</p>
-                            <p id="group"></p>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
         <nav id="sideMenu" className={lpMain.sideMenu} aria-hidden="true" role="navigation" aria-label="Side menu" inert>
@@ -611,7 +628,7 @@ export default function LearnPlace() {
             </div>
         </nav>
         <div className={lpMain.mainContent_container} style={{maxWidth: 'unset', alignItems: 'center', paddingBottom: '4em'}}>
-            <section className={lpMain.schedule} style={{display: 'none', maxWidth: '500px'}}>
+            <section className={lpMain.schedule} style={{display: 'none'}}>
                 <div className={lpMain.tell_streak}>
                     <div className={`${lpMain.streak_container} ${lpMain.stnow}`}>
                         <p>Current streak</p>
@@ -725,7 +742,12 @@ export default function LearnPlace() {
             <div className={lpMain.SearchResultData}>
                 <div className={lpMain.SearchResultData_sub}>
                     {siteSearch.map((item) => (
-                        <a href={`admin/${item.thsl_word}`} className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id} style={{ backgroundColor: item.color }}>
+                        <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
+                            style={{ backgroundColor: item.color }}
+                            onClick={(e) => {
+                                navigate(`/learn/info/${e.currentTarget.querySelector('h1').innerText}`)
+                            }}
+                        >
                             <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
                                 onLoad={e => {
                                     let parent = e.currentTarget.parentElement
@@ -733,9 +755,8 @@ export default function LearnPlace() {
                                 }}
                             />
                             <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
-                        </a>
+                        </div>
                     ))}
-
                 </div>
             </div>
         </section>
@@ -767,7 +788,6 @@ export default function LearnPlace() {
                                             let element = e.target
                                             let value = element.value == '' || element.value == null ? settingStore.value.schedule : element.value
                                             if (value > 100) {
-                                                let time = 750
                                                 let color = element.style.color
                                                 element.inert = true
                                                 element.setAttribute('type', 'text')
@@ -780,7 +800,7 @@ export default function LearnPlace() {
                                                     element.style.color = color
                                                     element.style.border = '3px solid #ccc'
                                                     element.value = ''
-                                                }, time);
+                                                }, 750);
                                             } else {
                                                 element.setAttribute('placeholder', `${value} week`)
                                                 setSettingStore(prevState => ({
@@ -897,8 +917,8 @@ export default function LearnPlace() {
                 <div className={lpSetting.bottom_deck}>
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
                     <div className={lpSetting.inner}>
-                        <input id="submit_setting" type="button" defaultValue="Ok" className={lpSetting.closeSetting} onClick={() => {comfirmSetting(true)}}/>
-                        <input id="cancle_setting" type="button" defaultValue="Cancle" className={lpSetting.closeSetting} onClick={()  => {comfirmSetting(false)}}/>
+                        <input id="submit_setting" type="button" defaultValue="Ok" className="closeSetting" onClick={() => {comfirmSetting(true)}}/>
+                        <input id="cancle_setting" type="button" defaultValue="Cancle" className="closeSetting" onClick={()  => {comfirmSetting(false)}}/>
                     </div>
                 </div>
             </div>
