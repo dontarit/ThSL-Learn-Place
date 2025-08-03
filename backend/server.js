@@ -519,26 +519,9 @@ app.post('/changeThSL_Description', (req, res) => {
     })
 })
 
-// app.post('/callAI', async (req, res) => {
-//     console.log('call api');
-//     const openai = new OpenAI({
-//         apiKey: "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",
-//     });
-//     console.log('call api');
-//     const response = openai.responses.create({
-//         model: "gpt-4o-mini",
-//         input: "write a haiku about ai",
-//         store: true,
-//     });
-//     response.then((result) => {
-//         console.log(result.output_text)
-//         return res.json(result.output_text)
-//     });
-// })
-
 // NOTE Main
 
-app.post('/getSetting', async (req, res) => {
+app.post('/getSetting', (req, res) => {
     const token = req.body.token
     const query = "SELECT user_setting FROM user_data WHERE user_id = ?"
     
@@ -561,7 +544,7 @@ app.post('/getSetting', async (req, res) => {
     })
 })
 
-app.post('/saveSetting', async (req, res) => {
+app.post('/saveSetting', (req, res) => {
     const token = req.body.token
     const setting = req.body.value
     const query = "UPDATE user_data SET user_setting = ? WHERE user_id = ?"
@@ -585,7 +568,33 @@ app.post('/saveSetting', async (req, res) => {
     })
 })
 
-app.post('/searchWord', async (req, res) => {
+app.post('/changeName', (req, res) => {
+    const token = req.body.token
+    const name = req.body.name
+    const query = "UPDATE user_data SET user_name = ? WHERE user_id = ?"
+
+    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid token' });
+
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection:', err)
+                return res.json({theme: 'danger', title: 'Error', content: "Can't connect to database"})
+            }
+            connection.query(query, [name, user.id], (err, data) => {
+                connection.release()
+                if (err) {
+                    console.error('Error executing query:', err)
+                    return res.json({theme: 'danger', title: 'Error', content: "Can't executing query"})
+                }else {
+                    return res.json({theme: 'success', title: 'Changed', content: "The new name has been signed"})
+                }
+            })
+        })
+    })
+})
+
+app.post('/searchWord', (req, res) => {
     const data = req.body.search_data
     // const query = `SELECT * FROM thsl_words WHERE MATCH(thsl_word) AGAINST('${data}' IN NATURAL LANGUAGE MODE)`
     const query = `SELECT * FROM thsl_words WHERE thsl_word LIKE '${data}%'`
@@ -605,7 +614,7 @@ app.post('/searchWord', async (req, res) => {
     })
 })
 
-app.post('/searchWordFirst', async (req, res) => {
+app.post('/searchWordFirst', (req, res) => {
     let data = req.body.random_data
     const query = `SELECT * FROM thsl_words WHERE id > ${data} ORDER BY id ASC LIMIT 20`
 
@@ -627,7 +636,7 @@ app.post('/searchWordFirst', async (req, res) => {
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World');
+    res.send('API');
 });
 https.createServer(credentials, app).listen(port, () => {
     console.log(`Server running on https://localhost:${port}`);

@@ -197,6 +197,19 @@
 .setting_container .con_in .sub_upper {
     width: 100%;
 }
+.setting_container .con_in .sub_upper_container {
+    position: relative;
+    display: flex;
+    .field_icon_name {
+        position: absolute;
+        font-size: clamp(12px, 2vw, 16px);
+        color: #000;
+        z-index: 2;
+        top: 25%;
+        right: 10px;
+        cursor: pointer;
+    }
+}
 
 .setting_container .con_in .sub_con p {
     margin: 0;
@@ -324,20 +337,19 @@
 #password-field {
     position: relative;
 }
-.field_icon {
-    all: unset;
+.emailpass_info {
+    display: flex;
     position: relative;
-    /* margin-left: -25px; */
-    margin-top: -25px;
     font-size: clamp(12px, 2vw, 16px);
+    gap: 8px;
     color: #000;
-    z-index: 2;
 }
 .setting_container .sub_con.pswdChange {
     justify-content: right;
-    background-color: red;
 }
-.setting_container .sub_con #changepswd_setting {
-    min-width: 100%;
+.setting_container .sub_con.pswdChange input {
+    max-width: none;
+    background-color: #dbdbdb;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2); 
     cursor: pointer;
 }

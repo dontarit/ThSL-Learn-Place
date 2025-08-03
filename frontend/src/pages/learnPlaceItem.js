@@ -126,6 +126,24 @@ export default function LearnPlaceItems() {
             element.inert = true
         }
     }
+
+    function handleNameType(name) {
+        console.log(name);
+        if (name != localStorage.getItem('name')) {
+            console.log('new');
+        }else {
+            console.log('old');
+        }
+    }
+    async function handleNameChange(name) {
+        await axios.post('/changeName', {name: name, token: authToken}).then(res => {
+            openAlert(res.data.theme, res.data.title, res.data.content)
+            localStorage.setItem('name', name)
+        }).catch(err => {
+            console.log('error')
+            openAlert('danger', 'Error', "Enable change name")
+        })
+    }
     
     function changeStrTable(row, col) {
         const tableStr = document.querySelector(`.${lpMain.showTableStr}`)
@@ -523,7 +541,7 @@ export default function LearnPlaceItems() {
                                 <i className="ph ph-magnifying-glass"></i>
                             </button>
                             <input type="text" name="word" id="search-box" className={lpSearch.search_box} autoComplete="off" 
-                                onChange={e => {typingSearch(e.target.value)}}
+                                onChange={e => {typingSearch(e.currentTarget.value)}}
                             />
                         </form>
                         <div className={lpSearch.free_option}>
@@ -908,13 +926,20 @@ export default function LearnPlaceItems() {
                                     <img src={blankProfile} alt='blank profile'/>
                                     <div className={lpSetting.sub_upper}>
                                         <p>Name</p>
-                                        <div>
+                                        <div className={lpSetting.sub_upper_container}>
                                             <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
-                                            <i className={`ph ph-pencil-simple ${lpSetting.field_icon}`}></i>
+                                            <i className={`ph ph-pencil-simple ${lpSetting.field_icon_name}`}
+                                                onClick={e => {
+                                                    handleNameChange(e.currentTarget.parentElement.querySelector('input').value);
+                                                }}
+                                                onChange={e => {
+                                                    handleNameType(e.currentTarget.parentElement.querySelector('input').value)
+                                                }}
+                                            ></i>
                                         </div>
                                     </div>
                                 </div>
-                                <div className={lpSetting.field_icon} style={{justifyContent: 'center'}}>
+                                <div className={lpSetting.emailpass_info} style={{justifyContent: 'center'}}>
                                     <div className={lpSetting.sub_upper}>
                                         <p title='Email'>Email</p>
                                         <input type="text" placeholder='name@email.com' defaultValue={localStorage.getItem('email')} style={{minWidth: '100%'}} inert/>
@@ -930,7 +955,7 @@ export default function LearnPlaceItems() {
                                     </div>
                                 </div>
                                 <div className={`${lpSetting.sub_con} ${lpSetting.pswdChange}`}>
-                                    <input id="changepswd_setting" type="button" defaultValue="Change password"/>
+                                    <input id="changepswd_setting" type="button" defaultValue="forgot password"/>
                                 </div>
                             </div>
                         </section>
