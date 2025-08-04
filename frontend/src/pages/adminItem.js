@@ -78,7 +78,9 @@ export default function AdminPageItems() {
             const fetchBtn = document.querySelector('.fetchDatatbThSLManage')
             async function hookState() {
                 await axios.post('/checkHookState').then(res => {
-                    if (res.data) {
+                    // console.log(parseInt(res.data));
+                    // console.log(Boolean(parseInt(res.data)));
+                    if (Boolean(parseInt(res.data))) {
                         setFetching(true)
                         fetchBtn.inert = true
                         fetchBtn.innerText = 'Fetching, please wait...'

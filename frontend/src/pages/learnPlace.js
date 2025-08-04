@@ -9,6 +9,7 @@ import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
 import { isTokenExpired } from '../js/tokenManipulate.js';
+import comfirmSetting from '../js/page_utility/confirmSetting.js'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
@@ -133,112 +134,9 @@ export default function LearnPlace() {
             openAlert('danger', 'Error', "Enable change name")
         })
     }
-    
-    function changeStrTable(row, col) {
-        const tableStr = document.querySelector(`.${lpMain.showTableStr}`)
-        tableStr.innerHTML = ''
-        for (let i = 1; i <= row; i++) {
-            let theRow = document.createElement('div')
-            theRow.classList.add(`row-${i}`)
-            theRow.classList.add(lpMain.tableRow)
 
-            for (let j = 1; j <= col; j++) {
-                let theColumn = document.createElement('div')
-                let progress = document.createElement('span')
-                let i = document.createElement('i')
-
-                theColumn.classList.add(`col-${j}`)
-                theColumn.classList.add("tableColumn")
-                theColumn.classList.add(lpMain.tableColumn)
-                progress.type = 'button'
-                i.classList.add('ph-fill')
-                i.classList.add('ph-check-circle')
-
-                theColumn.appendChild(progress)
-                theColumn.appendChild(i)
-                theRow.appendChild(theColumn)
-            }
-            tableStr.appendChild(theRow)
-        }
-        document.querySelector('.tableColumn').style.width = 'calc(50% / (7 / 1.5))'
-    }
-    function disableStreak(disable) {
-        let time = 500
-        const main = document.querySelector(`.${lpMain.mainContent_container}`)
-        const schedule = document.querySelector(`.${lpMain.schedule}`)
-        main.style.transition = `${time}ms`
-        schedule.style.transition = `${time}ms`
-        if (disable) {
-            main.style.transform = `translateY(calc(0% - clamp(1.2em, 8vw, 5em) - ${schedule.offsetHeight}px))`
-            schedule.classList.add(lpMain.disableSchedule)
-        }else {
-            main.style.transform = 'translateY(0%)'
-            schedule.classList.remove(lpMain.disableSchedule)
-        }
-    }
-    function checkTheme(theme) {
-        const validThemes = ['light', 'dark', 'ocean'];
-        if (validThemes.includes(theme)) {
-            document.querySelector(`.${lpMain.body}`).setAttribute('data-theme', theme);
-        }
-    }
-
-    async function comfirmSetting(apply, firstload) {
-        const historyShow = document.getElementById('history-show')
-        const streakShow = document.getElementById('streak-show')
-        const themeShow = document.getElementById('theme-show')
-        const timeShow = document.getElementById('time-show')
-
-        if (apply) {
-            Object.entries(settingStore.setValue).forEach(thevalue => {
-                settingStore.value[thevalue[0]] = thevalue[1]
-            })
-        } else {
-            Object.entries(settingStore.value).forEach(thevalue => {
-                settingStore.setValue[thevalue[0]] = thevalue[1]
-            })
-        }
-
-        let schedule = settingStore.value.schedule
-        let streak = settingStore.value.streak
-        let theme = settingStore.value.theme
-        let time = settingStore.value.time
-
-        if (firstload) {
-            await axios.post('/getSetting', {token: authToken}).then(res => {
-                const data = JSON.parse(res.data[0].user_setting);
-                schedule = data.schedule
-                streak = data.streak
-                theme = data.theme
-                time = data.time
-            })
-            .catch(err => {
-                console.error("Failed to load settings:", err);
-            });
-        }
-
-        let setting = {
-            schedule: schedule,
-            streak: streak,
-            theme: theme,
-            time: time
-        }
-
-        await axios.post('/saveSetting', {token: authToken, value: JSON.stringify(setting)}).catch(err => {
-            console.log('error save setting: ', err)
-        })
-
-        // table
-        changeStrTable(schedule, 7)
-        historyShow.setAttribute('placeholder', `${schedule} week`)
-        // streak
-        disableStreak(streak)
-        streakShow.checked = streak
-        // theme
-        checkTheme(theme)
-        themeShow.value = theme
-        // time
-        timeShow.value = time
+    async function callConfirmSetting(apply, firstload = false) {
+        comfirmSetting(apply, firstload, settingStore, setSettingStore, authToken)
     }
 
     function SpinCheck(elememt) {
@@ -502,7 +400,7 @@ export default function LearnPlace() {
             document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
-        comfirmSetting(true, true)
+        callConfirmSetting(true, true)
     }, [authToken, location]);
 
 
@@ -936,8 +834,8 @@ export default function LearnPlace() {
                 <div className={lpSetting.bottom_deck}>
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
                     <div className={lpSetting.inner}>
-                        <input id="submit_setting" type="button" defaultValue="Ok" className="closeSetting" onClick={() => {comfirmSetting(true)}}/>
-                        <input id="cancle_setting" type="button" defaultValue="Cancle" className="closeSetting" onClick={()  => {comfirmSetting(false)}}/>
+                        <input id="submit_setting" type="button" defaultValue="Ok" className="closeSetting" onClick={() => {callConfirmSetting(true)}}/>
+                        <input id="cancle_setting" type="button" defaultValue="Cancle" className="closeSetting" onClick={()  => {callConfirmSetting(false)}}/>
                     </div>
                 </div>
             </div>
