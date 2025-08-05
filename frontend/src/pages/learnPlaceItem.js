@@ -5,6 +5,7 @@ import axios from 'axios'
 import lpMain from '../css/learnPlace.module.css'
 import lpSearch from '../css/sub/searchbox.module.css'
 import lpSetting from '../css/sub/setting_page.module.css'
+import lpNavC from '../css/sub/navigate_circle.module.css'
 import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
@@ -97,13 +98,30 @@ export default function LearnPlaceItems() {
         navigate(`/learn/search/${value}`)
         searchWordData(value)
     }
-
+    
     async function searchWordData(value) {
+        let search1, search2
+
         await axios.post('/searchWord', {search_data: value}).then(res => {
-            setSiteSearch(res.data)
+            search1 = res.data
         }).catch(() => {
             console.log('error')
         })
+        await axios.post('/searchWord', {search_data: value, to_site: true}).then(res => {
+            search2 = res.data
+        }).catch(() => {
+            console.log('error')
+        })
+
+        let search = search1.concat(search2)
+
+        const uniqueData = search.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.id === value.id
+            ))
+        );
+        
+        setSiteSearch(uniqueData)
     }
     
     function showSearchResult(toShow) {
@@ -152,6 +170,46 @@ export default function LearnPlaceItems() {
         }
     }
 
+    function openMiniNav(element) {
+        const sign = element.querySelector(`.${lpNavC.show_over}`)
+        const butt = element.querySelectorAll(`.${lpNavC.data_drop} .${lpNavC.dataContainer}`)
+        const state = element.getAttribute('current-state')
+        let count = 0
+
+        if (state == 'close') {
+            element.setAttribute('current-state', 'open')
+            sign.style.transform = 'rotate(135deg)'
+            butt.forEach(sub => {
+                sub.inert = false
+                sub.style.opacity = '1'
+                sub.style.transform = `translate(0%, -${110 + (count * 110)}%)`
+                count += 1
+            });
+        }
+        if (state == 'open') {
+            element.setAttribute('current-state', 'close')
+            sign.style.transform = 'rotate(0deg)'
+            butt.forEach(sub => {
+                sub.inert = true
+                sub.style.opacity = '0'
+                sub.style.transform = `translate(0, 0)`
+            });
+        }
+    }
+
+    function changeView_Content(elem, isList) {
+        const select = document.querySelector(`i[view_selected='select']`)
+        const contai = document.querySelector(`.${lpMain.SearchResultData}`)
+        select.setAttribute('view_selected', 'not')
+        elem.setAttribute('view_selected', 'select')
+
+        if (isList) {
+            contai.setAttribute('data-view-result', 'list')
+        } else {
+            contai.setAttribute('data-view-result', 'grid')
+        }
+    }
+
     useEffect(() => {
         if (didRun.current) return;
         didRun.current = true;
@@ -183,6 +241,7 @@ export default function LearnPlaceItems() {
         const sideItem = document.querySelectorAll(`.${lpMain.nav_bar} .${lpMain.typeNav} div`)
 
         function openMenu() {
+            console.log(menuBtn_in);
             sideMenu.inert = false
             sideMenu.style.transform = "translateX(0%)";
             sideMenu.setAttribute("aria-hidden", "false");
@@ -353,6 +412,8 @@ export default function LearnPlaceItems() {
 
         // Window event
         window.addEventListener("keydown", (e) => {
+            const sideMenu = document.getElementById("sideMenu");
+            if (sideMenu == null) return
             if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
                 closeMenu()   
             }
@@ -361,6 +422,10 @@ export default function LearnPlaceItems() {
             }
         });
         window.addEventListener("click", (e) => {
+            const sideMenu = document.getElementById("sideMenu");
+            const menuBtn = document.getElementById("menuBtn");
+            const searchCon = document.getElementById('search-container')
+            if (sideMenu == null || menuBtn == null || searchCon == null) return
             if (
                 sideMenu.getAttribute('aria-hidden') == 'false' &&
                 !sideMenu.contains(e.target) &&
@@ -373,6 +438,8 @@ export default function LearnPlaceItems() {
             }
         });
         window.addEventListener('scroll', () => {
+            const sideMenu = document.getElementById("sideMenu");
+            if (sideMenu == null) return
             if (sideMenu.ariaHidden == 'false') {
                 closeMenu()
             }
@@ -409,12 +476,12 @@ export default function LearnPlaceItems() {
         <header className={lpMain.headerSection}>
             <div className={lpMain.con_header}>
                 <div className={`${lpMain.open_menu} me_hed_btn`} id="menuBtn">
-                        <span className={lpMain.menu_btn_out}></span>
-                        <div className={lpMain.menu_btn_gruop}>
-                            <span className={lpMain.menu_btn_in}></span>
-                            <span className={lpMain.menu_btn_in}></span>
-                        </div>
-                        <span className={lpMain.menu_btn_out}></span>
+                    <span className={lpMain.menu_btn_out}></span>
+                    <div className={lpMain.menu_btn_gruop}>
+                        <span id='menu_btn_in_first' className={lpMain.menu_btn_in}></span>
+                        <span className={lpMain.menu_btn_in}></span>
+                    </div>
+                    <span className={lpMain.menu_btn_out}></span>
                 </div>
                 <div className={lpMain.main_logo}>
                     <img src={TSLlogo} alt='logo'/>
@@ -442,8 +509,8 @@ export default function LearnPlaceItems() {
                         </div>
                     </div>
                 </div>
-                <div className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} me_hed_btn ${lpMain.settingIconOpen} ${lpMain.Spin_n}`}
-                    onClick={e => { SpinCheck(e.target) }}
+                <div id='open_setting_to_animate' className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} Spin_n me_hed_btn`}
+                    onClick={e => { SpinCheck(e.currentTarget) }}
                 >
                     <i className="ph-fill ph-gear-six"></i>
                 </div>
@@ -464,13 +531,17 @@ export default function LearnPlaceItems() {
                     };
                     return (
                         <div className={lpMain.word_container} key={data.id} onClick={(e) => {
-                            navigate(`/learn/search/${e.currentTarget.querySelector('div p').innerHTML}`);
-                            searchWordData(data.thsl_word);
+                            let target = e.target.querySelector('div p').innerHTML
+                            navigate(`/learn/search/${target}`);
+                            searchWordData(target)
                         }}>
-                            <div>
+                            <div className={lpMain.icontentContainer}>
+                                <i className="ph ph-magnifying-glass"></i>
+                            </div>
+                            <div className={lpMain.titleContainer}>
                                 <p>{data.thsl_word}</p>
                             </div>
-                            <div>
+                            <div className={lpMain.descriptContainer}>
                                 <p id="meaning">{result.meanings}</p>
                                 <p id="group">{data.group}</p>
                             </div>
@@ -516,36 +587,36 @@ export default function LearnPlaceItems() {
                 </div>
             </div>
             <div className={lpMain.nav_bar}>
-                <div className={`${lpMain.first_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.searchBtn} ${lpMain.iconBtn} ${lpMain.activateSearch} forceCloseMenu`} id="activateSearch">
+                <div className={`${lpMain.typeNav}`}>
+                    <div className={`${lpMain.iconBtn} ${lpMain.activateSearch} forceCloseMenu`} id="activateSearch">
                         <img src={searchBtn}/>
                         <p>Search</p>
                     </div>
-                    <div className={`${lpMain.favBtn} ${lpMain.iconBtn} btnAnimate`}>
+                    <div className={`${lpMain.iconBtn}`}>
                         <img src={favBtn}/>
                         <p>Favorite</p>
                     </div>
                 </div>
-                <div className={`${lpMain.second_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.positionBtn} ${lpMain.iconBtn} btnAnimate`}>
+                <div className={`${lpMain.typeNav}`}>
+                    <div className={`${lpMain.iconBtn}`}>
                         <img src={handPosBtn}/>
                         <p>Hand Position</p>
                     </div>
-                    <div className={`${lpMain.shapeBtn} ${lpMain.iconBtn} btnAnimate`}>
+                    <div className={`${lpMain.iconBtn}`}>
                         <img src={handShapeBtn}/>
                         <p>Hand Shape</p>
                     </div>
-                    <div className={`${lpMain.turningBtn} ${lpMain.iconBtn} btnAnimate`}>
+                    <div className={`${lpMain.iconBtn}`}>
                         <img src={palmTurnBtn}/>
                         <p>Palm Turning</p>
                     </div>
                 </div>
-                <div className={`${lpMain.third_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.settingBtn} ${lpMain.iconBtn} ${lpMain.open_setting} forceCloseMenu`}>
+                <div className={`${lpMain.typeNav}`}>
+                    <div className={`${lpMain.iconBtn} ${lpMain.open_setting} forceCloseMenu`}>
                         <img src={settingBtn}/>
                         <p>Setting</p>
                     </div>
-                    <div className={`${lpMain.daynightBtn} ${lpMain.iconBtn} btnAnimate`} id='logoutBtnFnc' onClick={handleLogout}>
+                    <div className={`${lpMain.iconBtn}`} id='logoutBtnFnc' onClick={handleLogout}>
                         <img src={logoutBtn}/>
                         <p>Logout</p>
                     </div>
@@ -664,24 +735,37 @@ export default function LearnPlaceItems() {
             </section>
         </div>
         <section className={lpMain.SearchResult_Container}>
-            <div className={lpMain.SearchResultData}>
+            <div className={lpMain.state_Changing}>
+                <div className={lpMain.S_Changing_cont}>
+                    <i className={`ph ph-list`} view_selected='not' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
+                    <i className={`ph ph-squares-four`} view_selected='select' onClick={(e) => {changeView_Content(e.currentTarget, 0)}}></i>
+                </div>
+            </div>
+            <div className={lpMain.SearchResultData} data-view-result='grid'>
                 <div className={lpMain.SearchResultData_sub}>
-                    {siteSearch.map((item) => (
-                        <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
-                            style={{ backgroundColor: item.color }}
-                            onClick={(e) => {
-                                navigate(`/learn/info/${e.currentTarget.querySelector('h1').innerText}`)
-                            }}
-                        >
-                            <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
-                                onLoad={e => {
-                                    let parent = e.currentTarget.parentElement
-                                    parent.classList.remove(lpMain.loading)
+                    {siteSearch.map((item) => {
+                        let desc = JSON.parse(item.thsl_desc)[0].text
+                        if (desc == '') { desc = "ไม่มีคำอธิบาย" }
+                        return (
+                            <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
+                                style={{ backgroundColor: item.color }}
+                                onClick={(e) => {
+                                    navigate(`/learn/info/${e.currentTarget.querySelector('h1').innerText}`)
                                 }}
-                            />
-                            <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
-                        </div>
-                    ))}
+                            >
+                                <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
+                                    onLoad={e => {
+                                        let parent = e.currentTarget.parentElement
+                                        parent.classList.remove(lpMain.loading)
+                                    }}
+                                />
+                                <div className={lpMain.searchTextData_cont}>
+                                    <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
+                                    <h2 className={lpMain.searchDescription}>{desc}</h2>
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </section>
@@ -874,6 +958,23 @@ export default function LearnPlaceItems() {
                         <input id="submit_setting" type="button" defaultValue="Ok" className="closeSetting" onClick={() => {callConfirmSetting(true)}}/>
                         <input id="cancle_setting" type="button" defaultValue="Cancle" className="closeSetting" onClick={()  => {callConfirmSetting(false)}}/>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div className={lpNavC.rightbottom_Navigate} current-state='close' onClick={(e) => {openMiniNav(e.currentTarget)}}>
+            <div className={lpNavC.show_over}>
+                <div className={lpNavC.navBtn}></div>
+                <div className={lpNavC.navBtn}></div>
+            </div>
+            <div className={lpNavC.data_drop}>
+                <div className={lpNavC.dataContainer} inert onClick={() => {navigate('/learn')}}>
+                    <i className="ph ph-house-line"></i>
+                </div>
+                <div className={`${lpNavC.dataContainer}`} inert id="activateSearch">
+                    <i className="ph ph-magnifying-glass"></i>
+                </div>
+                <div className={lpNavC.dataContainer} inert onClick={() => {navigate('/camera')}}>
+                    <i className="ph ph-camera"></i>
                 </div>
             </div>
         </div>

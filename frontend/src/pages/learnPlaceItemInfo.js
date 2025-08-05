@@ -9,6 +9,8 @@ import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
 import { isTokenExpired } from '../js/tokenManipulate.js';
+import { handleLogoutAcc } from '../js/page_utility/normal.js';
+import comfirmSetting from '../js/page_utility/confirmSetting.js'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 import blankProfile from '../assets/img/blank-profile.png';
@@ -34,8 +36,7 @@ export default function LearnPlaceItems() {
     const didRun = useRef(false);
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [searchRes, setSearchRes] = useState([]);
-    // Svae setting config
-    const [validSetting, setValidSetting] = useState(true)
+    const [loading, setLoading] = useState(true);
     const [settingStore, setSettingStore] = useState({
         setValue: {
             schedule: 4,
@@ -52,21 +53,12 @@ export default function LearnPlaceItems() {
     })
 
     async function handleLogout() {
-        localStorage.removeItem('authToken')
-        localStorage.setItem('name', 'Unknow')
-        localStorage.setItem('email', '')
-        localStorage.setItem('profile', '')
-        setAuthToken(false);
-        await axios.post('/logoutServer').then(res => {
-            if (authToken && isTokenExpired()) {
-                navigate('/home')
-                return
-            }
-            openAlert(res.data.theme, res.data.title, res.data.content)
-        }).catch(err => {
-            console.log('error')
-            openAlert('danger', 'Error', "Unable to logout")
-        })
+        const result = await handleLogoutAcc(authToken, setAuthToken);
+        console.log(result);
+        
+        navigate(result.navigate, { replace: true })
+        const [theme, title, content] = result.alert_value;
+        openAlert(theme, title, content);
     }
     
     async function typingSearch(value) {
@@ -105,13 +97,30 @@ export default function LearnPlaceItems() {
         navigate(`/learn/search/${value}`)
         searchWordData(value)
     }
-
+    
     async function searchWordData(value) {
+        let search1, search2
+
         await axios.post('/searchWord', {search_data: value}).then(res => {
-            setSiteSearch(res.data)
+            search1 = res.data
         }).catch(() => {
             console.log('error')
         })
+        await axios.post('/searchWord', {search_data: value, to_site: true}).then(res => {
+            search2 = res.data
+        }).catch(() => {
+            console.log('error')
+        })
+
+        let search = search1.concat(search2)
+
+        const uniqueData = search.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.id === value.id
+            ))
+        );
+        
+        setSiteSearch(uniqueData)
     }
     
     function showSearchResult(toShow) {
@@ -127,128 +136,49 @@ export default function LearnPlaceItems() {
         }
     }
     
-    function changeStrTable(row, col) {
-        const tableStr = document.querySelector(`.${lpMain.showTableStr}`)
-        tableStr.innerHTML = ''
-        for (let i = 1; i <= row; i++) {
-            let theRow = document.createElement('div')
-            theRow.classList.add(`row-${i}`)
-            theRow.classList.add(lpMain.tableRow)
-
-            for (let j = 1; j <= col; j++) {
-                let theColumn = document.createElement('div')
-                let progress = document.createElement('span')
-                let i = document.createElement('i')
-
-                theColumn.classList.add(`col-${j}`)
-                theColumn.classList.add("tableColumn")
-                theColumn.classList.add(lpMain.tableColumn)
-                progress.type = 'button'
-                i.classList.add('ph-fill')
-                i.classList.add('ph-check-circle')
-
-                theColumn.appendChild(progress)
-                theColumn.appendChild(i)
-                theRow.appendChild(theColumn)
-            }
-            tableStr.appendChild(theRow)
-        }
-        document.querySelector('.tableColumn').style.width = 'calc(50% / (7 / 1.5))'
-    }
-    function disableStreak(disable) {
-        let time = 500
-        const main = document.querySelector(`.${lpMain.mainContent_container}`)
-        const schedule = document.querySelector(`.${lpMain.schedule}`)
-        main.style.transition = `${time}ms`
-        schedule.style.transition = `${time}ms`
-        if (disable) {
-            main.style.transform = `translateY(calc(0% - clamp(1.2em, 8vw, 5em) - ${schedule.offsetHeight}px))`
-            schedule.classList.add(lpMain.disableSchedule)
-        }else {
-            main.style.transform = 'translateY(0%)'
-            schedule.classList.remove(lpMain.disableSchedule)
-        }
-    }
-    function checkTheme(theme) {
-        const validThemes = ['light', 'dark', 'ocean'];
-        if (validThemes.includes(theme)) {
-            document.querySelector(`.${lpMain.body}`).setAttribute('data-theme', theme);
-        }
-    }
-
-    async function comfirmSetting(apply, firstload) {
-        const historyShow = document.getElementById('history-show')
-        const streakShow = document.getElementById('streak-show')
-        const themeShow = document.getElementById('theme-show')
-        const timeShow = document.getElementById('time-show')
-
-        if (apply) {
-            Object.entries(settingStore.setValue).forEach(thevalue => {
-                settingStore.value[thevalue[0]] = thevalue[1]
-            })
-        } else {
-            Object.entries(settingStore.value).forEach(thevalue => {
-                settingStore.setValue[thevalue[0]] = thevalue[1]
-            })
-        }
-
-        let schedule = settingStore.value.schedule
-        let streak = settingStore.value.streak
-        let theme = settingStore.value.theme
-        let time = settingStore.value.time
-
-        if (firstload) {
-            await axios.post('/getSetting', {token: authToken}).then(res => {
-                const data = JSON.parse(res.data[0].user_setting);
-                schedule = data.schedule
-                streak = data.streak
-                theme = data.theme
-                time = data.time
-            })
-            .catch(err => {
-                console.error("Failed to load settings:", err);
-            });
-        }
-
-        let setting = {
-            schedule: schedule,
-            streak: streak,
-            theme: theme,
-            time: time
-        }
-
-        await axios.post('/saveSetting', {token: authToken, value: JSON.stringify(setting)}).catch(err => {
-            console.log('error save setting: ', err)
+    async function handleNameChange(name) {
+        await axios.post('/changeName', {name: name, token: authToken}).then(res => {
+            openAlert(res.data.theme, res.data.title, res.data.content)
+            localStorage.setItem('name', name)
+        }).catch(err => {
+            console.log('error')
+            openAlert('danger', 'Error', "Enable change name")
         })
+    }
 
-        // table
-        changeStrTable(schedule, 7)
-        historyShow.setAttribute('placeholder', `${schedule} week`)
-        // streak
-        disableStreak(streak)
-        streakShow.checked = streak
-        // theme
-        checkTheme(theme)
-        themeShow.value = theme
-        // time
-        timeShow.value = time
+    async function callConfirmSetting(apply, firstload = false) {
+        comfirmSetting(apply, firstload, settingStore, setSettingStore, authToken, true)
+        setLoading(false);
     }
 
     function SpinCheck(elememt) {
         const setting = document.getElementById('open_setting_to_animate')
-        const settime = 250
+        const settime = 500
 
         if (elememt.classList.contains('Spin_n')) {
             elememt.classList.add('Spin_y')
             elememt.classList.remove('Spin_n')
-            setting.style.transition = `all ${settime}`
-            setting.style.rotate = '0deg'
+            setting.style.transition = `all ${settime}ms`
+            setting.style.transform = 'rotate(360deg)'
         }
         else if (elememt.classList.contains('Spin_y')) {
             elememt.classList.add('Spin_n')
             elememt.classList.remove('Spin_y')
-            setting.style.transition = `all ${settime}`
-            setting.style.rotate = '360deg'
+            setting.style.transition = `all ${settime}ms`
+            setting.style.transform = 'rotate(0deg)'
+        }
+    }
+
+    function changeView_Content(elem, isList) {
+        const select = document.querySelector(`i[view_selected='select']`)
+        const contai = document.querySelector(`.${lpMain.SearchResultData}`)
+        select.setAttribute('view_selected', 'not')
+        elem.setAttribute('view_selected', 'select')
+
+        if (isList) {
+            contai.setAttribute('data-view-result', 'list')
+        } else {
+            contai.setAttribute('data-view-result', 'grid')
         }
     }
 
@@ -263,24 +193,27 @@ export default function LearnPlaceItems() {
 
         // Button animation on click
         const append_btnAnimate = document.querySelectorAll('.btnAnimate')
-        append_btnAnimate.forEach(element => {
-            element.addEventListener('click', () => {
-                element.transition = 'transform 100ms'
-                element.style.transform = 'translateY(-5%) scale(1.02)'
-                element.ontransitionend = () => {
-                    element.style.transform = 'translateY(0%) scale(1)'
-                }
-            })
-        });
+        if (append_btnAnimate != undefined) {
+            append_btnAnimate.forEach(element => {
+                element.addEventListener('click', () => {
+                    element.transition = 'transform 100ms'
+                    element.style.transform = 'translateY(-5%) scale(1.02)'
+                    element.ontransitionend = () => {
+                        element.style.transform = 'translateY(0%) scale(1)'
+                    }
+                })
+            });
+        }
 
         // Menu toggle button
         const sideMenu = document.getElementById("sideMenu");
         const menuBtn = document.getElementById("menuBtn");
-        const menuBtn_out = document.querySelectorAll(`.${lpMain.open_menu} .${lpMain.menu_btn_out}`);
-        const menuBtn_in = document.querySelector(`.${lpMain.open_menu} .${lpMain.menu_btn_in}`)
+        const menuBtn_in = document.getElementById('menu_btn_in_first')
+        const menuBtn_out = document.querySelectorAll(`.${lpMain.menu_btn_out}`);
         const sideItem = document.querySelectorAll(`.${lpMain.nav_bar} .${lpMain.typeNav} div`)
 
         function openMenu() {
+            console.log(menuBtn_in);
             sideMenu.inert = false
             sideMenu.style.transform = "translateX(0%)";
             sideMenu.setAttribute("aria-hidden", "false");
@@ -338,10 +271,10 @@ export default function LearnPlaceItems() {
             if (window.innerWidth < 768) {
                 headBtn.forEach(elememt => {
                     elememt.inert = true
-                    elememt.style.transition = 'opacity 300ms'
+                    elememt.style.transition = 'all 300ms'
                     elememt.style.opacity = '0'
                 });
-                mainLogo.style.transition = 'opacity 300ms'
+                mainLogo.style.transition = 'all 300ms'
                 mainLogo.style.opacity = '0'
             }
             searchCon.inert = false
@@ -353,10 +286,10 @@ export default function LearnPlaceItems() {
             showSearchResult(false)
             headBtn.forEach(element => {
                 element.inert = false
-                element.style.transition = 'opacity 300ms'
+                element.style.transition = 'all 300ms'
                 element.style.opacity = '1'
             });
-            mainLogo.style.transition = 'opacity 300ms'
+            mainLogo.style.transition = 'all 300ms'
             mainLogo.style.opacity = '1'
             searchCon.inert = true
             searchCon.style.transition = 'ease top 300ms'
@@ -385,30 +318,30 @@ export default function LearnPlaceItems() {
         
         topSelect.forEach(element => {
             element.addEventListener('click', () => {
-                option_numberID = element.id
-                let option_Value = parseInt(option_numberID.match(/\d+/)[0])
-                slideContent.style.transform = `translateX(${option_Value * -100}%)`
-                topSelect.forEach(inner => {
-                    inner.classList.remove(lpSetting.set_as_main)
-                    inner.classList.add(lpSetting.set_as_sub)
-                })
+                option_numberID = element.id;
+                option_Value = parseInt(option_numberID.match(/\d+/)[0]);
                 
-                topSelect[option_Value].classList.remove(lpSetting.set_as_sub)
-                topSelect[option_Value].classList.add(lpSetting.set_as_main)
-                if (option_Value == 0) {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value + 1].style.opacity = '0'
+                if (option_Value >= 0 && option_Value < contentOption.length) {
+                    slideContent.style.transform = `translateX(${option_Value * -100}%)`;
+                    topSelect.forEach(inner => {
+                        inner.classList.remove(lpSetting.set_as_main);
+                        inner.classList.add(lpSetting.set_as_sub);
+                    });
+
+                    topSelect[option_Value].classList.remove(lpSetting.set_as_sub);
+                    topSelect[option_Value].classList.add(lpSetting.set_as_main);
+
+                    if (contentOption[option_Value]) {
+                        contentOption[option_Value].style.opacity = '1';
+                        if (option_Value + 1 < contentOption.length) {
+                            contentOption[option_Value + 1].style.opacity = '0';
+                        }
+                        if (option_Value - 1 >= 0) {
+                            contentOption[option_Value - 1].style.opacity = '0';
+                        }
+                    }
                 }
-                else if (option_Value + 1 == topSelect.length) {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value - 1].style.opacity = '0'
-                }
-                else {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value + 1].style.opacity = '0'
-                    contentOption[option_Value - 1].style.opacity = '0'
-                }
-            })
+            });
         });
 
         // Open and Close setting
@@ -427,6 +360,8 @@ export default function LearnPlaceItems() {
             })
         });
         function closeSettingFunc() {
+            document.getElementById('user-name').value = localStorage.getItem('name')
+            document.querySelector(`.ph.ph-pencil-simple.${lpSetting.field_icon_name}`).style.transform = 'scale(1) rotate(0deg)'
             overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
             overlaySetting.style.opacity = '0'
             setTimeout(() => {
@@ -449,6 +384,8 @@ export default function LearnPlaceItems() {
 
         // Window event
         window.addEventListener("keydown", (e) => {
+            const sideMenu = document.getElementById("sideMenu");
+            if (sideMenu == null) return
             if (e.key === "Escape" && sideMenu.getAttribute('aria-hidden') == 'false') {
                 closeMenu()   
             }
@@ -457,6 +394,10 @@ export default function LearnPlaceItems() {
             }
         });
         window.addEventListener("click", (e) => {
+            const sideMenu = document.getElementById("sideMenu");
+            const menuBtn = document.getElementById("menuBtn");
+            const searchCon = document.getElementById('search-container')
+            if (sideMenu == null || menuBtn == null || searchCon == null) return
             if (
                 sideMenu.getAttribute('aria-hidden') == 'false' &&
                 !sideMenu.contains(e.target) &&
@@ -469,13 +410,13 @@ export default function LearnPlaceItems() {
             }
         });
         window.addEventListener('scroll', () => {
+            const sideMenu = document.getElementById("sideMenu");
+            if (sideMenu == null) return
             if (sideMenu.ariaHidden == 'false') {
                 closeMenu()
             }
         })
         window.addEventListener('load', () => {
-            document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
-            document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
             const transitions = [
                 { selector: '.tableColumn span', style: 'scale 1s' },
@@ -495,23 +436,24 @@ export default function LearnPlaceItems() {
             document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
+        callConfirmSetting(true, true)
         searchWordData(id.word)
-        comfirmSetting(true, true)
     }, [authToken, location]);
     
 
 
+    // return loading ? <p>Loading...</p> : (
     return (
         <div className={lpMain.body}>
         <header className={lpMain.headerSection}>
             <div className={lpMain.con_header}>
                 <div className={`${lpMain.open_menu} me_hed_btn`} id="menuBtn">
-                        <span className={lpMain.menu_btn_out}></span>
-                        <div className={lpMain.menu_btn_gruop}>
-                            <span className={lpMain.menu_btn_in}></span>
-                            <span className={lpMain.menu_btn_in}></span>
-                        </div>
-                        <span className={lpMain.menu_btn_out}></span>
+                    <span className={lpMain.menu_btn_out}></span>
+                    <div className={lpMain.menu_btn_gruop}>
+                        <span id='menu_btn_in_first' className={lpMain.menu_btn_in}></span>
+                        <span className={lpMain.menu_btn_in}></span>
+                    </div>
+                    <span className={lpMain.menu_btn_out}></span>
                 </div>
                 <div className={lpMain.main_logo}>
                     <img src={TSLlogo} alt='logo'/>
@@ -523,7 +465,7 @@ export default function LearnPlaceItems() {
                                 <i className="ph ph-magnifying-glass"></i>
                             </button>
                             <input type="text" name="word" id="search-box" className={lpSearch.search_box} autoComplete="off" 
-                                onChange={e => {typingSearch(e.target.value)}}
+                                onChange={e => {typingSearch(e.currentTarget.value)}}
                             />
                         </form>
                         <div className={lpSearch.free_option}>
@@ -539,8 +481,8 @@ export default function LearnPlaceItems() {
                         </div>
                     </div>
                 </div>
-                <div className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} me_hed_btn ${lpMain.settingIconOpen} ${lpMain.Spin_n}`}
-                    onClick={e => { SpinCheck(e.target) }}
+                <div id='open_setting_to_animate' className={`${lpMain.open_setting} ${lpMain.open_setting_to_animate} Spin_n me_hed_btn`}
+                    onClick={e => { SpinCheck(e.currentTarget) }}
                 >
                     <i className="ph-fill ph-gear-six"></i>
                 </div>
@@ -561,13 +503,17 @@ export default function LearnPlaceItems() {
                     };
                     return (
                         <div className={lpMain.word_container} key={data.id} onClick={(e) => {
-                            navigate(`/learn/search/${e.currentTarget.querySelector('div p').innerHTML}`);
-                            searchWordData(data.thsl_word);
+                            let target = e.target.querySelector('div p').innerHTML
+                            navigate(`/learn/search/${target}`);
+                            searchWordData(target)
                         }}>
-                            <div>
+                            <div className={lpMain.icontentContainer}>
+                                <i className="ph ph-magnifying-glass"></i>
+                            </div>
+                            <div className={lpMain.titleContainer}>
                                 <p>{data.thsl_word}</p>
                             </div>
-                            <div>
+                            <div className={lpMain.descriptContainer}>
                                 <p id="meaning">{result.meanings}</p>
                                 <p id="group">{data.group}</p>
                             </div>
@@ -613,36 +559,36 @@ export default function LearnPlaceItems() {
                 </div>
             </div>
             <div className={lpMain.nav_bar}>
-                <div className={`${lpMain.first_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.searchBtn} ${lpMain.iconBtn} ${lpMain.activateSearch} forceCloseMenu`} id="activateSearch">
+                <div className={`${lpMain.typeNav}`}>
+                    <div className={`${lpMain.iconBtn} ${lpMain.activateSearch} forceCloseMenu`} id="activateSearch">
                         <img src={searchBtn}/>
                         <p>Search</p>
                     </div>
-                    <div className={`${lpMain.favBtn} ${lpMain.iconBtn} btnAnimate`}>
+                    <div className={`${lpMain.iconBtn}`}>
                         <img src={favBtn}/>
                         <p>Favorite</p>
                     </div>
                 </div>
-                <div className={`${lpMain.second_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.positionBtn} ${lpMain.iconBtn} btnAnimate`}>
+                <div className={`${lpMain.typeNav}`}>
+                    <div className={`${lpMain.iconBtn}`}>
                         <img src={handPosBtn}/>
                         <p>Hand Position</p>
                     </div>
-                    <div className={`${lpMain.shapeBtn} ${lpMain.iconBtn} btnAnimate`}>
+                    <div className={`${lpMain.iconBtn}`}>
                         <img src={handShapeBtn}/>
                         <p>Hand Shape</p>
                     </div>
-                    <div className={`${lpMain.turningBtn} ${lpMain.iconBtn} btnAnimate`}>
+                    <div className={`${lpMain.iconBtn}`}>
                         <img src={palmTurnBtn}/>
                         <p>Palm Turning</p>
                     </div>
                 </div>
-                <div className={`${lpMain.third_nav} ${lpMain.typeNav}`}>
-                    <div className={`${lpMain.settingBtn} ${lpMain.iconBtn} ${lpMain.open_setting} forceCloseMenu`}>
+                <div className={`${lpMain.typeNav}`}>
+                    <div className={`${lpMain.iconBtn} ${lpMain.open_setting} forceCloseMenu`}>
                         <img src={settingBtn}/>
                         <p>Setting</p>
                     </div>
-                    <div className={`${lpMain.daynightBtn} ${lpMain.iconBtn} btnAnimate`} id='logoutBtnFnc' onClick={handleLogout}>
+                    <div className={`${lpMain.iconBtn}`} id='logoutBtnFnc' onClick={handleLogout}>
                         <img src={logoutBtn}/>
                         <p>Logout</p>
                     </div>
@@ -761,24 +707,37 @@ export default function LearnPlaceItems() {
             </section>
         </div>
         <section className={lpMain.SearchResult_Container}>
-            <div className={lpMain.SearchResultData}>
+            <div className={lpMain.state_Changing}>
+                <div className={lpMain.S_Changing_cont}>
+                    <i className={`ph ph-list`} view_selected='not' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
+                    <i className={`ph ph-squares-four`} view_selected='select' onClick={(e) => {changeView_Content(e.currentTarget, 0)}}></i>
+                </div>
+            </div>
+            <div className={lpMain.SearchResultData} data-view-result='grid'>
                 <div className={lpMain.SearchResultData_sub}>
-                    {siteSearch.map((item) => (
-                        <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
-                            style={{ backgroundColor: item.color }}
-                            onClick={(e) => {
-                                navigate(`/learn/info/${e.currentTarget.querySelector('h1').innerText}`)
-                            }}
-                        >
-                            <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
-                                onLoad={e => {
-                                    let parent = e.currentTarget.parentElement
-                                    parent.classList.remove(lpMain.loading)
+                    {siteSearch.map((item) => {
+                        let desc = JSON.parse(item.thsl_desc)[0].text
+                        if (desc == '') { desc = "ไม่มีคำอธิบาย" }
+                        return (
+                            <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
+                                style={{ backgroundColor: item.color }}
+                                onClick={(e) => {
+                                    navigate(`/learn/info/${e.currentTarget.querySelector('h1').innerText}`)
                                 }}
-                            />
-                            <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
-                        </div>
-                    ))}
+                            >
+                                <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
+                                    onLoad={e => {
+                                        let parent = e.currentTarget.parentElement
+                                        parent.classList.remove(lpMain.loading)
+                                    }}
+                                />
+                                <div className={lpMain.searchTextData_cont}>
+                                    <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
+                                    <h2 className={lpMain.searchDescription}>{desc}</h2>
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </section>
@@ -908,13 +867,42 @@ export default function LearnPlaceItems() {
                                     <img src={blankProfile} alt='blank profile'/>
                                     <div className={lpSetting.sub_upper}>
                                         <p>Name</p>
-                                        <div>
-                                            <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
-                                            <i className={`ph ph-pencil-simple ${lpSetting.field_icon}`}></i>
+                                        <div className={lpSetting.sub_upper_container}>
+                                            <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off'
+                                                style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}
+                                                onChange={e => {
+                                                    let value = e.currentTarget.value
+                                                    let sub = e.currentTarget.parentElement.querySelector('i')
+                                                    if (value != localStorage.getItem('name')) {
+                                                        sub.style.transform = 'scale(1.5) rotate(360deg)'
+                                                    } else {
+                                                        sub.style.transform = 'scale(1) rotate(0deg)'
+                                                    }
+                                                }}
+                                            />
+                                            <i className={`ph ph-pencil-simple ${lpSetting.field_icon_name}`}
+                                                onClick={e => {
+                                                    let element = e.currentTarget.parentElement.querySelector('input')
+                                                    let value = element.value
+                                                    if (value == localStorage.getItem('name') || value == '') {
+                                                        e.currentTarget.style.transform = 'scale(1) rotate(0deg)'
+                                                        element.inert = true
+                                                        element.value = 'Invalid'
+                                                        element.style.color = '#c32509'
+                                                        element.style.border = '3px solid #c32509'
+                                                        setTimeout(() => {
+                                                            element.inert = false
+                                                            element.style.color = '#000'
+                                                            element.style.border = '3px solid #ccc'
+                                                            element.value = localStorage.getItem('name')
+                                                        }, 750);
+                                                    } else {handleNameChange(value);}
+                                                }}
+                                            ></i>
                                         </div>
                                     </div>
                                 </div>
-                                <div className={lpSetting.field_icon} style={{justifyContent: 'center'}}>
+                                <div className={lpSetting.emailpass_info} style={{justifyContent: 'center'}}>
                                     <div className={lpSetting.sub_upper}>
                                         <p title='Email'>Email</p>
                                         <input type="text" placeholder='name@email.com' defaultValue={localStorage.getItem('email')} style={{minWidth: '100%'}} inert/>
@@ -930,7 +918,7 @@ export default function LearnPlaceItems() {
                                     </div>
                                 </div>
                                 <div className={`${lpSetting.sub_con} ${lpSetting.pswdChange}`}>
-                                    <input id="changepswd_setting" type="button" defaultValue="Change password"/>
+                                    <input id="changepswd_setting" type="button" defaultValue="forgot password"/>
                                 </div>
                             </div>
                         </section>
@@ -939,8 +927,8 @@ export default function LearnPlaceItems() {
                 <div className={lpSetting.bottom_deck}>
                     <input id="advance_setting" type="button" defaultValue="Advance"/>
                     <div className={lpSetting.inner}>
-                        <input id="submit_setting" type="button" defaultValue="Ok" className="closeSetting" onClick={() => {comfirmSetting(true)}}/>
-                        <input id="cancle_setting" type="button" defaultValue="Cancle" className="closeSetting" onClick={()  => {comfirmSetting(false)}}/>
+                        <input id="submit_setting" type="button" defaultValue="Ok" className="closeSetting" onClick={() => {callConfirmSetting(true)}}/>
+                        <input id="cancle_setting" type="button" defaultValue="Cancle" className="closeSetting" onClick={()  => {callConfirmSetting(false)}}/>
                     </div>
                 </div>
             </div>

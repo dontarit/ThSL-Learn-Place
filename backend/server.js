@@ -45,7 +45,7 @@ const pool = mysql.createPool({
 
 app.post('/signinServer', (req, res) => {
     const { name, email, pswd } = req.body
-    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password, user_setting) VALUES (?, ?, ?, ?)"
+    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password, user_setting, user_search) VALUES (?, ?, ?, ?, ?)"
     const checkEmailQuery = "SELECT * FROM user_data WHERE user_email = ?"
     
     pool.getConnection((err, connection) => {
@@ -63,7 +63,7 @@ app.post('/signinServer', (req, res) => {
                     return res.json({theme: 'warning', title: 'Warning', content: 'That email already exists. Enter a different account'})
                 }
     
-                connection.query(insertQuery, [name, email, pswd, {}], (err) => {
+                connection.query(insertQuery, [name, email, pswd, {}, {}], (err) => {
                     if (err) {
                         console.error('Error inserting data:', err)
                         return res.json({theme: 'danger', title: 'Error', content: "Can't inserting data"})
@@ -257,14 +257,33 @@ const saveWordData = async (word_data) => {
                 connection.query(query, [textTitle, imageUrl, descript], (err) => {
                     connection.release()
                     if (err) {
-                        console.error('Error saving image to database:', err);
+                        console.error('Error saving data:', err);
                     } else {
                         console.log(`Fetch "${textTitle}" into database`);
                     }
                 });
             })
         } catch (error) {
-            console.error('Error downloading image:', error);
+            console.error('Error saving data:', error);
+        }
+
+        try {
+            const query = 'CREATE FULLTEXT INDEX thsl_word_fulltext_idx ON thsl_words(thsl_word);';
+
+            pool.getConnection((err, connection) => {
+                if (err) {
+                    console.error('Error getting connection:', err)
+                    return res.json({theme: 'danger', title: 'Error', content: "Can't connect to database"})
+                }
+                connection.query(query, (err) => {
+                    connection.release()
+                    if (err) {
+                        console.error('Error create fulltext:', err);
+                    }
+                });
+            })
+        } catch (error) {
+            console.error('Error create fulltext:', error);
         }
     }
 };
@@ -596,8 +615,13 @@ app.post('/changeName', (req, res) => {
 
 app.post('/searchWord', (req, res) => {
     const data = req.body.search_data
-    // const query = `SELECT * FROM thsl_words WHERE MATCH(thsl_word) AGAINST('${data}' IN NATURAL LANGUAGE MODE)`
-    const query = `SELECT * FROM thsl_words WHERE thsl_word LIKE '${data}%'`
+    const toSite = req.body.to_site
+    let query
+    if (toSite) {
+        query = `SELECT * FROM thsl_words WHERE MATCH(thsl_word) AGAINST('${data}' IN NATURAL LANGUAGE MODE)`
+    } else {
+        query = `SELECT * FROM thsl_words WHERE thsl_word LIKE '${data}%'`
+    }
 
     pool.getConnection((err, connection) => {
         if (err) {
