@@ -123,7 +123,6 @@ export default function LearnPlace() {
 
     function SpinCheck(elememt) {
         const setting = document.getElementById('open_setting_to_animate')
-        console.log(setting);
         const settime = 500
 
         if (elememt.classList.contains('Spin_n')) {
@@ -145,7 +144,7 @@ export default function LearnPlace() {
         didRun.current = true;
 
         if (!authToken && isTokenExpired()) {
-            navigate('/home')
+            navigate('/home', { replace: true })
             return
         }
 

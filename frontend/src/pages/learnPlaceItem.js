@@ -136,7 +136,6 @@ export default function LearnPlaceItems() {
 
     function SpinCheck(elememt) {
         const setting = document.getElementById('open_setting_to_animate')
-        console.log(setting);
         const settime = 500
 
         if (elememt.classList.contains('Spin_n')) {
