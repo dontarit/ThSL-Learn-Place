@@ -81,6 +81,11 @@
 }
 
 /* Set Admin / Remove Admin Button (Green) */
+.userAccountTable_Container .tdRootAdmin {
+  background-color: #70786a;
+  color: #d2d2d2;
+  cursor: not-allowed;
+}
 .userAccountTable_Container .tdNowAdmin {
   background-color: #4CAF50;
   color: white;

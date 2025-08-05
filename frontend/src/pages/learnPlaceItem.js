@@ -36,6 +36,7 @@ export default function LearnPlaceItems() {
     const didRun = useRef(false);
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [searchRes, setSearchRes] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [settingStore, setSettingStore] = useState({
         setValue: {
             schedule: 4,
@@ -130,23 +131,25 @@ export default function LearnPlaceItems() {
 
     async function callConfirmSetting(apply, firstload = false) {
         comfirmSetting(apply, firstload, settingStore, setSettingStore, authToken, true)
+        setLoading(false);
     }
 
     function SpinCheck(elememt) {
         const setting = document.getElementById('open_setting_to_animate')
-        const settime = 250
+        console.log(setting);
+        const settime = 500
 
         if (elememt.classList.contains('Spin_n')) {
             elememt.classList.add('Spin_y')
             elememt.classList.remove('Spin_n')
-            setting.style.transition = `all ${settime}`
-            setting.style.rotate = '0deg'
+            setting.style.transition = `all ${settime}ms`
+            setting.style.transform = 'rotate(360deg)'
         }
         else if (elememt.classList.contains('Spin_y')) {
             elememt.classList.add('Spin_n')
             elememt.classList.remove('Spin_y')
-            setting.style.transition = `all ${settime}`
-            setting.style.rotate = '360deg'
+            setting.style.transition = `all ${settime}ms`
+            setting.style.transform = 'rotate(0deg)'
         }
     }
 
@@ -161,21 +164,23 @@ export default function LearnPlaceItems() {
 
         // Button animation on click
         const append_btnAnimate = document.querySelectorAll('.btnAnimate')
-        append_btnAnimate.forEach(element => {
-            element.addEventListener('click', () => {
-                element.transition = 'transform 100ms'
-                element.style.transform = 'translateY(-5%) scale(1.02)'
-                element.ontransitionend = () => {
-                    element.style.transform = 'translateY(0%) scale(1)'
-                }
-            })
-        });
+        if (append_btnAnimate != undefined) {
+            append_btnAnimate.forEach(element => {
+                element.addEventListener('click', () => {
+                    element.transition = 'transform 100ms'
+                    element.style.transform = 'translateY(-5%) scale(1.02)'
+                    element.ontransitionend = () => {
+                        element.style.transform = 'translateY(0%) scale(1)'
+                    }
+                })
+            });
+        }
 
         // Menu toggle button
         const sideMenu = document.getElementById("sideMenu");
         const menuBtn = document.getElementById("menuBtn");
-        const menuBtn_out = document.querySelectorAll(`.${lpMain.open_menu} .${lpMain.menu_btn_out}`);
-        const menuBtn_in = document.querySelector(`.${lpMain.open_menu} .${lpMain.menu_btn_in}`)
+        const menuBtn_in = document.getElementById('menu_btn_in_first')
+        const menuBtn_out = document.querySelectorAll(`.${lpMain.menu_btn_out}`);
         const sideItem = document.querySelectorAll(`.${lpMain.nav_bar} .${lpMain.typeNav} div`)
 
         function openMenu() {
@@ -236,10 +241,10 @@ export default function LearnPlaceItems() {
             if (window.innerWidth < 768) {
                 headBtn.forEach(elememt => {
                     elememt.inert = true
-                    elememt.style.transition = 'opacity 300ms'
+                    elememt.style.transition = 'all 300ms'
                     elememt.style.opacity = '0'
                 });
-                mainLogo.style.transition = 'opacity 300ms'
+                mainLogo.style.transition = 'all 300ms'
                 mainLogo.style.opacity = '0'
             }
             searchCon.inert = false
@@ -251,10 +256,10 @@ export default function LearnPlaceItems() {
             showSearchResult(false)
             headBtn.forEach(element => {
                 element.inert = false
-                element.style.transition = 'opacity 300ms'
+                element.style.transition = 'all 300ms'
                 element.style.opacity = '1'
             });
-            mainLogo.style.transition = 'opacity 300ms'
+            mainLogo.style.transition = 'all 300ms'
             mainLogo.style.opacity = '1'
             searchCon.inert = true
             searchCon.style.transition = 'ease top 300ms'
@@ -283,30 +288,30 @@ export default function LearnPlaceItems() {
         
         topSelect.forEach(element => {
             element.addEventListener('click', () => {
-                option_numberID = element.id
-                let option_Value = parseInt(option_numberID.match(/\d+/)[0])
-                slideContent.style.transform = `translateX(${option_Value * -100}%)`
-                topSelect.forEach(inner => {
-                    inner.classList.remove(lpSetting.set_as_main)
-                    inner.classList.add(lpSetting.set_as_sub)
-                })
+                option_numberID = element.id;
+                option_Value = parseInt(option_numberID.match(/\d+/)[0]);
                 
-                topSelect[option_Value].classList.remove(lpSetting.set_as_sub)
-                topSelect[option_Value].classList.add(lpSetting.set_as_main)
-                if (option_Value == 0) {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value + 1].style.opacity = '0'
+                if (option_Value >= 0 && option_Value < contentOption.length) {
+                    slideContent.style.transform = `translateX(${option_Value * -100}%)`;
+                    topSelect.forEach(inner => {
+                        inner.classList.remove(lpSetting.set_as_main);
+                        inner.classList.add(lpSetting.set_as_sub);
+                    });
+
+                    topSelect[option_Value].classList.remove(lpSetting.set_as_sub);
+                    topSelect[option_Value].classList.add(lpSetting.set_as_main);
+
+                    if (contentOption[option_Value]) {
+                        contentOption[option_Value].style.opacity = '1';
+                        if (option_Value + 1 < contentOption.length) {
+                            contentOption[option_Value + 1].style.opacity = '0';
+                        }
+                        if (option_Value - 1 >= 0) {
+                            contentOption[option_Value - 1].style.opacity = '0';
+                        }
+                    }
                 }
-                else if (option_Value + 1 == topSelect.length) {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value - 1].style.opacity = '0'
-                }
-                else {
-                    contentOption[option_Value].style.opacity = '1'
-                    contentOption[option_Value + 1].style.opacity = '0'
-                    contentOption[option_Value - 1].style.opacity = '0'
-                }
-            })
+            });
         });
 
         // Open and Close setting
@@ -399,6 +404,7 @@ export default function LearnPlaceItems() {
     
 
 
+    // return loading ? <p>Loading...</p> : (
     return (
         <div className={lpMain.body}>
         <header className={lpMain.headerSection}>

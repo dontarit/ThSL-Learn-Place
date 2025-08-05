@@ -438,14 +438,16 @@ export default function AdminPageItems() {
                                     <tr className='contentTableRow' key={user.user_id}>
                                         <td className='setWidthFixtb'>{user.user_name}</td>
                                         <td className='setWidthFixtb'>{user.user_email}</td>
-                                        <td className='setWidthFixtb'>{user.admin_state == true ? "Admin" : "User"}</td>
+                                        <td className='setWidthFixtb'>{user.admin_state == 1 || user.admin_state == 2 ? "Admin" : "User"}</td>
                                         <td className='tbActionBtn_container setWidthFixtb'>
-                                            <button className='tbDeleteBtn tbActionBtn' onClick={() => user_handleDelete(user.user_id, user.user_email)}>Delete</button>
-                                            {user.admin_state !== 1 ? (
-                                                <button className='tbSetadBtn tdNowAdmin tbActionBtn' onClick={() => user_handleSetAdmin(user.user_id, 1)}>Set as Admin</button>
-                                            ) : (
+                                            {user.admin_state == 2 ? (
+                                                <button className='tbSetadBtn tbActionBtn tdRootAdmin'>Delete</button>
+                                            ) : <button className='tbDeleteBtn tbActionBtn' onClick={() => user_handleDelete(user.user_id, user.user_email)}>Delete</button>}
+                                            {user.admin_state == 2 ? (
+                                                <button className='tbSetadBtn tbActionBtn tdRootAdmin'>This can't be change</button>
+                                            ) : user.admin_state == 1 ? (
                                                 <button className='tbSetadBtn tdNotAdmin tbActionBtn' onClick={() => user_handleSetAdmin(user.user_id, 0)}>Remove Admin</button>
-                                            )}
+                                            ) : <button className='tbSetadBtn tdNowAdmin tbActionBtn' onClick={() => user_handleSetAdmin(user.user_id, 1)}>Set as Admin</button>}
                                         </td>
                                     </tr>
                                 ))}
