@@ -45,7 +45,7 @@ const pool = mysql.createPool({
 
 app.post('/signinServer', (req, res) => {
     const { name, email, pswd } = req.body
-    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password) VALUES (?, ?, ?)"
+    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password, user_setting) VALUES (?, ?, ?, ?)"
     const checkEmailQuery = "SELECT * FROM user_data WHERE user_email = ?"
     
     pool.getConnection((err, connection) => {
@@ -63,7 +63,7 @@ app.post('/signinServer', (req, res) => {
                     return res.json({theme: 'warning', title: 'Warning', content: 'That email already exists. Enter a different account'})
                 }
     
-                connection.query(insertQuery, [name, email, pswd], (err) => {
+                connection.query(insertQuery, [name, email, pswd, {}], (err) => {
                     if (err) {
                         console.error('Error inserting data:', err)
                         return res.json({theme: 'danger', title: 'Error', content: "Can't inserting data"})

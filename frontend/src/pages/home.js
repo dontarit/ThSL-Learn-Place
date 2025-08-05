@@ -55,17 +55,15 @@ export default function HomePage() {
             return
         })
     }
-    checkState(authToken)
-
+    if (localStorage.getItem('authToken') != null) {
+        checkState(authToken)
+    }
+        
 
 
     useEffect(() => {
         if (didRun.current) return;
         didRun.current = true;
-        
-        if (!authToken && isTokenExpired()) {
-            setAuthToken(refreshToken)
-        }
         
         const burger = document.getElementById("burger");
         const navList = document.getElementById("nav-list");

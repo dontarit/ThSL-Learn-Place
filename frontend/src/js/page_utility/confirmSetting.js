@@ -26,10 +26,17 @@ export default async function comfirmSetting(apply, firstload, settingStore, set
     if (firstload) {
         await axios.post('/getSetting', {token: authToken}).then(res => {
             const data = JSON.parse(res.data[0].user_setting);
-            schedule = data.schedule
-            streak = data.streak
-            theme = data.theme
-            time = data.time
+            if (data[0] == undefined) {
+                schedule = 4
+                streak = false
+                theme = 'light'
+                time = '00:10'
+            } else {
+                schedule = data.schedule
+                streak = data.streak
+                theme = data.theme
+                time = data.time
+            }
         })
         .catch(err => {
             console.error("Failed to load settings:", err);

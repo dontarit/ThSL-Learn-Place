@@ -9,6 +9,7 @@ import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
 import { isTokenExpired } from '../js/tokenManipulate.js';
+import { handleLogoutAcc } from '../js/page_utility/normal.js';
 import comfirmSetting from '../js/page_utility/confirmSetting.js'
 
 import TSLlogo from '../assets/img/TSLlogo.png';
@@ -35,8 +36,6 @@ export default function LearnPlaceItems() {
     const didRun = useRef(false);
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [searchRes, setSearchRes] = useState([]);
-    // Svae setting config
-    const [validSetting, setValidSetting] = useState(true)
     const [settingStore, setSettingStore] = useState({
         setValue: {
             schedule: 4,
@@ -53,21 +52,12 @@ export default function LearnPlaceItems() {
     })
 
     async function handleLogout() {
-        localStorage.removeItem('authToken')
-        localStorage.setItem('name', 'Unknow')
-        localStorage.setItem('email', '')
-        localStorage.setItem('profile', '')
-        setAuthToken(false);
-        await axios.post('/logoutServer').then(res => {
-            if (authToken && isTokenExpired()) {
-                navigate('/home')
-                return
-            }
-            openAlert(res.data.theme, res.data.title, res.data.content)
-        }).catch(err => {
-            console.log('error')
-            openAlert('danger', 'Error', "Unable to logout")
-        })
+        const result = await handleLogoutAcc(authToken, setAuthToken);
+        console.log(result);
+        
+        navigate(result.navigate, { replace: true })
+        const [theme, title, content] = result.alert_value;
+        openAlert(theme, title, content);
     }
     
     async function typingSearch(value) {
@@ -127,15 +117,7 @@ export default function LearnPlaceItems() {
             element.inert = true
         }
     }
-
-    function handleNameType(name) {
-        console.log(name);
-        if (name != localStorage.getItem('name')) {
-            console.log('new');
-        }else {
-            console.log('old');
-        }
-    }
+    
     async function handleNameChange(name) {
         await axios.post('/changeName', {name: name, token: authToken}).then(res => {
             openAlert(res.data.theme, res.data.title, res.data.content)
@@ -343,6 +325,8 @@ export default function LearnPlaceItems() {
             })
         });
         function closeSettingFunc() {
+            document.getElementById('user-name').value = localStorage.getItem('name')
+            document.querySelector(`.ph.ph-pencil-simple.${lpSetting.field_icon_name}`).style.transform = 'scale(1) rotate(0deg)'
             overlaySetting.style.transition = `opacity ${overlaySettingTime}ms`
             overlaySetting.style.opacity = '0'
             setTimeout(() => {
@@ -390,8 +374,6 @@ export default function LearnPlaceItems() {
             }
         })
         window.addEventListener('load', () => {
-            document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
-            document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
             const transitions = [
                 { selector: '.tableColumn span', style: 'scale 1s' },
@@ -411,8 +393,8 @@ export default function LearnPlaceItems() {
             document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
-        searchWordData(id.word)
         callConfirmSetting(true, true)
+        searchWordData(id.word)
     }, [authToken, location]);
     
 
@@ -825,13 +807,35 @@ export default function LearnPlaceItems() {
                                     <div className={lpSetting.sub_upper}>
                                         <p>Name</p>
                                         <div className={lpSetting.sub_upper_container}>
-                                            <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off' style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}/>
+                                            <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off'
+                                                style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}
+                                                onChange={e => {
+                                                    let value = e.currentTarget.value
+                                                    let sub = e.currentTarget.parentElement.querySelector('i')
+                                                    if (value != localStorage.getItem('name')) {
+                                                        sub.style.transform = 'scale(1.5) rotate(360deg)'
+                                                    } else {
+                                                        sub.style.transform = 'scale(1) rotate(0deg)'
+                                                    }
+                                                }}
+                                            />
                                             <i className={`ph ph-pencil-simple ${lpSetting.field_icon_name}`}
                                                 onClick={e => {
-                                                    handleNameChange(e.currentTarget.parentElement.querySelector('input').value);
-                                                }}
-                                                onChange={e => {
-                                                    handleNameType(e.currentTarget.parentElement.querySelector('input').value)
+                                                    let element = e.currentTarget.parentElement.querySelector('input')
+                                                    let value = element.value
+                                                    if (value == localStorage.getItem('name') || value == '') {
+                                                        e.currentTarget.style.transform = 'scale(1) rotate(0deg)'
+                                                        element.inert = true
+                                                        element.value = 'Invalid'
+                                                        element.style.color = '#c32509'
+                                                        element.style.border = '3px solid #c32509'
+                                                        setTimeout(() => {
+                                                            element.inert = false
+                                                            element.style.color = '#000'
+                                                            element.style.border = '3px solid #ccc'
+                                                            element.value = localStorage.getItem('name')
+                                                        }, 750);
+                                                    } else {handleNameChange(value);}
                                                 }}
                                             ></i>
                                         </div>

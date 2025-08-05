@@ -9,6 +9,7 @@ import getBase from '../js/getBase.js'
 import NotFoundPage from '../pages/notfound.js';
 import openAlert from '../js/alert-box.js'
 import { isTokenExpired } from '../js/tokenManipulate.js';
+import { handleLogoutAcc } from '../js/page_utility/normal.js';
 
 import TSLlogo from '../assets/img/TSLlogo.png';
 
@@ -17,71 +18,45 @@ export default function AdminPage() {
     getBase()
     
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
-    const [isAdmin, setIsAdmin] = useState();
+    const [isAdmin, setIsAdmin] = useState(null);
 
-    async function checkState() {
-        await axios.post('/checkAdminServer', {token: authToken}).then(res => {
-            setIsAdmin((res.data == 1 || res.data == 2) ? true : false)
-            return
-        }).catch(err => {
-            setIsAdmin(false)
-            return
-        })
+    useEffect(() => {
+        async function checkState(token) {
+            try {
+                const res = await axios.post('/checkAdminServer', { token });
+                setIsAdmin(res.data == 1 || res.data == 2); 
+            } catch (err) {
+                setIsAdmin(false);
+            }
+        }
+
+        if (authToken) {
+            checkState(authToken);
+        } else {
+            setIsAdmin(false);
+        }
+    }, [authToken]);
+
+    if (isAdmin === null) {
+        return <div>Loading...</div>;
     }
-    checkState()
-    
-    // useEffect(() => {
-    //     if (!authToken && isTokenExpired()) {
-    //         navigate('/home')
-    //         return
-    //     }
-    // }, [authToken]);
-    
     if (!isAdmin) {
         return <NotFoundPage />;
     }
 
-    async function handleLogout() {
-        localStorage.removeItem('authToken')
-        localStorage.setItem('name', '')
-        localStorage.setItem('email', '')
-        localStorage.setItem('profile', '')
-        setAuthToken(false);
-        await axios.post('/logoutServer')
-            .then(res => {
-                if (authToken && isTokenExpired()) {
-                    navigate('/home')
-                    return
-                }
-            })
-            .catch(err => {
-                console.log('error')
-            })
-    }
-
     const adminGeneralItems = [
-        {
-            id: 1,
-            link: 'create',
-            icon: 'ph-camera',
-            title: 'Create Data',
-            color: '#c4e456',
-        },
-        {
-            id: 2,
-            link: 'user',
-            icon: 'ph-identification-card',
-            title: 'User Management',
-            color: '#6d9be4',
-        },
-        {
-            id: 3,
-            link: 'thsl',
-            icon: 'ph-database',
-            title: 'ThSL Management',
-            color: '#f6cf55',
-        },
-    ]
+        { id: 1, link: 'create', icon: 'ph-camera', title: 'Create Data', color: '#c4e456' },
+        { id: 2, link: 'user', icon: 'ph-identification-card', title: 'User Management', color: '#6d9be4' },
+        { id: 3, link: 'thsl', icon: 'ph-database', title: 'ThSL Management', color: '#f6cf55' },
+    ];
+
+    async function handleLogout() {
+        const result = await handleLogoutAcc(authToken, setAuthToken);
+        
+        navigate(result.navigate, { replace: true })
+        const [theme, title, content] = result.alert_value;
+        openAlert(theme, title, content);
+    }
 
     return (
         <>
