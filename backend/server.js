@@ -268,7 +268,7 @@ const saveWordData = async (word_data) => {
         }
 
         try {
-            const query = 'CREATE FULLTEXT INDEX thsl_word_fulltext_idx ON thsl_words(thsl_word);';
+            const query = 'CREATE FULLTEXT INDEX thsl_word_fulltext_idx ON thsl_words(thsl_word)';
 
             pool.getConnection((err, connection) => {
                 if (err) {

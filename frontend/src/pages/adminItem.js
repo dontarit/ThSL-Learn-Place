@@ -434,24 +434,34 @@ export default function AdminPageItems() {
                                 </tr>
                             </thead>
                             <tbody className='contentTable'>
-                                {users.map((user) => (
-                                    <tr className='contentTableRow' key={user.user_id}>
-                                        <td className='setWidthFixtb'>{user.user_name}</td>
-                                        <td className='setWidthFixtb'>{user.user_email}</td>
-                                        <td className='setWidthFixtb'>{user.admin_state == 1 || user.admin_state == 2 ? "Admin" : "User"}</td>
-                                        <td className='tbActionBtn_container setWidthFixtb'>
-                                            {user.admin_state == 2 ? (
-                                                <button className='tbSetadBtn tbActionBtn tdRootAdmin'>Delete</button>
-                                            ) : <button className='tbDeleteBtn tbActionBtn' onClick={() => user_handleDelete(user.user_id, user.user_email)}>Delete</button>}
-                                            {user.admin_state == 2 ? (
-                                                <button className='tbSetadBtn tbActionBtn tdRootAdmin'>This can't be change</button>
-                                            ) : user.admin_state == 1 ? (
-                                                <button className='tbSetadBtn tdNotAdmin tbActionBtn' onClick={() => user_handleSetAdmin(user.user_id, 0)}>Remove Admin</button>
-                                            ) : <button className='tbSetadBtn tdNowAdmin tbActionBtn' onClick={() => user_handleSetAdmin(user.user_id, 1)}>Set as Admin</button>}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {users.map((user) => {
+                                    return (
+                                        <tr className='contentTableRow' key={user.user_id}>
+                                            <td className='setWidthFixtb'>{user.user_name}</td>
+                                            <td className='setWidthFixtb'>{user.user_email}</td>
+                                            <td className='setWidthFixtb'>{user.admin_state == 1 || user.admin_state == 2 ? "Admin" : "User"}</td>
+                                            <td className='tbActionBtn_container setWidthFixtb'>
+                                                {user.admin_state == 2 ? (
+                                                    <button className='tbSetadBtn tbActionBtn tdRootAdmin'>Delete</button>
+                                                ) : <button className='tbDeleteBtn tbActionBtn' onClick={() => user_handleDelete(user.user_id, user.user_email)}>Delete</button>}
+                                                {user.admin_state == 2 ? (
+                                                    <button className='tbSetadBtn tbActionBtn tdRootAdmin'>This can't be change</button>
+                                                ) : user.admin_state == 1 ? (
+                                                    <button className='tbSetadBtn tdNotAdmin tbActionBtn' onClick={() => user_handleSetAdmin(user.user_id, 0)}>Remove Admin</button>
+                                                ) : <button className='tbSetadBtn tdNowAdmin tbActionBtn' onClick={() => user_handleSetAdmin(user.user_id, 1)}>Set as Admin</button>}
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
+                            <tfoot className='TalbeEndhere'>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
                         </table>
                     )}
                 </div>
@@ -502,21 +512,32 @@ export default function AdminPageItems() {
                                 </tr>
                             </thead>
                             <tbody className='contentTable'>
-                                {thsls.map((data) => (
-                                    <tr className='contentTableRow' key={data.id}>
-                                        <td className='setWidthFixtb'>{data.thsl_word}</td>
-                                        <td className='setWidthFixtb'>none</td>
-                                        <td className='setWidthFixtb'>
-                                            <a href={data.thsl_src} target="_blank" rel="noopener noreferrer">GIF Example</a>
-                                        </td>
-                                        <td className='tbActionBtn_container setWidthFixtb'>
-                                            <button className='tbSetadBtn tbActionBtn tbChangeData' onClick={() => thsl_handleChange_Title(data.id, data.thsl_word)}>Change Title</button>
-                                            <button className='tbSetadBtn tbActionBtn tbChangeData' onClick={() => thsl_handleChange_Description(data.id, data.thsl_word)}>Change Desc</button>
-                                            {/* <button className='tbDeleteBtn tbActionBtn' onClick={() => thsl_handleDelete(data.id, data.thsl_word)}>Delete</button> */}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {thsls.map((data) => {
+                                    let desc_data = JSON.parse(data.thsl_desc)[0].text
+                                    return (
+                                        <tr className='contentTableRow' key={data.id}>
+                                            <td className='setWidthFixtb'>{data.thsl_word}</td>
+                                            <td className='setWidthFixtb'>{desc_data == '' ? "ไม่พบข้อมูล" : desc_data}</td>
+                                            <td className='setWidthFixtb'>
+                                                <a href={data.thsl_src} target="_blank" rel="noopener noreferrer">{data.thsl_src}</a>
+                                            </td>
+                                            <td className='tbActionBtn_container setWidthFixtb'>
+                                                <button className='tbSetadBtn tbActionBtn tbChangeData' onClick={() => thsl_handleChange_Title(data.id, data.thsl_word)}>Change Title</button>
+                                                <button className='tbSetadBtn tbActionBtn tbChangeData' onClick={() => thsl_handleChange_Description(data.id, data.thsl_word)}>Change Desc</button>
+                                                {/* <button className='tbDeleteBtn tbActionBtn' onClick={() => thsl_handleDelete(data.id, data.thsl_word)}>Delete</button> */}
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
+                            <tfoot className='TalbeEndhere'>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
                         </table>
                         <div className='thslToggle'>
                             <div className='toggleSelect'>
