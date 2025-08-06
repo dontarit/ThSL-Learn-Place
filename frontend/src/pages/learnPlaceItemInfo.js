@@ -5,6 +5,7 @@ import axios from 'axios'
 import lpMain from '../css/learnPlace.module.css'
 import lpSearch from '../css/sub/searchbox.module.css'
 import lpSetting from '../css/sub/setting_page.module.css'
+import lpNavC from '../css/sub/navigate_circle.module.css'
 import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
@@ -166,6 +167,33 @@ export default function LearnPlaceItems() {
             elememt.classList.remove('Spin_y')
             setting.style.transition = `all ${settime}ms`
             setting.style.transform = 'rotate(0deg)'
+        }
+    }
+
+    function openMiniNav(element) {
+        const sign = element.querySelector(`.${lpNavC.show_over}`)
+        const butt = element.querySelectorAll(`.${lpNavC.data_drop} .${lpNavC.dataContainer}`)
+        const state = element.getAttribute('current-state')
+        let count = 0
+
+        if (state == 'close') {
+            element.setAttribute('current-state', 'open')
+            sign.style.transform = 'rotate(135deg)'
+            butt.forEach(sub => {
+                sub.inert = false
+                sub.style.opacity = '1'
+                sub.style.transform = `translate(0%, -${110 + (count * 110)}%)`
+                count += 1
+            });
+        }
+        if (state == 'open') {
+            element.setAttribute('current-state', 'close')
+            sign.style.transform = 'rotate(0deg)'
+            butt.forEach(sub => {
+                sub.inert = true
+                sub.style.opacity = '0'
+                sub.style.transform = `translate(0, 0)`
+            });
         }
     }
 
@@ -430,6 +458,13 @@ export default function LearnPlaceItems() {
                     element.style.transition = style;
                 });
             });
+
+            if (window.innerWidth <= 481) {
+                let elem = document.getElementById('changeViewInnerWight')
+                if (elem) {
+                    changeView_Content(elem, 1)
+                }
+            }
         });
         setTimeout(() => {
             document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
@@ -708,8 +743,12 @@ export default function LearnPlaceItems() {
         </div>
         <section className={lpMain.SearchResult_Container}>
             <div className={lpMain.state_Changing}>
+                <div className={lpMain.S_Searching_show}>
+                    <i className="ph ph-magnifying-glass"></i>
+                    <p>{id.word}</p>
+                </div>
                 <div className={lpMain.S_Changing_cont}>
-                    <i className={`ph ph-list`} view_selected='not' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
+                    <i className={`ph ph-list`} view_selected='not' id='changeViewInnerWight' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
                     <i className={`ph ph-squares-four`} view_selected='select' onClick={(e) => {changeView_Content(e.currentTarget, 0)}}></i>
                 </div>
             </div>
@@ -930,6 +969,23 @@ export default function LearnPlaceItems() {
                         <input id="submit_setting" type="button" defaultValue="Ok" className="closeSetting" onClick={() => {callConfirmSetting(true)}}/>
                         <input id="cancle_setting" type="button" defaultValue="Cancle" className="closeSetting" onClick={()  => {callConfirmSetting(false)}}/>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div className={lpNavC.rightbottom_Navigate} current-state='close' onClick={(e) => {openMiniNav(e.currentTarget)}}>
+            <div className={lpNavC.show_over}>
+                <div className={lpNavC.navBtn}></div>
+                <div className={lpNavC.navBtn}></div>
+            </div>
+            <div className={lpNavC.data_drop}>
+                <div className={lpNavC.dataContainer} inert onClick={() => {navigate('/learn')}}>
+                    <i className="ph ph-house-line"></i>
+                </div>
+                <div className={`${lpNavC.dataContainer}`} inert id="activateSearch">
+                    <i className="ph ph-magnifying-glass"></i>
+                </div>
+                <div className={lpNavC.dataContainer} inert onClick={() => {navigate('/camera')}}>
+                    <i className="ph ph-camera"></i>
                 </div>
             </div>
         </div>

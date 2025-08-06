@@ -458,6 +458,13 @@ export default function LearnPlaceItems() {
                     element.style.transition = style;
                 });
             });
+
+            if (window.innerWidth <= 481) {
+                let elem = document.getElementById('changeViewInnerWight')
+                if (elem) {
+                    changeView_Content(elem, 1)
+                }
+            }
         });
         setTimeout(() => {
             document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
@@ -736,8 +743,12 @@ export default function LearnPlaceItems() {
         </div>
         <section className={lpMain.SearchResult_Container}>
             <div className={lpMain.state_Changing}>
+                <div className={lpMain.S_Searching_show}>
+                    <i className="ph ph-magnifying-glass"></i>
+                    <p>{id.word}</p>
+                </div>
                 <div className={lpMain.S_Changing_cont}>
-                    <i className={`ph ph-list`} view_selected='not' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
+                    <i className={`ph ph-list`} view_selected='not' id='changeViewInnerWight' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
                     <i className={`ph ph-squares-four`} view_selected='select' onClick={(e) => {changeView_Content(e.currentTarget, 0)}}></i>
                 </div>
             </div>

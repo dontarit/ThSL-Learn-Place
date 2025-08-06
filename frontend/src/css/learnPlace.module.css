@@ -981,6 +981,7 @@
     max-width: 180px;
     width: 100%;
     height: auto;
+    top: 0;
     aspect-ratio: 1/1;
     object-fit: cover;
     border-radius: 0 0 5px 5px;
@@ -989,12 +990,14 @@
 .searchTextData_cont {
     display: flex;
     overflow: hidden;
+    height: 100%;
     .searchTitleName {
         margin: 12px 12px;
         color: #e3e3e3;
         width: 200px;
+        width: 100%;
         overflow: hidden;
-        white-space: nowrap;
+        /* white-space: nowrap; */
         text-overflow: ellipsis;
         text-align: center;
         font-size: clamp(1em, 2vw, 1.2em);
@@ -1054,11 +1057,28 @@
 
 .state_Changing {
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
     width: calc(100% - 2em);
     padding: 12px 25px;
     background-color: #3b4b68;
     border-radius: 5px;
+}
+.S_Searching_show {
+    display: flex;
+    color: #c7d2e0;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    gap: 5px;
+    i, p {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 1.8em;
+        text-wrap: nowrap;
+    }
 }
 .S_Changing_cont {
     display: flex;
