@@ -167,6 +167,8 @@ export default function LearnPlace() {
         }
     }
 
+    
+
     useEffect(() => {
         if (didRun.current) return;
         didRun.current = true;
@@ -486,7 +488,7 @@ export default function LearnPlace() {
                     };
                     return (
                         <div className={lpMain.word_container} key={data.id} onClick={(e) => {
-                            navigate(`/learn/search/${e.target.querySelector('div p').innerHTML}`);
+                            navigate(`/learn/search/${e.target.querySelector('div p').innerHTML.split('/')[0]}`);
                         }}>
                             <div className={lpMain.icontentContainer}>
                                 <i className="ph ph-magnifying-glass"></i>
@@ -596,8 +598,8 @@ export default function LearnPlace() {
                 </div>
                 <div className={lpMain.showTableStr}></div>
                 <div className={lpMain.tell_history}>
-                    <p id="last-use">21/5/2025</p>
-                    <p id="study-time">No History</p>
+                    <p id="last-use">-</p>
+                    <p id="study-time">-</p>
                 </div>
             </section>
             <section className={lpMain.lvl_review}>
@@ -609,14 +611,14 @@ export default function LearnPlace() {
                                 <span>You are currently studying</span>
                             </div>
                             <div className={lpMain.make_text_gap}>
-                                <span className={lpMain.txthilig} id='txthilig'>134</span>
+                                <span className={lpMain.txthilig} id='txthilig'>-</span>
                                 <span>Thai Sign word.</span>
                             </div>
                         </div>
                         <div className={lpMain.box2}>
                             <div className={lpMain.make_text_gap}>
                                 <span>Now you have</span>
-                                <span className={lpMain.txthilig} id='txthilig'>10</span>
+                                <span className={lpMain.txthilig} id='txthilig'>-</span>
                                 <span>word</span>
                             </div>
                             <div>
@@ -629,35 +631,35 @@ export default function LearnPlace() {
                     <div className={lpMain.level_current}>
                         <p className={lpMain.make_text_gap}>
                             <span>Level</span>
-                            <span className={lpMain.levamt} id='levamt'>3-8</span>
+                            <span className={lpMain.levamt} id='levamt'>0</span>
                         </p>
                         <p className={lpMain.make_text_gap}>
                             <span>Next Level</span>
-                            <span className={lpMain.levamt} id='levamt'>144</span>
+                            <span className={lpMain.levamt} id='levamt'>100</span>
                             <span>XP</span>
                         </p>
                     </div>
-                    <progress className={lpMain.UserLvl} id="UserLvl" value="32" max="100"></progress>
+                    <progress className={lpMain.UserLvl} id="UserLvl" value="0" max="100"></progress>
                 </div>
                 <div className={lpMain.progress_word}>
                     <div className={lpMain.progress_0}>
-                        <p id="wordNumber">10</p>
+                        <p id="wordNumber">0</p>
                         <p>0% - 24%</p>
                     </div>
                     <div className={lpMain.progress_1}>
-                        <p id="wordNumber">10</p>
+                        <p id="wordNumber">0</p>
                         <p>25% - 49%</p>
                     </div>
                     <div className={lpMain.progress_2}>
-                        <p id="wordNumber">10</p>
+                        <p id="wordNumber">0</p>
                         <p>50% - 74%</p>
                     </div>
                     <div className={lpMain.progress_3}>
-                        <p id="wordNumber">10</p>
+                        <p id="wordNumber">0</p>
                         <p>75% - 99%</p>
                     </div>
                     <div className={lpMain.progress_4}>
-                        <p id="wordNumber">10</p>
+                        <p id="wordNumber">0</p>
                         <p><span>---</span>100%<span>---</span></p>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 .alert-content {
     padding:0;
-    margin:10% 15%;   
+    margin:10% 15%;
 }
 
 .close {
@@ -35,6 +35,7 @@ button.close {
     right: 10px;
     bottom: 0; 
     transition: transform 750ms;
+    z-index: 999;
 }
 
 .alert {

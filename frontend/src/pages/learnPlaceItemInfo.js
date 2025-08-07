@@ -6,6 +6,7 @@ import lpMain from '../css/learnPlace.module.css'
 import lpSearch from '../css/sub/searchbox.module.css'
 import lpSetting from '../css/sub/setting_page.module.css'
 import lpNavC from '../css/sub/navigate_circle.module.css'
+import lpInfor from '../css/learnPlace_informate.module.css'
 import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
@@ -37,6 +38,7 @@ export default function LearnPlaceItems() {
     const didRun = useRef(false);
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [searchRes, setSearchRes] = useState([]);
+    const [searchSpecific, setSearchSpecific] = useState({});
     const [loading, setLoading] = useState(true);
     const [settingStore, setSettingStore] = useState({
         setValue: {
@@ -120,6 +122,12 @@ export default function LearnPlaceItems() {
                 t.id === value.id
             ))
         );
+
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
         
         setSiteSearch(uniqueData)
     }
@@ -208,6 +216,18 @@ export default function LearnPlaceItems() {
         } else {
             contai.setAttribute('data-view-result', 'grid')
         }
+    }
+
+    async function search_word_specific(word) {
+        await axios.post('/searchSpecific', {word: word}).then(res => {
+            let data = res.data[0]
+            setSearchSpecific({
+                id: data.id,
+                word: data.thsl_word,
+                meaning: JSON.parse(res.data[0].thsl_desc),
+                src: data.thsl_src
+            })
+        }).catch(err => { console.log('error: ', err) })
     }
 
     useEffect(() => {
@@ -471,8 +491,10 @@ export default function LearnPlaceItems() {
             document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
+        
         callConfirmSetting(true, true)
-        searchWordData(id.word)
+        console.log(id.word);
+        search_word_specific(id.word)
     }, [authToken, location]);
     
 
@@ -630,7 +652,7 @@ export default function LearnPlaceItems() {
                 </div>
             </div>
         </nav>
-        <div className={lpMain.mainContent_container} style={{maxWidth: 'unset', alignItems: 'center', paddingBottom: '4em'}}>
+        <div className={lpMain.mainContent_container} style={{maxWidth: 'unset', alignItems: 'center', paddingBottom: '4em', display: 'none'}}>
             <section className={lpMain.schedule} style={{display: 'none'}}>
                 <div className={lpMain.tell_streak}>
                     <div className={`${lpMain.streak_container} ${lpMain.stnow}`}>
@@ -722,7 +744,7 @@ export default function LearnPlaceItems() {
                     </button>
                 </div>
             </section>
-            <section className={lpMain.Cam_Search} style={{maxWidth: '500px'}}>
+            <section className={lpMain.Cam_Search} style={{maxWidth: '500px', display: 'none'}}>
                 <button className={`${lpMain.camsearchInside} ${lpMain.searchBoxBtn} ${lpMain.activateSearch} btnAnimate`} id="activateSearch">
                     <p>Search for a word</p>
                     <i className="ph ph-magnifying-glass"></i>
@@ -733,15 +755,9 @@ export default function LearnPlaceItems() {
                     <p>Translate with camera</p>
                     <i className="ph-fill ph-camera"></i>
                 </button>
-                <button className={`${lpMain.camsearchInside} ${lpMain.cameraBoxBtn} btnAnimate`}
-                    onClick={() => {navigate('/learn')}}
-                >
-                    <p>Go back</p>
-                    <i className="ph ph-house-line"></i>
-                </button>
             </section>
         </div>
-        <section className={lpMain.SearchResult_Container}>
+        {/* <section className={`${lpMain.SearchResult_Container} ${lpMain.body}`}>
             <div className={lpMain.state_Changing}>
                 <div className={lpMain.S_Searching_show}>
                     <i className="ph ph-magnifying-glass"></i>
@@ -779,6 +795,45 @@ export default function LearnPlaceItems() {
                     })}
                 </div>
             </div>
+        </section> */}
+        <section className={lpInfor.searchResult_Information}>
+            <section className={lpInfor.header_info}>
+                <div className={lpInfor.manage_group}>
+                    <div>
+                        <i className="ph ph-heart"></i>
+                    </div>
+                    <div>
+                        <i className="ph ph-star"></i>
+                    </div>
+                </div>
+                <div className={lpInfor.data_and_itemInfo}>
+                    <div className={lpInfor.src_cont}>
+                        <img src={searchSpecific.src}></img>
+                    </div>
+                    <div className={lpInfor.detail_cont}>
+                        <div>
+                            <p>{searchSpecific.word}</p>
+                            <p>word</p>
+                        </div>
+                        <div>
+                            <p>{searchSpecific.id}</p>
+                            <p>sequence</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {searchSpecific.meaning && Array.isArray(searchSpecific.meaning) ? (
+                searchSpecific.meaning.map((item, index) => (
+                    <section className={lpInfor.meaning_info} key={index}>
+                        <p className={lpInfor.head}>{item.head}</p>
+                        <p className={lpInfor.body}>{
+                            (item.text == '') ? "ไม่พบคำอธิบาย" : item.text
+                        }</p>
+                    </section>
+                ))
+            ) : (
+                <p>No meaning available</p>
+            )}
         </section>
         <div className={lpSetting.setting_container}>
             <div className={lpSetting.con_out}>

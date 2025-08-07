@@ -120,6 +120,12 @@ export default function LearnPlaceItems() {
                 t.id === value.id
             ))
         );
+
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
         
         setSiteSearch(uniqueData)
     }
@@ -471,6 +477,7 @@ export default function LearnPlaceItems() {
             document.querySelector(`.${lpMain.headerSection}`).style.transition = '500ms ease-in-out';
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
+        
         callConfirmSetting(true, true)
         searchWordData(id.word)
     }, [authToken, location]);
@@ -630,7 +637,7 @@ export default function LearnPlaceItems() {
                 </div>
             </div>
         </nav>
-        <div className={lpMain.mainContent_container} style={{maxWidth: 'unset', alignItems: 'center', paddingBottom: '4em'}}>
+        <div className={lpMain.mainContent_container} style={{maxWidth: 'unset', alignItems: 'center', paddingBottom: '4em', display: 'none'}}>
             <section className={lpMain.schedule} style={{display: 'none'}}>
                 <div className={lpMain.tell_streak}>
                     <div className={`${lpMain.streak_container} ${lpMain.stnow}`}>
@@ -722,7 +729,7 @@ export default function LearnPlaceItems() {
                     </button>
                 </div>
             </section>
-            <section className={lpMain.Cam_Search} style={{maxWidth: '500px'}}>
+            <section className={lpMain.Cam_Search} style={{maxWidth: '500px', display: 'none'}}>
                 <button className={`${lpMain.camsearchInside} ${lpMain.searchBoxBtn} ${lpMain.activateSearch} btnAnimate`} id="activateSearch">
                     <p>Search for a word</p>
                     <i className="ph ph-magnifying-glass"></i>
@@ -733,15 +740,9 @@ export default function LearnPlaceItems() {
                     <p>Translate with camera</p>
                     <i className="ph-fill ph-camera"></i>
                 </button>
-                <button className={`${lpMain.camsearchInside} ${lpMain.cameraBoxBtn} btnAnimate`}
-                    onClick={() => {navigate('/learn')}}
-                >
-                    <p>Go back</p>
-                    <i className="ph ph-house-line"></i>
-                </button>
             </section>
         </div>
-        <section className={lpMain.SearchResult_Container}>
+        <section className={`${lpMain.SearchResult_Container} ${lpMain.body}`}>
             <div className={lpMain.state_Changing}>
                 <div className={lpMain.S_Searching_show}>
                     <i className="ph ph-magnifying-glass"></i>
@@ -761,7 +762,7 @@ export default function LearnPlaceItems() {
                             <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
                                 style={{ backgroundColor: item.color }}
                                 onClick={(e) => {
-                                    navigate(`/learn/info/${e.currentTarget.querySelector('h1').innerText}`)
+                                    navigate(`/learn/info/${item.id}`)
                                 }}
                             >
                                 <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}

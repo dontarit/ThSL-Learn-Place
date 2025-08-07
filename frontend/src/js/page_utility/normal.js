@@ -8,6 +8,12 @@ export async function handleLogoutAcc(token, setAuthToken) {
     localStorage.setItem('profile', '');
     setAuthToken(false)
 
+    window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+    });
+
     try {
         const res = await axios.post('/logoutServer');
         if (token && isTokenExpired()) {

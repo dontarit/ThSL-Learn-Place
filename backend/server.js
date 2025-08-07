@@ -643,14 +643,28 @@ app.post('/searchWordFirst', (req, res) => {
     const query = `SELECT * FROM thsl_words WHERE id > ${data} ORDER BY id ASC LIMIT 20`
 
     pool.getConnection((err, connection) => {
-        if (err) {
-            console.error('Error getting connection:', err)
-        }
+        if (err) { console.error('Error getting connection:', err) }
         connection.query(query, (err, data) => {
             connection.release()
             if (err) {
                 console.error('Error executing query:', err)
             }else {
+                return res.json(data)
+            }
+        })
+    })
+})
+
+app.post('/searchSpecific', (req, res) => {
+    let word = req.body.word
+    const query = `SELECT * FROM thsl_words WHERE id = ?`
+
+    pool.getConnection((err, connection) => {
+        if (err) { console.error('Error getting connection:', err) }
+        connection.query(query, [word], (err, data) => {
+            connection.release()
+            if (err) { console.error('Error executing query:', err) }
+            else {
                 return res.json(data)
             }
         })
