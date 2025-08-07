@@ -588,11 +588,14 @@ export default function AdminPageItems() {
                             {/* <canvas className="output_canvas" width="240px" height="320px"></canvas> */}
                         </div>
                         <div className="informationRec">
-                            <div className='filerec'>
+                            <div>
+                                <p>waiting..</p>
+                            </div>
+                            <div className='filerec' style={{display: 'none'}}>
                                 <p>File :</p>
                                 <p id="fileRec">&nbsp;0/0</p>
                             </div>
-                            <div className='framerec'>
+                            <div className='framerec' style={{display: 'none'}}>
                                 <p>Frame : </p>
                                 <p id="frameRec">&nbsp;0/0</p>
                             </div>
@@ -605,6 +608,10 @@ export default function AdminPageItems() {
                         <div className="loading">
                             <div className="spinner"></div>
                         </div>
+                    </section>
+                    <section className="download-container" style={{display: 'none'}}>
+                        <p id="head">Download</p>
+                        <div className="file-list"></div>
                     </section>
                 </div>
             </div>
