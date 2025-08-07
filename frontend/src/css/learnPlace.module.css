@@ -1101,6 +1101,104 @@
     }
 }
 
+.learn_appear_information {
+    display: none;
+    position: fixed;
+    width: 100%;
+    max-width: 660px;
+    height: calc(100vh - 8em);
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    top: 50%;
+    left: 50%;
+    border-radius: 8px;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    transition: opacity 100ms;
+    z-index: 21;
+    .searchResult_Info_Container {
+        width: 100%;
+        height: 100%;
+        box-shadow: none;
+        padding: 0 clamp(2em, 6vw, 4em);
+        section {
+            height: fit-content;
+            margin-bottom: clamp(1em, 1.6vw, 1.6em);
+        }
+    }
+}
+.learn_appear_information::-webkit-scrollbar {
+    width: 0px;
+}
+.learn_appear_information::-webkit-scrollbar-track {
+    background: transparent;
+}
+.learn_appear_information::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 100px;
+}
+
+.toTheNext_new_word {
+    display: none;
+    position: fixed;
+    align-items: center;
+    opacity: 0;
+    width: 100%;
+    max-width: 660px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    justify-content: space-between;
+    z-index: 22;
+    .btn_m_subContaner {
+        height: 100%;
+        transition: all 250ms;
+        i {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            color: #494949;
+            background-color: transparent;
+            pointer-events: all;
+            cursor: pointer;
+            font-size: clamp(2em, 6vw, 4em);
+            z-index: 22;
+            transition: all 250ms;
+        }
+    }
+    .btn_m_subContaner:hover {
+        background-color: rgba(191, 191, 191, .5);
+        i {color: #e7e6e6;}
+    }
+}
+
+.overlay_new_word_learn {
+    position: fixed;
+    display: none;
+    backdrop-filter: blur(100px);
+    opacity: 0;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    transition: opacity 250ms;
+    z-index: 20;
+}
+.body[data-theme='dark'] .overlay_new_word_learn {
+    background-color: var(--dark-bg);
+}
+.body[data-theme='light'] .overlay_new_word_learn {
+    background-color: var(--light-bg);
+}
+.body[data-theme='ocean'] .overlay_new_word_learn {
+    background-color: var(--ocean-bg);
+}
+
 
 
 @media (max-width: 768px) {

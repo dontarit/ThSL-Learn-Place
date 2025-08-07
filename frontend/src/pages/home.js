@@ -65,6 +65,8 @@ export default function HomePage() {
         if (didRun.current) return;
         didRun.current = true;
         
+        // localStorage.clear();
+        
         const burger = document.getElementById("burger");
         const navList = document.getElementById("nav-list");
         burger.addEventListener("click", () => navList.classList.toggle("show"));

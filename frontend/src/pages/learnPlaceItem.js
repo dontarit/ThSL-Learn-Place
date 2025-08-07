@@ -43,13 +43,15 @@ export default function LearnPlaceItems() {
             schedule: 4,
             streak: false,
             theme: 'light',
-            time: '00:10'
+            time: '00:10',
+            lang: 'english'
         },
         value: {
             schedule: 4,
             streak: false,
             theme: 'light',
-            time: '00:10'
+            time: '00:10',
+            lang: 'english'
         }
     })
 
@@ -247,7 +249,6 @@ export default function LearnPlaceItems() {
         const sideItem = document.querySelectorAll(`.${lpMain.nav_bar} .${lpMain.typeNav} div`)
 
         function openMenu() {
-            console.log(menuBtn_in);
             sideMenu.inert = false
             sideMenu.style.transform = "translateX(0%)";
             sideMenu.setAttribute("aria-hidden", "false");
@@ -892,6 +893,27 @@ export default function LearnPlaceItems() {
                                             }));
                                         }}
                                     />
+                                </div>
+                                <div className={lpSetting.sub_con}>
+                                    <p title='language'>Language</p>
+                                    <select name="language-show" id="language-show" defaultValue="english"
+                                        onChange={(e) => {
+                                            const lang = e.target.value;
+                                            console.log(lang);
+                                            if (['thai', 'english'].includes(lang)) {
+                                                setSettingStore(prevState => ({
+                                                    ...prevState,
+                                                    setValue: {
+                                                        ...prevState.setValue,
+                                                        lang
+                                                    }
+                                                }));
+                                            }
+                                        }}
+                                    >
+                                        <option value="thai">Thai</option>
+                                        <option value="english">English</option>
+                                    </select>
                                 </div>
                             </div>
                         </section>

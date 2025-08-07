@@ -48,6 +48,7 @@ export default function AdminPage() {
         { id: 1, link: 'create', icon: 'ph-camera', title: 'Create Data', color: '#c4e456' },
         { id: 2, link: 'user', icon: 'ph-identification-card', title: 'User Management', color: '#6d9be4' },
         { id: 3, link: 'thsl', icon: 'ph-database', title: 'ThSL Management', color: '#f6cf55' },
+        { id: 4, link: 'model', icon: 'ph ph-sphere', title: 'Model Testing', color: '#837fe4ff' },
     ];
 
     async function handleLogout() {

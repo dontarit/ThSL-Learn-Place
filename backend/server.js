@@ -45,7 +45,7 @@ const pool = mysql.createPool({
 
 app.post('/signinServer', (req, res) => {
     const { name, email, pswd } = req.body
-    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password, user_setting, user_search) VALUES (?, ?, ?, ?, ?)"
+    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password, user_setting, word_score, word_fav, schedule, exp) VALUES (?, ?, ?, '{}', '{}', '{}', '{}', 0)"
     const checkEmailQuery = "SELECT * FROM user_data WHERE user_email = ?"
     
     pool.getConnection((err, connection) => {
@@ -63,7 +63,7 @@ app.post('/signinServer', (req, res) => {
                     return res.json({theme: 'warning', title: 'Warning', content: 'That email already exists. Enter a different account'})
                 }
     
-                connection.query(insertQuery, [name, email, pswd, {}, {}], (err) => {
+                connection.query(insertQuery, [name, email, pswd], (err) => {
                     if (err) {
                         console.error('Error inserting data:', err)
                         return res.json({theme: 'danger', title: 'Error', content: "Can't inserting data"})
@@ -667,6 +667,58 @@ app.post('/searchSpecific', (req, res) => {
             else {
                 return res.json(data)
             }
+        })
+    })
+})
+
+app.post('/getLearnData', (req, res) => {
+    const token = req.body.token
+    const query = "SELECT learn_id, word_score, word_fav, schedule, exp FROM user_data WHERE user_id = ?"
+
+    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid token' });
+
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection:', err)
+            }
+            connection.query(query, [user.id], (err, data) => {
+                connection.release()
+                if (err) {
+                    console.error('Error executing query:', err)
+                }else {
+                    return res.json({
+                        learn_id: data[0].learn_id,
+                        word_score: data[0].word_score,
+                        word_fav: data[0].word_fav,
+                        schedule: data[0].schedule,
+                        exp: data[0].exp
+                    })
+                }
+            })
+        })
+    })
+})
+
+app.post('/storeLearnData', (req, res) => {
+    const token = req.body.token
+    const data = req.body.new_word
+    console.log(data);
+    const query = "UPDATE user_data SET learn_id = ? WHERE user_id = ?"
+
+    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Invalid token' });
+
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection:', err)
+            }
+            connection.query(query, [data, user.id], (err, data) => {
+                connection.release()
+                if (err) {
+                    console.error('Error executing query:', err)
+                }
+            })
         })
     })
 })

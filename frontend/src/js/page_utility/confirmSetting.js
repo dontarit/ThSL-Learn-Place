@@ -7,6 +7,7 @@ export default async function comfirmSetting(apply, firstload, settingStore, set
     const streakShow = document.getElementById('streak-show')
     const themeShow = document.getElementById('theme-show')
     const timeShow = document.getElementById('time-show')
+    const langShow = document.getElementById('language-show')
 
     if (apply) {
         Object.entries(settingStore.setValue).forEach(thevalue => {
@@ -22,32 +23,21 @@ export default async function comfirmSetting(apply, firstload, settingStore, set
     let streak = settingStore.value.streak
     let theme = settingStore.value.theme
     let time = settingStore.value.time
+    let lang = settingStore.value.lang
 
     if (firstload) {
         await axios.post('/getSetting', {token: authToken}).then(res => {
             const data = JSON.parse(res.data[0].user_setting);
-            if (data.schedule == undefined) {
-                schedule = 4
-                streak = false
-                theme = 'light'
-                time = '00:10'
-            } else {
-                schedule = data.schedule
-                streak = data.streak
-                theme = data.theme
-                time = data.time
-            }
+            
+            schedule = data.schedule == undefined ? 4 : data.schedule
+            streak = data.streak == undefined ? false : data.streak
+            theme = data.theme == undefined ? 'light' : data.theme
+            time = data.time == undefined ? '00:10' : data.time
+            lang = data.lang == undefined ? 'english' : data.lang
         })
         .catch(err => {
             console.error("Failed to load settings:", err);
         });
-
-        let setting = {
-            schedule: schedule,
-            streak: streak,
-            theme: theme,
-            time: time
-        }
 
         setSettingStore({
             setValue: {
@@ -55,12 +45,14 @@ export default async function comfirmSetting(apply, firstload, settingStore, set
                 streak: streak,
                 theme: theme,
                 time: time,
+                lang: lang
             },
             value: {
                 schedule: schedule,
                 streak: streak,
                 theme: theme,
                 time: time,
+                lang: lang
             }
         })
     }
@@ -69,26 +61,31 @@ export default async function comfirmSetting(apply, firstload, settingStore, set
         schedule: schedule,
         streak: streak,
         theme: theme,
-        time: time
+        time: time,
+        lang: lang
     }
     
     await axios.post('/saveSetting', {token: authToken, value: JSON.stringify(setting)}).catch(err => {
         console.log('error save setting: ', err)
     })
 
-    // // table
+    // table
     changeStrTable(schedule, 7)
     historyShow.setAttribute('placeholder', `${schedule} week`)
-    // // streak
+    // streak
     if (streak_new_form) {
         disableStreak_new_form(streak)
     } else {
         disableStreak(streak, firstload)
     }
-    streakShow.checked = streak
-    // // theme
+    streakShow.checked = setting.streak
+    // theme
     checkTheme(theme)
-    themeShow.value = theme
+    themeShow.value = setting.theme
+    // time
+    timeShow.value = setting.time
+    // language
+    langShow.value = setting.lang
 }
 
 

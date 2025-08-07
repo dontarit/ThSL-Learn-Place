@@ -102,6 +102,22 @@ export default function AdminPageItems() {
             }
             hookState()
         }
+        if (id.page === 'model') {
+            import('../css/admin/create.css')
+            const scripts = [
+                'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js',
+                'https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js',
+                'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js',
+                'https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5/holistic.js'
+            ];
+            scripts.forEach(loadScript);
+
+            import('../js/admin-create.js').then((module) => {
+                if (module && typeof module.cleanup === 'function') {
+                    cleanupFn = module.cleanup;
+                }
+            });
+        }
         
         return () => {
             addedScripts.forEach(script => {
@@ -273,6 +289,7 @@ export default function AdminPageItems() {
         { id: 1, link: 'create', icon: 'ph-camera', title: 'Create Data', color: '#c4e456' },
         { id: 2, link: 'user', icon: 'ph-identification-card', title: 'User Management', color: '#6d9be4' },
         { id: 3, link: 'thsl', icon: 'ph-database', title: 'ThSL Management', color: '#f6cf55' },
+        { id: 4, link: 'model', icon: 'ph ph-sphere', title: 'Model Testing', color: '#837fe4ff' },
     ];
 
     let pageMount
@@ -555,6 +572,43 @@ export default function AdminPageItems() {
                     )}
                 </div>
             </div>
+            </>
+        );
+    }
+    else if (id.page == 'model') {
+        pageMount = (
+            <>
+            <div className='mainWithSidebar'>
+                {asideBar}
+                <div className="mainContent-container">
+                    <video className="input_video"></video>
+                    <section className="canvas-container">
+                        <div className="output-container">
+                            <canvas className="output_canvas" width="720px" height="960px"></canvas>
+                            {/* <canvas className="output_canvas" width="240px" height="320px"></canvas> */}
+                        </div>
+                        <div className="informationRec">
+                            <div className='filerec'>
+                                <p>File :</p>
+                                <p id="fileRec">&nbsp;0/0</p>
+                            </div>
+                            <div className='framerec'>
+                                <p>Frame : </p>
+                                <p id="frameRec">&nbsp;0/0</p>
+                            </div>
+                        </div>
+                        <div className="record-container" style={{display: 'none'}}>
+                            <input type="button" value="Record" className="record-btn on" id="record"/>
+                            <input type="button" value="Stop" className="record-btn disable" id="stop" disabled/>
+                            <input type="button" value="Bone" className="record-btn on" id="bone"/>
+                        </div>
+                        <div className="loading">
+                            <div className="spinner"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div className="control-panel" style={{display: 'none'}}></div>
             </>
         );
     }

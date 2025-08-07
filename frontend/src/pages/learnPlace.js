@@ -1,11 +1,12 @@
 import { useRef, useEffect, useState } from 'react';
-import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { data, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios'
 
 import lpMain from '../css/learnPlace.module.css'
 import lpSearch from '../css/sub/searchbox.module.css'
 import lpSetting from '../css/sub/setting_page.module.css'
 import lpNavC from '../css/sub/navigate_circle.module.css'
+import lpInfor from '../css/learnPlace_informate.module.css'
 import lpWave from '../css/sub/waveBtn.module.css'
 import getBase from '../js/getBase.js'
 import openAlert from '../js/alert-box.js'
@@ -33,21 +34,25 @@ export default function LearnPlace() {
     getBase()
     
     const didRun = useRef(false);
+    const [loading, setLoading] = useState(true);
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
     const [searchRes, setSearchRes] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [pageCurrent, setPageCurrent] = useState(0);
+    const [searchSpecific, setSearchSpecific] = useState({});
     const [settingStore, setSettingStore] = useState({
         setValue: {
             schedule: 4,
             streak: false,
             theme: 'light',
-            time: '00:10'
+            time: '00:10',
+            lang: 'english'
         },
         value: {
             schedule: 4,
             streak: false,
             theme: 'light',
-            time: '00:10'
+            time: '00:10',
+            lang: 'english'
         }
     })
     
@@ -67,7 +72,7 @@ export default function LearnPlace() {
                     setSearchRes(res.data)
                 }
             }).catch(err => {
-                console.log('error')
+                console.log('error: ', err)
                 showSearchResult(false)
             })
         }else {
@@ -83,7 +88,7 @@ export default function LearnPlace() {
         await axios.post('/searchWordFirst', {random_data: rand}).then(res => {
             setSearchRes(res.data)
         }).catch(err => {
-            console.log('error')
+            console.log('error: ', err)
             showSearchResult(false)
         })
     }
@@ -112,7 +117,7 @@ export default function LearnPlace() {
             openAlert(res.data.theme, res.data.title, res.data.content)
             localStorage.setItem('name', name)
         }).catch(err => {
-            console.log('error')
+            console.log('error: ', err)
             openAlert('danger', 'Error', "Enable change name")
         })
     }
@@ -167,7 +172,99 @@ export default function LearnPlace() {
         }
     }
 
+    async function search_word_specific(word) {
+        await axios.post('/searchSpecific', {word: word}).then(res => {
+            let data = res.data[0]
+            setSearchSpecific({
+                id: data.id,
+                word: data.thsl_word,
+                meaning: JSON.parse(res.data[0].thsl_desc),
+                src: data.thsl_src
+            })
+        }).catch(err => { console.log('error: ', err) })
+    }
+
+    async function getLearnData() {
+        let learn_id, word_score, word_fav, schedule, exp
+        
+        await axios.post('/getLearnData', {token: authToken}).then(res => {
+            let data = res.data
+            learn_id = data.learn_id
+            word_score = Object.keys(JSON.parse(data.word_score)).length == 0 ? null : JSON.parse(data.word_score)
+            word_fav = Object.keys(JSON.parse(data.word_fav)).length == 0 ? null : JSON.parse(data.word_fav)
+            schedule = Object.keys(JSON.parse(data.schedule)).length == 0 ? null : JSON.parse(data.schedule)
+            exp = data.exp
+        }).catch(err => {
+            console.log('error: ', err)
+            openAlert('danger', 'Error', "Something went wrong")
+        })
+
+        localStorage.setItem("learn_id", learn_id)
+        localStorage.setItem("word_score", word_score)
+        localStorage.setItem("word_fav", word_fav)
+        localStorage.setItem("schedule", schedule)
+        localStorage.setItem("exp", exp)
+    }
     
+    getLearnData()
+    const limitSpaceChange = 5
+    let searchId = parseInt(localStorage.getItem('learn_id'))
+    let limit4Learn = parseInt(localStorage.getItem('learn_id')) + limitSpaceChange
+    let have4Learn = limit4Learn - limitSpaceChange == 0 ? limitSpaceChange : Math.abs(((limit4Learn - limitSpaceChange) - limit4Learn) - 1)
+    if (searchId == 0 || searchId == undefined || searchId == null) {searchId = 1}
+
+    function toNextLernWord(e, toNext = 1) {
+        let searchId = parseInt(localStorage.getItem('learn_id'))
+        let limit4Learn = parseInt(localStorage.getItem('learn_id')) + limitSpaceChange
+        
+        console.log(limit4Learn);
+        localStorage.setItem('pageSaving', limit4Learn + 1)
+        
+        let parent = e.parentElement.parentElement
+        let left = parent.querySelectorAll('div')[0]
+        let right = parent.querySelectorAll('div')[1]
+        
+        if (toNext) {
+            let pageNow = parseInt(document.getElementById('specific_page_id').innerText) + 1
+            console.log(pageNow);
+            searchId = pageNow
+            setPageCurrent(pageCurrent + 1)
+            localStorage.setItem("page_current", pageNow)
+            if (searchId >= limit4Learn) {
+                setPageCurrent(pageCurrent + 1)
+                localStorage.setItem("page_current", pageNow)
+                right.querySelectorAll('i')[0].style.display = 'flex'
+                right.querySelectorAll('i')[1].style.display = 'none'
+            }
+            search_word_specific(searchId)
+            left.querySelectorAll('i')[0].style.display = 'none'
+            left.querySelectorAll('i')[1].style.display = 'flex'
+        }else {
+            let pageNow = parseInt(document.getElementById('specific_page_id').innerText) - 1
+            searchId = pageNow
+            let trueLimit = (limit4Learn - limitSpaceChange) == 0 ? 1 : limit4Learn - limitSpaceChange
+            if (pageNow == trueLimit) {
+                search_word_specific(searchId)
+                setPageCurrent(searchId)
+                localStorage.setItem("page_current", pageNow)
+                left.querySelectorAll('i')[0].style.display = 'flex'
+                left.querySelectorAll('i')[1].style.display = 'none'
+            } else {
+                search_word_specific(searchId)
+                setPageCurrent(searchId)
+                localStorage.setItem("page_current", pageNow)
+                right.querySelectorAll('i')[0].style.display = 'none'
+                right.querySelectorAll('i')[1].style.display = 'flex'
+            }
+        }
+    }
+
+    async function storeNewLearn(data, listData) {
+        await axios.post('/storeLearnData', {token: authToken, new_word: data, new_list: listData}).catch(err => {
+            console.log(err);
+            openAlert('danger', 'Error', "Something went wrong")
+        })
+    }
 
     useEffect(() => {
         if (didRun.current) return;
@@ -368,6 +465,79 @@ export default function LearnPlace() {
             })
         });
 
+        function toggleScroll() {
+            if (document.body.style.overflow === 'hidden') {
+                document.body.style.overflow = '';
+            } else {
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        // Learn new word
+        const learnNewWordBtn = document.getElementById('learnNewWordBtn')
+        const learn_container = document.querySelector(`.${lpMain.learn_appear_information}`)
+        const overlayLearn = document.getElementById('overlay-new-word-learn')
+        const btnNavCon = document.getElementById('btnManageContaner')
+
+        const toNextBtn = document.getElementById('toTheNext-word')
+        const toPrevBtn = document.getElementById('toPrevous-word')
+        const toFinish = document.getElementById('endAnd-Finish')
+        const toClose = document.getElementById('closeThisProce')
+
+        if (learnNewWordBtn != null && overlayLearn != null) {
+            let closeProcess = () => {
+                if (overlayLearn.getAttribute('aria-hidden') == 'false') {
+                    toggleScroll()
+                    toClose.style.display = 'flex'
+                    toNextBtn.style.display = 'flex'
+                    toPrevBtn.style.display = 'none'
+                    toFinish.style.display = 'none'
+                    learn_container.style.opacity = '0';
+                    overlayLearn.style.opacity = '0';
+                    btnNavCon.style.opacity = '0';
+                    overlayLearn.setAttribute('aria-hidden', 'true');
+                    learn_container.ontransitionend = () => {
+                        learn_container.style.display = 'none';
+                        overlayLearn.style.display = 'none';
+                        btnNavCon.style.display = 'none';
+                    };
+                }
+            }
+            
+            document.getElementById('closeThisProce').addEventListener('click', closeProcess)
+            overlayLearn.addEventListener('click', closeProcess);
+            toFinish.addEventListener('click', () => {
+                closeProcess()
+                localStorage.setItem('learn_id', parseInt(localStorage.getItem('page_current')) + 1)
+                searchId = parseInt(localStorage.getItem('learn_id'))
+                limit4Learn = parseInt(localStorage.getItem('learn_id')) + limitSpaceChange - 1
+                
+                let data_save =  parseInt(localStorage.getItem('pageSaving'))
+                // for (let i = 0; i < array.length; i++) {
+                //     const element = array[i];
+                    
+                // }
+                storeNewLearn(data_save)
+            });
+
+            learnNewWordBtn.addEventListener('click', () => {
+                searchId += pageCurrent
+                setPageCurrent(pageCurrent + 1)
+                search_word_specific(searchId)
+                toggleScroll()
+                learn_container.style.display = 'flex'
+                overlayLearn.style.display = 'block'
+                btnNavCon.style.display = 'flex'
+                overlayLearn.setAttribute('aria-hidden', 'false')
+                learn_container.ontransitionend = () => {}
+                setTimeout(() => {
+                    learn_container.style.opacity = '1'
+                    overlayLearn.style.opacity = '.76'
+                    btnNavCon.style.opacity = '1'
+                }, 10);
+            })
+        }
+
         // Window event
         window.addEventListener("keydown", (e) => {
             const sideMenu = document.getElementById("sideMenu");
@@ -383,7 +553,8 @@ export default function LearnPlace() {
             const sideMenu = document.getElementById("sideMenu");
             const menuBtn = document.getElementById("menuBtn");
             const searchCon = document.getElementById('search-container')
-            if (sideMenu == null || menuBtn == null || searchCon == null) return
+            const overlayLearn = document.getElementById('overlay-new-word-learn')
+            if (sideMenu == null || menuBtn == null || searchCon == null || overlayLearn == null) return
             if (
                 sideMenu.getAttribute('aria-hidden') == 'false' &&
                 !sideMenu.contains(e.target) &&
@@ -423,6 +594,7 @@ export default function LearnPlace() {
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
         callConfirmSetting(true, true)
+        // search_word_specific(1426)
     }, [authToken, location]);
 
 
@@ -584,14 +756,14 @@ export default function LearnPlace() {
                     <div className={`${lpMain.streak_container} ${lpMain.stnow}`}>
                         <p>Current streak</p>
                         <p id="dayStr" className={lpMain.make_text_gap}>
-                            <span>2</span>
+                            <span>-</span>
                             <span>DAY</span>
                         </p>
                     </div>
                     <div className={`${lpMain.streak_container} ${lpMain.stbest}`}>
                         <p>Best streak</p>
                         <p id="bestStr" className={lpMain.make_text_gap}>
-                            <span>16</span>
+                            <span>-</span>
                             <span>DAY</span>
                         </p>
                     </div>
@@ -664,10 +836,22 @@ export default function LearnPlace() {
                     </div>
                 </div>
                 <div className={lpMain.revBtn_container}>
-                    <button id="reviewBtn" className={`${lpMain.reviewBtn} btnAnimate`}>
-                        <span>START REVIEW</span>
-                        <span>(10)</span>
-                    </button>
+                    {(() => {
+                        const storedData = localStorage.getItem("word_score");
+                        let wordScore = null;
+                        wordScore = storedData ? JSON.parse(storedData) : null;
+
+                        return wordScore == null ? (
+                            <button id="learnNewWordBtn" className={`${lpMain.reviewBtn} btnAnimate`}>
+                                <span>Learn new word!!</span>
+                            </button>
+                        ) : (
+                            <button id="reviewBtn" className={`${lpMain.reviewBtn} btnAnimate`}>
+                                <span>START</span>
+                                <span>(10)</span>
+                            </button>
+                        );
+                    })()}
                 </div>
             </section>
             <section className={lpMain.Cam_Search}>
@@ -808,6 +992,26 @@ export default function LearnPlace() {
                                         }}
                                     />
                                 </div>
+                                <div className={lpSetting.sub_con}>
+                                    <p title='language'>Language</p>
+                                    <select name="language-show" id="language-show" defaultValue="english"
+                                        onChange={(e) => {
+                                            const lang = e.target.value;
+                                            if (['thai', 'english'].includes(lang)) {
+                                                setSettingStore(prevState => ({
+                                                    ...prevState,
+                                                    setValue: {
+                                                        ...prevState.setValue,
+                                                        lang
+                                                    }
+                                                }));
+                                            }
+                                        }}
+                                    >
+                                        <option value="thai">Thai</option>
+                                        <option value="english">English</option>
+                                    </select>
+                                </div>
                             </div>
                         </section>
                     </div>
@@ -888,6 +1092,7 @@ export default function LearnPlace() {
                 </div>
             </div>
         </div>
+
         <div className={lpNavC.rightbottom_Navigate} current-state='close' onClick={(e) => {openMiniNav(e.currentTarget)}}>
             <div className={lpNavC.show_over}>
                 <div className={lpNavC.navBtn}></div>
@@ -905,6 +1110,64 @@ export default function LearnPlace() {
                 </div>
             </div>
         </div>
+        
+        <div className={lpMain.learn_appear_information}>
+            <div className={lpMain.searchResult_Info_Container}>
+                <section className={lpInfor.header_info}>
+                    <div className={lpInfor.manage_group}>
+                        <div className={lpInfor.process_show}>
+                            <p>Progress: 0%</p>
+                        </div>
+                        <div className={lpInfor.mamage_btn_group}>
+                            <i className="ph ph-heart"></i>
+                            <i className="ph ph-star"></i>
+                        </div>
+                    </div>
+                    <div className={lpInfor.data_and_itemInfo}>
+                        <div className={lpInfor.src_cont}>
+                            <img src={searchSpecific.src}></img>
+                        </div>
+                        <div className={lpInfor.detail_cont}>
+                            <div>
+                                <p>{searchSpecific.word}</p>
+                                <p>word</p>
+                            </div>
+                            <div>
+                                <p id='specific_page_id'>{searchSpecific.id}</p>
+                                <p>sequence</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                {searchSpecific.meaning && Array.isArray(searchSpecific.meaning) ? (
+                    searchSpecific.meaning.map((item, index) => (
+                        <section className={lpInfor.meaning_info} key={index}>
+                            <p className={lpInfor.head}>{item.head}</p>
+                            <p className={lpInfor.body}>{
+                                (item.text == '') ? "ไม่พบคำอธิบาย" : item.text
+                            }</p>
+                        </section>
+                    ))
+                ) : (
+                    <p>No meaning available</p>
+                )}
+            </div>
+        </div>
+        <div id='btnManageContaner' className={lpMain.toTheNext_new_word}>
+            <div className={lpMain.btn_m_subContaner}>
+                <i id='closeThisProce' className="ph ph-house"></i>
+                <i id='toPrevous-word' className="ph ph-caret-circle-left" style={{display: 'none'}}
+                    onClick={e => {toNextLernWord(e.currentTarget, false)}}
+                ></i>
+            </div>
+            <div className={lpMain.btn_m_subContaner}>
+                <i id='endAnd-Finish' className="ph ph-seal-check" style={{display: 'none'}}></i>
+                <i id='toTheNext-word' className="ph ph-caret-circle-right"
+                    onClick={e => {toNextLernWord(e.currentTarget)}}
+                ></i>
+            </div>
+        </div>
+        <div id="overlay-new-word-learn" className={`${lpMain.overlay_new_word_learn} ${lpMain.body}`} aria-hidden='true'></div>
         <div id="overlay-setting-container" className={lpSetting.overlay_setting_container}></div>
         </div>
     );
