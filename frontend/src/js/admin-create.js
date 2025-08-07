@@ -242,6 +242,8 @@ async function onResults(results) {
             }
         });
     });
+    
+    console.log(land_data);
 
     // Draw the overlays.
     canvasCtx.save()
