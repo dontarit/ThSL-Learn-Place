@@ -9,7 +9,6 @@ const puppeteer = require('puppeteer')
 const https = require('https');
 const fs = require('fs');
 const axios = require('axios')
-const OpenAI = require('openai')
 
 // const port = process.env.PORT || 5000
 const port = 4000
