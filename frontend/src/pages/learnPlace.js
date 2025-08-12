@@ -39,6 +39,11 @@ export default function LearnPlace() {
     const [searchRes, setSearchRes] = useState([]);
     const [pageCurrent, setPageCurrent] = useState(0);
     const [searchSpecific, setSearchSpecific] = useState({});
+
+    const [data_word_score, setData_word_score] = useState([]);
+    const [data_word_fav, setData_word_fav] = useState([]);
+    const [data_schedule, setData_schedule] = useState([]);
+
     const [settingStore, setSettingStore] = useState({
         setValue: {
             schedule: 4,
@@ -124,7 +129,6 @@ export default function LearnPlace() {
 
     async function callConfirmSetting(apply, firstload = false) {
         comfirmSetting(apply, firstload, settingStore, setSettingStore, authToken)
-        setLoading(false);
     }
 
     function SpinCheck(elememt) {
@@ -183,30 +187,27 @@ export default function LearnPlace() {
             })
         }).catch(err => { console.log('error: ', err) })
     }
-
+    
     async function getLearnData() {
-        let learn_id, word_score, word_fav, schedule, exp
-        
+        let learn_id, exp
         await axios.post('/getLearnData', {token: authToken}).then(res => {
             let data = res.data
             learn_id = data.learn_id
-            word_score = Object.keys(JSON.parse(data.word_score)).length == 0 ? null : JSON.parse(data.word_score)
-            word_fav = Object.keys(JSON.parse(data.word_fav)).length == 0 ? null : JSON.parse(data.word_fav)
-            schedule = Object.keys(JSON.parse(data.schedule)).length == 0 ? null : JSON.parse(data.schedule)
             exp = data.exp
+            setData_word_score(JSON.parse(data.word_score))
+            setData_word_fav(JSON.parse(data.word_fav))
+            setData_schedule(JSON.parse(data.schedule))
         }).catch(err => {
             console.log('error: ', err)
             openAlert('danger', 'Error', "Something went wrong")
         })
-
+        
         localStorage.setItem("learn_id", learn_id)
-        localStorage.setItem("word_score", word_score)
-        localStorage.setItem("word_fav", word_fav)
-        localStorage.setItem("schedule", schedule)
         localStorage.setItem("exp", exp)
+
+        setLoading(false)
     }
     
-    getLearnData()
     const limitSpaceChange = 5
     let searchId = parseInt(localStorage.getItem('learn_id'))
     let limit4Learn = parseInt(localStorage.getItem('learn_id')) + limitSpaceChange
@@ -217,7 +218,6 @@ export default function LearnPlace() {
         let searchId = parseInt(localStorage.getItem('learn_id'))
         let limit4Learn = parseInt(localStorage.getItem('learn_id')) + limitSpaceChange
         
-        console.log(limit4Learn);
         localStorage.setItem('pageSaving', limit4Learn + 1)
         
         let parent = e.parentElement.parentElement
@@ -226,7 +226,6 @@ export default function LearnPlace() {
         
         if (toNext) {
             let pageNow = parseInt(document.getElementById('specific_page_id').innerText) + 1
-            console.log(pageNow);
             searchId = pageNow
             setPageCurrent(pageCurrent + 1)
             localStorage.setItem("page_current", pageNow)
@@ -264,6 +263,35 @@ export default function LearnPlace() {
             console.log(err);
             openAlert('danger', 'Error', "Something went wrong")
         })
+    }
+
+    function toggleScroll() {
+        if (document.body.style.overflow === 'hidden') {
+            document.body.style.overflow = '';
+        } else {
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function handle_learnNewWordBtn() {
+        const learn_container = document.querySelector(`.${lpMain.learn_appear_information}`)
+        const overlayLearn = document.getElementById('overlay-new-word-learn')
+        const btnNavCon = document.getElementById('btnManageContaner')
+        
+        search_word_specific(searchId)
+        searchId += pageCurrent
+        setPageCurrent(pageCurrent + 1)
+        toggleScroll()
+        learn_container.style.display = 'flex'
+        overlayLearn.style.display = 'block'
+        btnNavCon.style.display = 'flex'
+        overlayLearn.setAttribute('aria-hidden', 'false')
+        learn_container.ontransitionend = () => {}
+        setTimeout(() => {
+            learn_container.style.opacity = '1'
+            overlayLearn.style.opacity = '.76'
+            btnNavCon.style.opacity = '1'
+        }, 10);
     }
 
     useEffect(() => {
@@ -464,14 +492,6 @@ export default function LearnPlace() {
                 closeSettingFunc()
             })
         });
-
-        function toggleScroll() {
-            if (document.body.style.overflow === 'hidden') {
-                document.body.style.overflow = '';
-            } else {
-                document.body.style.overflow = 'hidden';
-            }
-        }
         
         // Learn new word
         const learnNewWordBtn = document.getElementById('learnNewWordBtn')
@@ -483,7 +503,7 @@ export default function LearnPlace() {
         const toPrevBtn = document.getElementById('toPrevous-word')
         const toFinish = document.getElementById('endAnd-Finish')
         const toClose = document.getElementById('closeThisProce')
-
+        
         if (learnNewWordBtn != null && overlayLearn != null) {
             let closeProcess = () => {
                 if (overlayLearn.getAttribute('aria-hidden') == 'false') {
@@ -509,33 +529,36 @@ export default function LearnPlace() {
             toFinish.addEventListener('click', () => {
                 closeProcess()
                 localStorage.setItem('learn_id', parseInt(localStorage.getItem('page_current')) + 1)
+                
+                let word_score = []
+                for (let i = searchId; i < limit4Learn + 1; i++) {
+                    let obj = {[i] : 0}
+                    word_score.push(obj)
+                }
+
                 searchId = parseInt(localStorage.getItem('learn_id'))
                 limit4Learn = parseInt(localStorage.getItem('learn_id')) + limitSpaceChange - 1
                 
                 let data_save =  parseInt(localStorage.getItem('pageSaving'))
-                // for (let i = 0; i < array.length; i++) {
-                //     const element = array[i];
-                    
-                // }
-                storeNewLearn(data_save)
+                storeNewLearn(data_save, word_score)
             });
-
-            learnNewWordBtn.addEventListener('click', () => {
-                searchId += pageCurrent
-                setPageCurrent(pageCurrent + 1)
-                search_word_specific(searchId)
-                toggleScroll()
-                learn_container.style.display = 'flex'
-                overlayLearn.style.display = 'block'
-                btnNavCon.style.display = 'flex'
-                overlayLearn.setAttribute('aria-hidden', 'false')
-                learn_container.ontransitionend = () => {}
-                setTimeout(() => {
-                    learn_container.style.opacity = '1'
-                    overlayLearn.style.opacity = '.76'
-                    btnNavCon.style.opacity = '1'
-                }, 10);
-            })
+            
+            // learnNewWordBtn.addEventListener('click', () => {
+            //     searchId += pageCurrent
+            //     setPageCurrent(pageCurrent + 1)
+            //     search_word_specific(searchId)
+            //     toggleScroll()
+            //     learn_container.style.display = 'flex'
+            //     overlayLearn.style.display = 'block'
+            //     btnNavCon.style.display = 'flex'
+            //     overlayLearn.setAttribute('aria-hidden', 'false')
+            //     learn_container.ontransitionend = () => {}
+            //     setTimeout(() => {
+            //         learn_container.style.opacity = '1'
+            //         overlayLearn.style.opacity = '.76'
+            //         btnNavCon.style.opacity = '1'
+            //     }, 10);
+            // })
         }
 
         // Window event
@@ -594,12 +617,13 @@ export default function LearnPlace() {
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
         callConfirmSetting(true, true)
+        getLearnData()
         // search_word_specific(1426)
     }, [authToken, location]);
 
 
 
-    // return loading ? <p>Loading...</p> : (
+    // return loading ? <p>Loading...</p> : ()
     return (
         <div className={lpMain.body}>
         <header className={lpMain.headerSection}>
@@ -756,22 +780,22 @@ export default function LearnPlace() {
                     <div className={`${lpMain.streak_container} ${lpMain.stnow}`}>
                         <p>Current streak</p>
                         <p id="dayStr" className={lpMain.make_text_gap}>
-                            <span>-</span>
+                            <span>0</span>
                             <span>DAY</span>
                         </p>
                     </div>
                     <div className={`${lpMain.streak_container} ${lpMain.stbest}`}>
                         <p>Best streak</p>
                         <p id="bestStr" className={lpMain.make_text_gap}>
-                            <span>-</span>
+                            <span>0</span>
                             <span>DAY</span>
                         </p>
                     </div>
                 </div>
                 <div className={lpMain.showTableStr}></div>
                 <div className={lpMain.tell_history}>
-                    <p id="last-use">-</p>
-                    <p id="study-time">-</p>
+                    <p id="last-use">0/0/0</p>
+                    <p id="study-time">0</p>
                 </div>
             </section>
             <section className={lpMain.lvl_review}>
@@ -783,14 +807,14 @@ export default function LearnPlace() {
                                 <span>You are currently studying</span>
                             </div>
                             <div className={lpMain.make_text_gap}>
-                                <span className={lpMain.txthilig} id='txthilig'>-</span>
+                                <span className={lpMain.txthilig} id='txthilig'>0</span>
                                 <span>Thai Sign word.</span>
                             </div>
                         </div>
                         <div className={lpMain.box2}>
                             <div className={lpMain.make_text_gap}>
                                 <span>Now you have</span>
-                                <span className={lpMain.txthilig} id='txthilig'>-</span>
+                                <span className={lpMain.txthilig} id='txthilig'>0</span>
                                 <span>word</span>
                             </div>
                             <div>
@@ -837,12 +861,10 @@ export default function LearnPlace() {
                 </div>
                 <div className={lpMain.revBtn_container}>
                     {(() => {
-                        const storedData = localStorage.getItem("word_score");
-                        let wordScore = null;
-                        wordScore = storedData ? JSON.parse(storedData) : null;
-
-                        return wordScore == null ? (
-                            <button id="learnNewWordBtn" className={`${lpMain.reviewBtn} btnAnimate`}>
+                        return data_word_score[0] === undefined ? (
+                            <button id="learnNewWordBtn" className={`${lpMain.reviewBtn} btnAnimate`}
+                                onClick={() => {handle_learnNewWordBtn()}}
+                            >
                                 <span>Learn new word!!</span>
                             </button>
                         ) : (
@@ -1030,32 +1052,39 @@ export default function LearnPlace() {
                                             <input name="user-name" id="user-name" type="text" placeholder='User Name' defaultValue={localStorage.getItem('name')} autoComplete='off'
                                                 style={{minWidth: '100%', fontSize: 'calc(clamp(48px, 4vw, 66px) / 2.5)'}}
                                                 onChange={e => {
-                                                    let value = e.currentTarget.value
+                                                    let value = e.currentTarget.value.replace(/\s/g, '')
                                                     let sub = e.currentTarget.parentElement.querySelector('i')
-                                                    if (value != localStorage.getItem('name')) {
-                                                        sub.style.transform = 'scale(1.5) rotate(360deg)'
-                                                    } else {
+                                                    if (value == localStorage.getItem('name') || value == '') {
+                                                        sub.inert = true
                                                         sub.style.transform = 'scale(1) rotate(0deg)'
+                                                    } else {
+                                                        sub.inert = false
+                                                        sub.style.transform = 'scale(1.5) rotate(360deg)'
                                                     }
                                                 }}
                                             />
-                                            <i className={`ph ph-pencil-simple ${lpSetting.field_icon_name}`}
+                                            <i className={`ph ph-pencil-simple ${lpSetting.field_icon_name}`} inert
                                                 onClick={e => {
                                                     let element = e.currentTarget.parentElement.querySelector('input')
-                                                    let value = element.value
+                                                    let value = element.value.replace(/\s/g, '')
                                                     if (value == localStorage.getItem('name') || value == '') {
                                                         e.currentTarget.style.transform = 'scale(1) rotate(0deg)'
+                                                        e.currentTarget.inert = true
                                                         element.inert = true
                                                         element.value = 'Invalid'
                                                         element.style.color = '#c32509'
                                                         element.style.border = '3px solid #c32509'
                                                         setTimeout(() => {
+                                                            e.currentTarget.inert = false
                                                             element.inert = false
                                                             element.style.color = '#000'
                                                             element.style.border = '3px solid #ccc'
                                                             element.value = localStorage.getItem('name')
                                                         }, 750);
-                                                    } else {handleNameChange(value);}
+                                                    } else {
+                                                        handleNameChange(value);
+                                                        e.currentTarget.style.transform = 'scale(1) rotate(0deg)'
+                                                    }
                                                 }}
                                             ></i>
                                         </div>

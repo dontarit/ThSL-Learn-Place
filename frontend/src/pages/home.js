@@ -62,10 +62,7 @@ export default function HomePage() {
 
 
     useEffect(() => {
-        if (didRun.current) return;
-        didRun.current = true;
-        
-        // localStorage.clear();
+        localStorage.clear();
         
         const burger = document.getElementById("burger");
         const navList = document.getElementById("nav-list");

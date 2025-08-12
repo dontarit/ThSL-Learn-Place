@@ -33,6 +33,7 @@ export default function LearnPlaceItems() {
     getBase()
     const id = useParams()
     const [siteSearch, setSiteSearch] = useState([]);
+    const [siteSearchOther, setSiteSearchOther] = useState([]);
     
     const didRun = useRef(false);
     const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'));
@@ -80,17 +81,18 @@ export default function LearnPlaceItems() {
             firstOpenSearch()
         }
     }
-    async function firstOpenSearch() {
+    async function firstOpenSearch(open=true) {
         const min = 1;
-        const max = 1000;
+        const max = 2000;
         const rand = Math.floor(Math.random() * (max - min + 1)) + min;
-
-        showSearchResult(true)
+        
+        if (open) {showSearchResult(true)}
         await axios.post('/searchWordFirst', {random_data: rand}).then(res => {
             setSearchRes(res.data)
+            if (!open) {setSiteSearchOther(res.data)}
         }).catch(err => {
             console.log('error')
-            showSearchResult(false)
+            if (open) {showSearchResult(false)}
         })
     }
     function handleSearch(e) {
@@ -207,14 +209,14 @@ export default function LearnPlaceItems() {
 
     function changeView_Content(elem, isList) {
         const select = document.querySelector(`i[view_selected='select']`)
-        const contai = document.querySelector(`.${lpMain.SearchResultData}`)
+        const contai = document.querySelectorAll(`.${lpMain.SearchResultData}`)
         select.setAttribute('view_selected', 'not')
         elem.setAttribute('view_selected', 'select')
 
         if (isList) {
-            contai.setAttribute('data-view-result', 'list')
+            contai.forEach(elem => { elem.setAttribute('data-view-result', 'list') });
         } else {
-            contai.setAttribute('data-view-result', 'grid')
+            contai.forEach(elem => { elem.setAttribute('data-view-result', 'grid') });
         }
     }
 
@@ -466,12 +468,13 @@ export default function LearnPlaceItems() {
                 });
             });
 
-            if (window.innerWidth <= 481) {
-                let elem = document.getElementById('changeViewInnerWight')
-                if (elem) {
-                    changeView_Content(elem, 1)
+            window.addEventListener("resize", () => {
+                console.log(window.innerWidth);
+                if (window.innerWidth <= 481) {
+                    let elem = document.getElementById('changeViewInnerWight')
+                    if (elem) { changeView_Content(elem, 1) }
                 }
-            }
+            })
         });
         setTimeout(() => {
             document.querySelector(`.${lpMain.body}`).style.transition = 'background-color 500ms ease-in-out';
@@ -479,6 +482,7 @@ export default function LearnPlaceItems() {
             document.getElementById('sideMenu').style.transition = 'transform 300ms';
         }, 1500);
         
+        firstOpenSearch(false)
         callConfirmSetting(true, true)
         searchWordData(id.word)
     }, [authToken, location]);
@@ -744,43 +748,137 @@ export default function LearnPlaceItems() {
             </section>
         </div>
         <section className={`${lpMain.SearchResult_Container} ${lpMain.body}`}>
+            {siteSearch[0] !== undefined ? (
+                <>
+                    <div className={lpMain.state_Changing}>
+                        <div className={lpMain.S_Searching_show}>
+                            <i className="ph ph-magnifying-glass"></i>
+                            <p>{id.word}</p>
+                        </div>
+                        <div className={lpMain.S_Changing_cont}>
+                            <i className={`ph ph-list`} view_selected='not' id='changeViewInnerWight' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
+                            <i className={`ph ph-squares-four`} view_selected='select' onClick={(e) => {changeView_Content(e.currentTarget, 0)}}></i>
+                        </div>
+                    </div>
+                    <div className={lpMain.SearchResultData} data-view-result='grid'>
+                        <div className={lpMain.SearchResultData_sub}>
+                            {siteSearch.map((item) => {
+                                let desc = JSON.parse(item.thsl_desc)[0].text;
+                                if (desc === '') {desc = "ไม่มีคำอธิบาย"}
+                                return (
+                                    <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
+                                        onClick={(e) => { navigate(`/learn/info/${item.id}`) }}
+                                    >
+                                    <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
+                                        onLoad={e => {
+                                            let parent = e.currentTarget.parentElement;
+                                            parent.classList.remove(lpMain.loading);
+                                        }}
+                                    />
+                                    <div className={lpMain.searchTextData_cont}>
+                                        <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
+                                        <h2 className={lpMain.searchDescription}>{desc}</h2>
+                                    </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <>
+                    <div className={lpMain.state_Changing}>
+                        <div className={lpMain.S_Searching_show}>
+                            <p>Not found</p>
+                        </div>
+                        <div className={lpMain.S_Changing_cont}>
+                            <i className={`ph ph-list`} view_selected='not' id='changeViewInnerWight' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
+                            <i className={`ph ph-squares-four`} view_selected='select' onClick={(e) => {changeView_Content(e.currentTarget, 0)}}></i>
+                        </div>
+                    </div>
+                </>
+            )}
             <div className={lpMain.state_Changing}>
                 <div className={lpMain.S_Searching_show}>
-                    <i className="ph ph-magnifying-glass"></i>
-                    <p>{id.word}</p>
+                    <p>Other discoveries</p>
                 </div>
-                <div className={lpMain.S_Changing_cont}>
+                <div className={lpMain.S_Changing_cont} style={{opacity: '0', pointerEvents: 'none'}} inert>
                     <i className={`ph ph-list`} view_selected='not' id='changeViewInnerWight' onClick={(e) => {changeView_Content(e.currentTarget, 1)}}></i>
                     <i className={`ph ph-squares-four`} view_selected='select' onClick={(e) => {changeView_Content(e.currentTarget, 0)}}></i>
                 </div>
             </div>
             <div className={lpMain.SearchResultData} data-view-result='grid'>
                 <div className={lpMain.SearchResultData_sub}>
-                    {siteSearch.map((item) => {
-                        let desc = JSON.parse(item.thsl_desc)[0].text
-                        if (desc == '') { desc = "ไม่มีคำอธิบาย" }
+                    {siteSearchOther.map((item) => {
+                        let desc = JSON.parse(item.thsl_desc)[0].text;
+                        if (desc === '') {desc = "ไม่มีคำอธิบาย"}
                         return (
                             <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
-                                style={{ backgroundColor: item.color }}
-                                onClick={(e) => {
-                                    navigate(`/learn/info/${item.id}`)
-                                }}
+                                onClick={(e) => { navigate(`/learn/info/${item.id}`) }}
                             >
-                                <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
-                                    onLoad={e => {
-                                        let parent = e.currentTarget.parentElement
-                                        parent.classList.remove(lpMain.loading)
-                                    }}
-                                />
-                                <div className={lpMain.searchTextData_cont}>
-                                    <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
-                                    <h2 className={lpMain.searchDescription}>{desc}</h2>
-                                </div>
+                            <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
+                                onLoad={e => {
+                                    let parent = e.currentTarget.parentElement;
+                                    parent.classList.remove(lpMain.loading);
+                                }}
+                            />
+                            <div className={lpMain.searchTextData_cont}>
+                                <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
+                                <h2 className={lpMain.searchDescription}>{desc}</h2>
                             </div>
-                        )
+                            </div>
+                        );
                     })}
                 </div>
             </div>
+
+            {/* <div className={lpMain.SearchResultData} data-view-result='grid'>
+                <div className={lpMain.SearchResultData_sub}>
+                    {siteSearch[0] !== undefined ? 
+                        siteSearch.map((item) => {
+                            let desc = JSON.parse(item.thsl_desc)[0].text
+                            if (desc == '') { desc = "ไม่มีคำอธิบาย" }
+                            return (
+                                <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
+                                    onClick={(e) => {navigate(`/learn/info/${item.id}`)}}
+                                >
+                                    <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
+                                        onLoad={e => {
+                                            let parent = e.currentTarget.parentElement
+                                            parent.classList.remove(lpMain.loading)
+                                        }}
+                                    />
+                                    <div className={lpMain.searchTextData_cont}>
+                                        <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
+                                        <h2 className={lpMain.searchDescription}>{desc}</h2>
+                                    </div>
+                                </div>
+                            )
+                        })
+                        :
+                        searchWordData('9') && siteSearch.map((item) => {
+                            let desc = JSON.parse(item.thsl_desc)[0].text
+                            if (desc == '') { desc = "ไม่มีคำอธิบาย" }
+                            return (
+                                <div className={`${lpMain.dataMainCard} ${lpMain.loading}`} key={item.id}
+                                    onClick={(e) => {navigate(`/learn/info/${item.id}`)}}
+                                >
+                                    <img className={lpMain.searchImage} src={item.thsl_src} alt={item.thsl_word}
+                                        onLoad={e => {
+                                            let parent = e.currentTarget.parentElement
+                                            parent.classList.remove(lpMain.loading)
+                                        }}
+                                    />
+                                    <div className={lpMain.searchTextData_cont}>
+                                        <h1 className={lpMain.searchTitleName} title={item.thsl_word}>{item.thsl_word}</h1>
+                                        <h2 className={lpMain.searchDescription}>{desc}</h2>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            </div> */}
         </section>
         <div className={lpSetting.setting_container}>
             <div className={lpSetting.con_out}>

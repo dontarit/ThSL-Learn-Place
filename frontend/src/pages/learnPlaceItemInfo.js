@@ -236,6 +236,12 @@ export default function LearnPlaceItems() {
         if (didRun.current) return;
         didRun.current = true;
 
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+        });
+
         if (!authToken && isTokenExpired()) {
             navigate('/home')
             return

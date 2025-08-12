@@ -44,7 +44,7 @@ const pool = mysql.createPool({
 
 app.post('/signinServer', (req, res) => {
     const { name, email, pswd } = req.body
-    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password, user_setting, word_score, word_fav, schedule, exp) VALUES (?, ?, ?, '{}', '{}', '{}', '{}', 0)"
+    const insertQuery = "INSERT INTO user_data(user_name, user_email, user_password, user_setting, word_score, word_fav, schedule, exp) VALUES (?, ?, ?, '{}', '[]', '[]', '[]', 0)"
     const checkEmailQuery = "SELECT * FROM user_data WHERE user_email = ?"
     
     pool.getConnection((err, connection) => {
@@ -701,22 +701,28 @@ app.post('/getLearnData', (req, res) => {
 
 app.post('/storeLearnData', (req, res) => {
     const token = req.body.token
-    const data = req.body.new_word
-    console.log(data);
-    const query = "UPDATE user_data SET learn_id = ? WHERE user_id = ?"
+    const dData = req.body.new_word
+    const dList = req.body.new_list
+    
+    const getScore = "SELECT word_score FROM user_data WHERE user_id = ?"
+    const query = "UPDATE user_data SET learn_id = ?, word_score = ? WHERE user_id = ?"
 
     jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res.status(403).json({ message: 'Invalid token' });
 
         pool.getConnection((err, connection) => {
-            if (err) {
-                console.error('Error getting connection:', err)
-            }
-            connection.query(query, [data, user.id], (err, data) => {
-                connection.release()
-                if (err) {
-                    console.error('Error executing query:', err)
-                }
+            if (err) { console.error('Error getting connection:', err) }
+            connection.query(getScore, [user.id], (err, data) => {
+                if (err) { console.error('Error executing query:', err) }
+                let dataList = JSON.stringify(dList.concat(JSON.parse(data[0].word_score)))
+
+                pool.getConnection((err, connection) => {
+                    if (err) { console.error('Error getting connection:', err) }
+                    connection.query(query, [dData, dataList, user.id], (err, data) => {
+                        if (err) { console.error('Error executing query:', err) }
+                        connection.release()
+                    })
+                })
             })
         })
     })
