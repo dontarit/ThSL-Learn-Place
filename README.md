@@ -35,16 +35,9 @@
 </ul>
 <hr>
 <h2>Overview</h2>
-<p>ThSL-Learn-Place is a comprehensive developer toolset designed to facilitate seamless full-stack web application development. It combines synchronized backend and frontend initialization with robust security features, including SSL/TLS encryption and JWT-based authentication. The platform supports real-time communication, performance monitoring, and error handling to ensure a resilient user experience. Its modular architecture promotes maintainability and scalability, while utility scripts handle device compatibility and secure token management.</p>
-<p><strong>Why ThSL-Learn-Place?</strong></p>
-<p>This project aims to streamline the development of secure, interactive, and scalable web applications. The core features include:</p>
-<ul class="list-disc pl-4 my-0">
-<li class="my-0">🛠️ <strong>Synchronized Startup:</strong> Orchestrates concurrent backend and frontend initialization for efficient local development.</li>
-<li class="my-0">🔒 <strong>Secure Communication:</strong> Implements SSL/TLS certificates and JWT authentication for data integrity and user security.</li>
-<li class="my-0">📊 <strong>Performance &amp; Stability:</strong> Integrates web vitals monitoring and error boundaries to maintain high responsiveness.</li>
-<li class="my-0">📱 <strong>Device &amp; Token Management:</strong> Detects device types and manages tokens for secure, device-aware interactions.</li>
-<li class="my-0">🧩 <strong>Modular Architecture:</strong> Supports diverse functionalities like user management, real-time data, and educational modules.</li>
-</ul>
+<p>
+  Sign language is an important tool that helps people with hearing and speech impairments communicate effectively with others. This website is made for learning and translating Thai sign language to reduce barriers and communication gaps between sign language users and the general public. It also provides a platform for self-learning sign language.
+</p>
 <hr>
 <h2>Getting Started</h2>
 <h3>Prerequisites</h3>
